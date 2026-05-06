@@ -56,4 +56,3 @@ def rerank_with_model(query: str, passages: List[str]) -> Optional[List[float]]:
     except Exception as exc:
         logger.warning("Model reranker failed, fallback to rule stage: %s", exc)
         return None
-

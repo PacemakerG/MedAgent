@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from app.core.config import ECG_SITE_URL
 
+
 class ECGPatientInfo(BaseModel):
     patient_id: Optional[str] = None
     patient_name: Optional[str] = None

@@ -240,4 +240,3 @@ def generate_ecg_pdf(
 
     c.save()
     return str(pdf_path)
-

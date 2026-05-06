@@ -1,8 +1,9 @@
-from pathlib import Path
 import importlib
+from pathlib import Path
 
 from app.schemas.ecg import ECGMonitorStartRequest, ECGReportResponse
 from app.services.ecg_monitor_service import ECGMonitorService
+
 monitor_module = importlib.import_module("app.services.ecg_monitor_service")
 
 
@@ -61,13 +62,19 @@ class _FakeHardwareModule:
 
 def test_monitor_fetch_latest_and_llm_io_contract(monkeypatch):
     service = ECGMonitorService()
-    intake = ECGMonitorStartRequest(patient_name="张三", age=29, gender="male")
+    intake = ECGMonitorStartRequest(
+        patient_name="张三",
+        age=29,
+        gender="male",
+        monitor_data_mode="live",
+    )
 
     monkeypatch.setattr(
         monitor_module,
         "_load_hardware_fetch_module",
         lambda: _FakeHardwareModule,
     )
+    monkeypatch.setattr(monitor_module, "ECG_MONITOR_TARGET_CREATE_TIME", "")
     monkeypatch.setattr(
         monitor_module.ecg_report_service,
         "generate_report",

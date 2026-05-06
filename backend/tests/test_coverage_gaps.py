@@ -3,7 +3,6 @@ import sys
 from unittest.mock import MagicMock, patch
 
 from fastapi import Request
-from langchain_core.documents import Document
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -146,8 +145,8 @@ def test_vector_store_coverage():
         vector_store._vectorstore = None
         with patch("os.path.exists", return_value=False):
             with patch("os.makedirs"):
-                    res = get_or_create_vectorstore(documents=None, persist_dir="new_fake_dir")
-                    assert res is None
+                res = get_or_create_vectorstore(documents=None, persist_dir="new_fake_dir")
+                assert res is None
 
 
 def test_vector_store_no_embeddings():

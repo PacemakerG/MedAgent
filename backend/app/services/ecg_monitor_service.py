@@ -160,24 +160,58 @@ def _synthetic_lead_ii_waveform(
 ) -> list[float]:
     sample_rate = max(100, int(sample_rate_hz or 500))
     total_samples = max(sample_rate, int(duration_sec * sample_rate))
-    beat_period_sec = 60.0 / max(35.0, float(heart_rate))
-    signal: list[float] = []
+    duration = total_samples / float(sample_rate)
+    base_rr_sec = 60.0 / max(45.0, float(heart_rate))
+    time_axis = [idx / float(sample_rate) for idx in range(total_samples)]
+    signal = [
+        0.016 * math.sin(2.0 * math.pi * 0.28 * t)
+        + 0.006 * math.sin(2.0 * math.pi * 0.09 * t + 1.1)
+        + 0.0025 * math.sin(2.0 * math.pi * 50.0 * t)
+        + 0.0012 * math.sin(2.0 * math.pi * 17.0 * t + 0.4)
+        for t in time_axis
+    ]
 
-    for idx in range(total_samples):
-        t = idx / float(sample_rate)
-        phase = (t % beat_period_sec) / beat_period_sec
+    beat_times: list[float] = []
+    beat_time = 0.42
+    beat_index = 0
+    while beat_time < duration + 0.5:
+        rr_scale = (
+            1.0
+            + 0.042 * math.sin(2.0 * math.pi * 0.19 * beat_time)
+            + 0.015 * math.sin(0.63 * beat_index + 0.8)
+        )
+        beat_times.append(beat_time)
+        beat_time += max(0.72, min(1.08, base_rr_sec * rr_scale))
+        beat_index += 1
 
-        p = 0.12 * math.exp(-0.5 * ((phase - 0.18) / 0.030) ** 2)
-        q = -0.14 * math.exp(-0.5 * ((phase - 0.36) / 0.012) ** 2)
-        r = 1.05 * math.exp(-0.5 * ((phase - 0.40) / 0.012) ** 2)
-        s = -0.28 * math.exp(-0.5 * ((phase - 0.44) / 0.016) ** 2)
-        tw = 0.32 * math.exp(-0.5 * ((phase - 0.70) / 0.060) ** 2)
-        baseline = 0.015 * math.sin(2.0 * math.pi * 0.33 * t)
-        mains = 0.004 * math.sin(2.0 * math.pi * 50.0 * t)
+    for beat_index, beat_center in enumerate(beat_times):
+        p_amp = 0.11 * (1.0 + 0.08 * math.sin(0.57 * beat_index + 0.2))
+        q_amp = -0.10 * (1.0 + 0.06 * math.sin(0.49 * beat_index + 0.5))
+        r_amp = 0.98 * (1.0 + 0.07 * math.sin(0.43 * beat_index + 0.1))
+        s_amp = -0.23 * (1.0 + 0.08 * math.sin(0.51 * beat_index + 1.0))
+        t_amp = 0.30 * (1.0 + 0.10 * math.sin(0.34 * beat_index + 0.9))
+        st_amp = 0.008 * math.sin(0.37 * beat_index + 0.6)
 
-        signal.append(round(p + q + r + s + tw + baseline + mains, 6))
+        p_width = 0.034 * (1.0 + 0.06 * math.sin(0.31 * beat_index + 0.3))
+        q_width = 0.010 * (1.0 + 0.05 * math.sin(0.27 * beat_index + 0.2))
+        r_width = 0.013 * (1.0 + 0.04 * math.sin(0.29 * beat_index + 0.4))
+        s_width = 0.015 * (1.0 + 0.05 * math.sin(0.33 * beat_index + 0.7))
+        t_width = 0.082 * (1.0 + 0.07 * math.sin(0.21 * beat_index + 0.5))
+        st_width = 0.030
 
-    return signal
+        for idx, t in enumerate(time_axis):
+            dt = t - beat_center
+            if dt < -0.28 or dt > 0.44:
+                continue
+            p_wave = p_amp * math.exp(-0.5 * ((dt + 0.20) / p_width) ** 2)
+            q_wave = q_amp * math.exp(-0.5 * ((dt + 0.045) / q_width) ** 2)
+            r_wave = r_amp * math.exp(-0.5 * (dt / r_width) ** 2)
+            s_wave = s_amp * math.exp(-0.5 * ((dt - 0.045) / s_width) ** 2)
+            st_wave = st_amp * math.exp(-0.5 * ((dt - 0.11) / st_width) ** 2)
+            t_wave = t_amp * math.exp(-0.5 * ((dt - 0.28) / t_width) ** 2)
+            signal[idx] += p_wave + q_wave + r_wave + s_wave + st_wave + t_wave
+
+    return [round(value, 6) for value in signal]
 
 
 def _build_synthetic_normal_payload(

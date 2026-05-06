@@ -5,10 +5,10 @@ Knowledge document loading and text splitting utilities.
 
 from __future__ import annotations
 
+import hashlib
 import os
 import posixpath
 import re
-import hashlib
 import xml.etree.ElementTree as ET
 import zipfile
 from html import unescape
@@ -24,15 +24,15 @@ from app.core.config import (
     RAG_CHUNK_OVERLAP,
     RAG_CHUNK_SIZE,
     RAG_CHUNK_STRATEGY,
+    RAG_PARENT_CHILD_ENABLED,
     RAG_PARENT_CHUNK_OVERLAP,
     RAG_PARENT_CHUNK_SIZE,
-    RAG_PARENT_CHILD_ENABLED,
 )
+from app.core.logging_config import logger
 from app.core.medical_taxonomy import (
     GENERAL_MEDICAL_DEPARTMENT,
     normalize_department_code,
 )
-from app.core.logging_config import logger
 
 SUPPORTED_KNOWLEDGE_SUFFIXES = (".pdf", ".epub")
 EPUB_CONTENT_MEDIA_TYPES = {"application/xhtml+xml", "text/html"}
@@ -263,10 +263,10 @@ def load_document(document_path: str) -> List[Document]:
 def _build_splitter(chunk_size: int, chunk_overlap: int):
     from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-    return RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+    return RecursiveCharacterTextSplitter(
         chunk_size=max(128, int(chunk_size)),
         chunk_overlap=max(0, int(chunk_overlap)),
-        separators=["\n\n", ". ", "\n", " "],
+        separators=["\n\n", "。", ". ", "\n", " "],
     )
 
 

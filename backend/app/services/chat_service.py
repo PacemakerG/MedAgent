@@ -3,10 +3,11 @@ MediGenius — services/chat_service.py
 ChatService: orchestrates the LangGraph agentic workflow for each chat message.
 """
 
+import asyncio
+import threading
 from datetime import datetime
 from time import perf_counter
 from typing import Any, AsyncGenerator, Dict
-import threading
 
 from app.agents.executor import (
     build_executor_plan,
@@ -14,13 +15,15 @@ from app.agents.executor import (
     normalize_executor_answer,
 )
 from app.agents.judge_need_rag import JudgeNeedRAGAgent
-from app.agents.memory import MemoryReadAgent, MemoryWriteAsyncAgent
 from app.agents.medical_router import MedicalRouterAgent
+from app.agents.memory import MemoryReadAgent, MemoryWriteAsyncAgent
 from app.agents.planner import KeywordRouterAgent
 from app.agents.query_rewriter import QueryRewriterAgent
-from app.agents.retriever import RetrieverAgent
 from app.agents.reranker import RerankerAgent
+from app.agents.retriever import RetrieverAgent
+from app.core.config import CHAT_MAX_CONCURRENT_WORKFLOWS, WORKFLOW_TIMEOUT_SECONDS
 from app.core.langgraph_workflow import create_workflow
+from app.core.langsmith_service import build_langsmith_runnable_config
 from app.core.logging_config import logger
 from app.core.medical_taxonomy import normalize_department_code
 from app.core.state import (
@@ -31,7 +34,7 @@ from app.core.state import (
 )
 from app.services.database_service import db_service
 from app.services.flow_trace_service import append_flow_trace_record
-from app.core.langsmith_service import build_langsmith_runnable_config
+from app.services.semantic_cache_service import semantic_cache_service
 from app.tools.llm_client import get_llm
 
 
@@ -42,6 +45,9 @@ class ChatService:
         self.workflow_app = None
         self.conversation_states: Dict[str, Dict] = {}
         self._lock = threading.Lock()
+        self._workflow_slots = threading.BoundedSemaphore(
+            max(1, int(CHAT_MAX_CONCURRENT_WORKFLOWS))
+        )
         logger.info("ChatService initialized")
 
     @staticmethod
@@ -155,6 +161,61 @@ class ChatService:
             return "".join(parts)
         return ""
 
+    async def _invoke_workflow(
+        self,
+        state: Dict[str, Any],
+        workflow_config: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        acquired = await asyncio.to_thread(
+            self._workflow_slots.acquire,
+            True,
+            max(1.0, float(WORKFLOW_TIMEOUT_SECONDS)),
+        )
+        if not acquired:
+            logger.warning("Workflow concurrency limit reached")
+            return self._workflow_fallback_state(state, "系统当前请求较多，请稍后再试。")
+
+        try:
+            try:
+                return await asyncio.wait_for(
+                    self.workflow_app.ainvoke(state, config=workflow_config),
+                    timeout=max(1.0, float(WORKFLOW_TIMEOUT_SECONDS)),
+                )
+            except AttributeError:
+                logger.warning("Falling back to sync invoke")
+                return await asyncio.wait_for(
+                    asyncio.to_thread(
+                        self.workflow_app.invoke,
+                        state,
+                        config=workflow_config,
+                    ),
+                    timeout=max(1.0, float(WORKFLOW_TIMEOUT_SECONDS)),
+                )
+        except asyncio.TimeoutError:
+            logger.error("Workflow timed out after %.1fs", float(WORKFLOW_TIMEOUT_SECONDS))
+            return self._workflow_fallback_state(
+                state,
+                "当前请求处理时间较长，系统已自动降级。请稍后重试，或补充更具体的问题。",
+            )
+        except Exception as exc:
+            logger.exception("Workflow failed: %s", exc)
+            return self._workflow_fallback_state(
+                state,
+                "服务暂时不可用，请稍后再试。如涉及急症或明显不适，请优先线下就医。",
+            )
+        finally:
+            self._workflow_slots.release()
+
+    @staticmethod
+    def _workflow_fallback_state(state: Dict[str, Any], answer: str) -> Dict[str, Any]:
+        result = dict(state)
+        result["generation"] = answer
+        result["source"] = "System Fallback"
+        result["llm_success"] = False
+        result.setdefault("flow_trace", [])
+        result["flow_trace"].append("workflow_fallback")
+        return result
+
     async def process_message(
         self,
         session_id: str,
@@ -185,6 +246,45 @@ class ChatService:
             user_id=user_id,
         )
 
+        cache_lookup = semantic_cache_service.build_lookup(
+            query=message,
+            tenant_id=tenant_id,
+            selected_department=selected_department,
+        )
+        cached_answer = semantic_cache_service.get_answer(cache_lookup)
+        if cached_answer:
+            response_text = cached_answer.get("answer") or ""
+            source = cached_answer.get("source") or "Semantic Cache"
+            flow_trace = list(cached_answer.get("flow_trace") or ["semantic_cache"])
+            db_service.save_message(
+                session_id,
+                "assistant",
+                response_text,
+                source,
+                tenant_id=tenant_id,
+                user_id=user_id,
+            )
+            append_flow_trace_record(
+                session_id=session_id,
+                question=message,
+                flow_trace=flow_trace,
+                source=source,
+                safety_level="SAFE",
+                domain="medical",
+                primary_department=selected_department or "",
+                use_rag=False,
+                need_rag=False,
+                profiling={"cache_hit": True, "semantic_cache": cache_lookup.metadata},
+            )
+            return {
+                "response": response_text,
+                "source": source,
+                "timestamp": datetime.now().strftime("%I:%M %p"),
+                "success": bool(response_text),
+                "flow_trace": flow_trace,
+                "cache_hit": True,
+            }
+
         context_key, state = self._prepare_query_state(
             session_id=session_id,
             message=message,
@@ -201,12 +301,7 @@ class ChatService:
             extra_tags=["chat", "sync"],
         )
 
-        # Run workflow (async preferred, sync fallback)
-        try:
-            result = await self.workflow_app.ainvoke(state, config=workflow_config)
-        except AttributeError:
-            logger.warning("Falling back to sync invoke")
-            result = self.workflow_app.invoke(state, config=workflow_config)
+        result = await self._invoke_workflow(state, workflow_config)
 
         self._store_state(context_key, result)
         result.setdefault("profiling", {})
@@ -238,12 +333,21 @@ class ChatService:
             profiling=result.get("profiling", {}),
         )
 
+        if result.get("llm_success", True):
+            semantic_cache_service.store_answer(
+                cache_lookup,
+                answer=response_text,
+                source=source,
+                flow_trace=flow_trace,
+            )
+
         return {
             "response": response_text,
             "source": source,
             "timestamp": datetime.now().strftime("%I:%M %p"),
             "success": bool(result.get("generation")),
             "flow_trace": flow_trace,
+            "cache_hit": False,
         }
 
     async def process_message_stream(
@@ -273,6 +377,50 @@ class ChatService:
             tenant_id=tenant_id,
             user_id=user_id,
         )
+        cache_lookup = semantic_cache_service.build_lookup(
+            query=message,
+            tenant_id=tenant_id,
+            selected_department=selected_department,
+        )
+        cached_answer = semantic_cache_service.get_answer(cache_lookup)
+        if cached_answer:
+            answer = cached_answer.get("answer") or ""
+            source_info = cached_answer.get("source") or "Semantic Cache"
+            flow_trace = list(cached_answer.get("flow_trace") or ["semantic_cache"])
+            if answer:
+                yield {"event": "delta", "delta": answer}
+            db_service.save_message(
+                session_id,
+                "assistant",
+                answer,
+                source_info,
+                tenant_id=tenant_id,
+                user_id=user_id,
+            )
+            append_flow_trace_record(
+                session_id=session_id,
+                question=message,
+                flow_trace=flow_trace,
+                source=source_info,
+                safety_level="SAFE",
+                domain="medical",
+                primary_department=selected_department or "",
+                use_rag=False,
+                need_rag=False,
+                profiling={"cache_hit": True, "semantic_cache": cache_lookup.metadata},
+            )
+            yield {
+                "event": "done",
+                "success": bool(answer),
+                "response": answer,
+                "source": source_info,
+                "timestamp": datetime.now().strftime("%I:%M %p"),
+                "flow_trace": flow_trace,
+                "profiling": {"cache_hit": True, "semantic_cache": cache_lookup.metadata},
+                "cache_hit": True,
+            }
+            return
+
         context_key, state = self._prepare_query_state(
             session_id=session_id,
             message=message,
@@ -432,6 +580,13 @@ class ChatService:
             need_rag=bool(state.get("need_rag", False)),
             profiling=state.get("profiling", {}),
         )
+        if state.get("llm_success", True):
+            semantic_cache_service.store_answer(
+                cache_lookup,
+                answer=answer,
+                source=source_info,
+                flow_trace=flow_trace,
+            )
         yield {
             "event": "done",
             "success": bool(answer),
@@ -440,6 +595,7 @@ class ChatService:
             "timestamp": datetime.now().strftime("%I:%M %p"),
             "flow_trace": flow_trace,
             "profiling": state.get("profiling", {}),
+            "cache_hit": False,
         }
 
     def clear_conversation(

@@ -19,6 +19,25 @@ class ChatResponse(BaseModel):
     timestamp: str
     success: bool
     flow_trace: List[str]
+    cache_hit: bool = False
+
+
+class ChatJobResponse(BaseModel):
+    job_id: str
+    status: str
+    success: bool = True
+
+
+class JobStatusResponse(BaseModel):
+    job_id: str
+    status: str
+    type: str
+    tenant_id: str
+    user_id: str
+    session_id: str
+    result: dict | None = None
+    error: str | None = None
+    success: bool = True
 
 
 class WelcomeRequest(BaseModel):

@@ -4,6 +4,7 @@ DatabaseService: all CRUD operations for chat history.
 """
 
 import json
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from sqlalchemy import delete, desc, func, select, text
@@ -13,6 +14,7 @@ from app.core.logging_config import logger
 from app.db.session import SessionLocal, engine
 from app.models.ecg_report import ECGReport
 from app.models.message import Base, Message
+from app.models.user import User
 
 
 class DatabaseService:
@@ -31,6 +33,8 @@ class DatabaseService:
 
     def _ensure_identity_columns(self) -> None:
         """Add tenant/user columns for legacy SQLite tables without migrations."""
+        if self.engine.dialect.name != "sqlite":
+            return
         column_specs = {
             "messages": [
                 ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'default'"),
@@ -61,6 +65,10 @@ class DatabaseService:
 
     def get_session(self) -> Session:
         return self.SessionLocal()
+
+    def ensure_user_table(self) -> None:
+        """Create the users table when legacy startup hooks were skipped/mocked."""
+        User.__table__.create(bind=self.engine, checkfirst=True)
 
     def save_message(
         self,
@@ -210,6 +218,48 @@ class DatabaseService:
             )
             record = session.execute(stmt).scalar_one_or_none()
             return record.to_dict() if record else None
+
+    def get_user(self, tenant_id: str, user_id: str) -> Optional[User]:
+        with self.get_session() as session:
+            stmt = (
+                select(User)
+                .where(User.tenant_id == tenant_id)
+                .where(User.user_id == user_id)
+            )
+            return session.execute(stmt).scalar_one_or_none()
+
+    def create_user(
+        self,
+        *,
+        tenant_id: str,
+        user_id: str,
+        password_hash: str,
+        role: str = "user",
+    ) -> Dict:
+        with self.get_session() as session:
+            record = User(
+                tenant_id=tenant_id,
+                user_id=user_id,
+                password_hash=password_hash,
+                role=role,
+            )
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return record.to_dict()
+
+    def update_user_last_login(self, tenant_id: str, user_id: str) -> None:
+        with self.get_session() as session:
+            stmt = (
+                select(User)
+                .where(User.tenant_id == tenant_id)
+                .where(User.user_id == user_id)
+            )
+            record = session.execute(stmt).scalar_one_or_none()
+            if not record:
+                return
+            record.last_login_at = datetime.utcnow()
+            session.commit()
 
 
 # Module-level singleton

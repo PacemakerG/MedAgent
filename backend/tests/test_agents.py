@@ -8,12 +8,12 @@ from langchain_core.documents import Document
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.agents.executor import ExecutorAgent  # noqa: E402
-from app.agents.memory import MemoryAgent  # noqa: E402
 from app.agents.medical_router import MedicalRouterAgent  # noqa: E402
+from app.agents.memory import MemoryAgent  # noqa: E402
 from app.agents.planner import PlannerAgent  # noqa: E402
 from app.agents.query_rewriter import QueryRewriterAgent  # noqa: E402
-from app.agents.retriever import RetrieverAgent  # noqa: E402
 from app.agents.reranker import RerankerAgent  # noqa: E402
+from app.agents.retriever import RetrieverAgent  # noqa: E402
 from app.core.state import initialize_conversation_state  # noqa: E402
 from app.tools.pdf_loader import split_documents  # noqa: E402
 

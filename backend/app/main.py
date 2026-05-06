@@ -27,16 +27,18 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.api.v1.api import api_router
 from app.core.config import (
     CHAT_DB_PATH,
+    CORS_ALLOW_ORIGINS,
     KEYWORD_BACKEND,
     KNOWLEDGE_ROOT_DIR,
     PDF_PATH,
     RAG_ENABLED,
+    SESSION_SECRET_KEY,
     VECTOR_STORE_DIR,
 )
+from app.core.langsmith_service import configure_langsmith
 from app.core.logging_config import logger
 from app.services.chat_service import chat_service
 from app.services.database_service import db_service
-from app.core.langsmith_service import configure_langsmith
 from app.tools.es_client import bulk_index_documents, es_document_count, es_enabled
 from app.tools.pdf_loader import (
     GENERAL_MEDICAL_DEPARTMENT,
@@ -137,12 +139,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ALLOW_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(SessionMiddleware, secret_key=secrets.token_hex(32))
+app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY or secrets.token_hex(32))
 
 # Register all API routes
 app.include_router(api_router)

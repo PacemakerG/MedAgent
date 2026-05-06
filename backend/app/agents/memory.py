@@ -5,8 +5,8 @@ Memory agents:
   - MemoryWriteAsyncAgent: async profile update after final answer
 """
 
-from app.core.state import AgentState, append_flow_trace, profile_node
 from app.core.langsmith_service import langsmith_traceable
+from app.core.state import AgentState, append_flow_trace, profile_node
 from app.services.profile_service import (
     load_profile,
     render_profile_as_text,

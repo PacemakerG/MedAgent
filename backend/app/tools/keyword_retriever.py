@@ -196,4 +196,3 @@ def keyword_search(
                 return []
             _INDEX_CACHE[cache_key] = index
     return index.search(query, top_k=max(1, int(top_k)))
-

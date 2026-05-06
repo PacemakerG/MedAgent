@@ -72,3 +72,20 @@ def test_delete_session(setup_teardown_db):
 
     db.delete_session("sess_to_del")
     assert len(db.get_chat_history("sess_to_del")) == 0
+
+
+def test_create_and_get_user(setup_teardown_db):
+    db = setup_teardown_db
+
+    created = db.create_user(
+        tenant_id="hospital_a",
+        user_id="doctor_1",
+        password_hash="pbkdf2_sha256$1$salt$hash",
+    )
+    assert created["tenant_id"] == "hospital_a"
+    assert created["user_id"] == "doctor_1"
+    assert "password_hash" not in created
+
+    user = db.get_user("hospital_a", "doctor_1")
+    assert user is not None
+    assert user.user_id == "doctor_1"

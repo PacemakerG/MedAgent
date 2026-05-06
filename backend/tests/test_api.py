@@ -63,6 +63,18 @@ def test_chat_flow_system_not_initialized(test_client):
         assert response.json()["detail"] == "System not initialized"
 
 
+def test_chat_job_created(test_client, mock_dependencies):
+    response = test_client.post(
+        "/api/v1/chat/jobs",
+        json={"message": "Hello async"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["status"] == "queued"
+    assert data["job_id"]
+
+
 def test_chat_stream_success(test_client, mock_dependencies):
     mock_dependencies["workflow_app"].ainvoke.return_value = {
         "generation": "流式回复测试",

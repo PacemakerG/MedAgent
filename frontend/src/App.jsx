@@ -202,7 +202,7 @@ function ChatArea({
           <div className="quick-actions">
             <h3>专业科室选择：</h3>
             <div className="quick-buttons">
-              {DEPARTMENT_OPTIONS.map(({ code, label, zh, icon }) => (
+              {DEPARTMENT_OPTIONS.map(({ code, label, icon }) => (
                 <button
                   key={code}
                   className="quick-btn glass-effect"
@@ -495,6 +495,17 @@ function LoginModal({
                 placeholder="default"
               />
             </label>
+            <label>
+              密码
+              <input
+                type="password"
+                value={form.password}
+                onChange={(e) => onChange('password', e.target.value)}
+                minLength={8}
+                autoComplete="current-password"
+                required
+              />
+            </label>
           </div>
           <div className="ecg-guide-actions">
             <button type="submit" className="action-btn" disabled={submitting}>
@@ -514,6 +525,7 @@ const API_BASE = '/api/v1';
 const TENANT_STORAGE_KEY = 'medigenius_tenant_id';
 const USER_STORAGE_KEY = 'medigenius_user_id';
 const SESSION_STORAGE_KEY = 'medigenius_session_id';
+const ACCESS_TOKEN_STORAGE_KEY = 'medigenius_access_token';
 
 function sanitizeIdentity(value, fallback) {
   const text = (value || '').trim();
@@ -573,9 +585,11 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
+  const [accessToken, setAccessToken] = useState(() => localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) || '');
   const [loginForm, setLoginForm] = useState({
     userId: '',
     tenantId: resolveClientIdentity().tenantId,
+    password: '',
   });
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
   const isMobile = useIsMobile();
@@ -628,8 +642,9 @@ export default function App() {
 
   const apiFetch = useCallback((path, options = {}, context = {}) => {
     const headers = new Headers(options.headers || {});
-    headers.set('X-Tenant-ID', identity.tenantId);
-    headers.set('X-User-ID', identity.userId);
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`);
+    }
     const effectiveSessionId = context.sessionId || currentSessionId || sessionHeaderId;
     if (effectiveSessionId) {
       headers.set('X-Session-ID', effectiveSessionId);
@@ -638,7 +653,7 @@ export default function App() {
       ...options,
       headers,
     });
-  }, [identity.tenantId, identity.userId, currentSessionId, sessionHeaderId]);
+  }, [accessToken, currentSessionId, sessionHeaderId]);
 
   const onLoginFormChange = useCallback((key, value) => {
     setLoginForm(prev => ({ ...prev, [key]: value }));
@@ -685,10 +700,11 @@ export default function App() {
     (async () => {
       try {
         const headers = {
-          'X-Tenant-ID': identity.tenantId,
-          'X-User-ID': identity.userId,
           'X-Session-ID': sessionHeaderId,
         };
+        if (accessToken) {
+          headers.Authorization = `Bearer ${accessToken}`;
+        }
         const res = await fetch(`${API_BASE}/auth/me`, { headers });
         const data = await res.json();
         if (cancelled) return;
@@ -707,15 +723,21 @@ export default function App() {
       }
     })();
     return () => { cancelled = true; };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submitLogin = useCallback(async (e) => {
     e.preventDefault();
     if (isAuthSubmitting) return;
     const userId = sanitizeIdentity(loginForm.userId, '');
     const tenantId = sanitizeIdentity(loginForm.tenantId || identity.tenantId, 'default');
+    const password = loginForm.password || '';
     if (!userId) {
       showToast('请输入用户ID', 'error');
+      return;
+    }
+    if (password.length < 8) {
+      showToast('密码至少 8 位', 'error');
       return;
     }
 
@@ -727,15 +749,20 @@ export default function App() {
           'Content-Type': 'application/json',
           'X-Session-ID': sessionHeaderId,
         },
-        body: JSON.stringify({ user_id: userId, tenant_id: tenantId }),
+        body: JSON.stringify({ user_id: userId, tenant_id: tenantId, password }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
         persistIdentity({ tenantId: data.tenant_id, userId: data.user_id });
+        if (data.access_token) {
+          setAccessToken(data.access_token);
+          localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, data.access_token);
+        }
         if (data.session_id) {
           persistSessionId(data.session_id);
           setCurrentSessionId(data.session_id);
         }
+        setLoginForm(prev => ({ ...prev, password: '' }));
         setIsLoggedIn(true);
         setSessions(null);
         setMessages([]);
@@ -744,14 +771,14 @@ export default function App() {
         setSelectedDepartment(null);
         showToast(`已登录为 ${data.user_id}`, 'success');
       } else {
-        showToast('登录失败，请重试', 'error');
+        showToast(data?.detail || '登录失败，请重试', 'error');
       }
     } catch {
       showToast('登录请求失败', 'error');
     } finally {
       setIsAuthSubmitting(false);
     }
-  }, [identity.tenantId, isAuthSubmitting, loginForm.tenantId, loginForm.userId, persistIdentity, persistSessionId, sessionHeaderId, showToast]);
+  }, [identity.tenantId, isAuthSubmitting, loginForm.password, loginForm.tenantId, loginForm.userId, persistIdentity, persistSessionId, sessionHeaderId, showToast]);
 
   const logout = useCallback(async () => {
     try {
@@ -760,6 +787,8 @@ export default function App() {
       // ignore logout network failures, still clear local state
     }
     persistIdentity({ tenantId: identity.tenantId, userId: 'anonymous' });
+    setAccessToken('');
+    localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
     setIsLoggedIn(false);
     setCurrentSessionId(null);
     setMessages([]);
@@ -861,7 +890,6 @@ export default function App() {
     } catch {
       showToast('会话删除失败', 'error');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiFetch, currentSessionId, isLoggedIn, loadSessions, showToast]);
 

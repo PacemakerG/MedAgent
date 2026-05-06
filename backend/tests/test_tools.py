@@ -1,9 +1,9 @@
 """Tests for tools — Deep Modular Architecture"""
 import os
 import sys
-from unittest.mock import MagicMock, patch
 import types
 import zipfile
+from unittest.mock import MagicMock, patch
 
 from langchain_core.documents import Document
 
@@ -246,10 +246,12 @@ def test_get_retriever():
 
 def test_split_documents():
     mock_doc = MagicMock()
+    mock_doc.page_content = "第一章 总论\n这里是测试内容。" * 20
+    mock_doc.metadata = {"source": "demo"}
     with patch('langchain_text_splitters.RecursiveCharacterTextSplitter') as mock_splitter_cls:
         mock_splitter = MagicMock()
         mock_splitter.split_documents.return_value = [mock_doc]
-        mock_splitter_cls.from_tiktoken_encoder.return_value = mock_splitter
+        mock_splitter_cls.return_value = mock_splitter
 
         res = split_documents([mock_doc])
         assert len(res) == 1

@@ -38,6 +38,15 @@ def _env_float(name: str, default: float) -> float:
     except Exception:
         return default
 
+
+def _env_list(name: str, default: list[str]) -> list[str]:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    items = [item.strip() for item in raw.split(",")]
+    return [item for item in items if item]
+
+
 # ── Paths ──────────────────────────────────────────────────────────────────────
 # backend/app/core/config.py -> backend/
 _BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -45,6 +54,7 @@ _BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 # Ensure logs and storage are inside backend directory
 LOG_DIR = os.getenv("LOG_DIR", os.path.join(_BACKEND_DIR, "logs"))
 CHAT_DB_PATH = os.getenv("CHAT_DB_PATH", os.path.join(_BACKEND_DIR, "storage", "chat_db", "medigenius.db"))
+DATABASE_URL = os.getenv("DATABASE_URL")
 VECTOR_STORE_DIR = os.getenv("VECTOR_STORE_DIR", os.path.join(_BACKEND_DIR, "storage", "vector_store"))
 PDF_PATH = os.getenv("PDF_PATH", os.path.join(_BACKEND_DIR, "data", "medical_book.pdf"))
 KNOWLEDGE_ROOT_DIR = os.getenv(
@@ -124,6 +134,32 @@ MODEL_ROUTING_CONFIG_PATH = os.getenv(
     "MODEL_ROUTING_CONFIG_PATH",
     os.path.join(_BACKEND_DIR, "storage", "model_routing.json"),
 )
+
+# ── Runtime / API Security ────────────────────────────────────────────────────
+SESSION_SECRET_KEY = os.getenv("SESSION_SECRET_KEY") or os.getenv("AUTH_TOKEN_SECRET")
+AUTH_TOKEN_SECRET = os.getenv("AUTH_TOKEN_SECRET") or SESSION_SECRET_KEY
+AUTH_ACCESS_TOKEN_TTL_SECONDS = _env_int("AUTH_ACCESS_TOKEN_TTL_SECONDS", 1800)
+AUTH_PASSWORD_HASH_ITERATIONS = _env_int("AUTH_PASSWORD_HASH_ITERATIONS", 310000)
+AUTH_AUTO_CREATE_USERS = _env_bool("AUTH_AUTO_CREATE_USERS", True)
+AUTH_TRUST_IDENTITY_HEADERS = _env_bool("AUTH_TRUST_IDENTITY_HEADERS", False)
+AUTH_LOGIN_RATE_LIMIT_PER_MINUTE = _env_int("AUTH_LOGIN_RATE_LIMIT_PER_MINUTE", 10)
+CORS_ALLOW_ORIGINS = _env_list("CORS_ALLOW_ORIGINS", ["http://localhost:5173", "http://127.0.0.1:5173"])
+
+# ── Redis / Cache / Queue ─────────────────────────────────────────────────────
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+REDIS_ENABLED = _env_bool("REDIS_ENABLED", False)
+REDIS_SOCKET_TIMEOUT_SECONDS = _env_float("REDIS_SOCKET_TIMEOUT_SECONDS", 1.0)
+SEMANTIC_CACHE_ENABLED = _env_bool("SEMANTIC_CACHE_ENABLED", True)
+SEMANTIC_CACHE_TTL_SECONDS = _env_int("SEMANTIC_CACHE_TTL_SECONDS", 86400)
+SEMANTIC_CACHE_PROMPT_VERSION = os.getenv("SEMANTIC_CACHE_PROMPT_VERSION", "medical_qa_v1")
+SEMANTIC_CACHE_RAG_VERSION = os.getenv("SEMANTIC_CACHE_RAG_VERSION", "local_rag_v1")
+SEMANTIC_CACHE_MIN_ENTITY_COUNT = _env_int("SEMANTIC_CACHE_MIN_ENTITY_COUNT", 1)
+CHAT_RATE_LIMIT_PER_MINUTE = _env_int("CHAT_RATE_LIMIT_PER_MINUTE", 60)
+CHAT_MAX_CONCURRENT_WORKFLOWS = _env_int("CHAT_MAX_CONCURRENT_WORKFLOWS", 8)
+WORKFLOW_TIMEOUT_SECONDS = _env_float("WORKFLOW_TIMEOUT_SECONDS", 90.0)
+TASK_QUEUE_ENABLED = _env_bool("TASK_QUEUE_ENABLED", True)
+TASK_QUEUE_MAX_WORKERS = _env_int("TASK_QUEUE_MAX_WORKERS", 4)
+TASK_STATUS_TTL_SECONDS = _env_int("TASK_STATUS_TTL_SECONDS", 86400)
 
 # ── ECG Remote Monitor ────────────────────────────────────────────────────────
 ECG_SITE_URL = os.getenv(

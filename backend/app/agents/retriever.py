@@ -23,8 +23,16 @@ from app.core.config import (
 )
 from app.core.langsmith_service import langsmith_traceable
 from app.core.logging_config import logger
-from app.core.medical_taxonomy import GENERAL_MEDICAL_DEPARTMENT, department_display_name
-from app.core.state import AgentState, append_flow_trace, profile_node, set_retrieval_metric
+from app.core.medical_taxonomy import (
+    GENERAL_MEDICAL_DEPARTMENT,
+    department_display_name,
+)
+from app.core.state import (
+    AgentState,
+    append_flow_trace,
+    profile_node,
+    set_retrieval_metric,
+)
 from app.tools.es_keyword_retriever import keyword_backend_available, keyword_search_es
 from app.tools.keyword_retriever import keyword_search
 from app.tools.vector_store import get_retriever

@@ -3,8 +3,8 @@ MediGenius — schemas/__init__.py
 Exports all Pydantic schemas.
 """
 
-from app.schemas.chat import ChatRequest, ChatResponse
 from app.schemas.auth import AuthStatusResponse, LoginRequest
+from app.schemas.chat import ChatRequest, ChatResponse
 from app.schemas.ecg import (
     ECGMonitorStartRequest,
     ECGMonitorStartResponse,

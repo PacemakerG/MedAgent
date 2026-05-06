@@ -15,6 +15,7 @@ from app.core.config import (
     WEB_SEARCH_ENABLED,
     WEB_SEARCH_USE_LLM_DECIDER,
 )
+from app.core.langsmith_service import langsmith_traceable
 from app.core.logging_config import logger
 from app.core.state import (
     AgentState,
@@ -26,7 +27,6 @@ from app.core.state import (
 )
 from app.schemas.ecg import ECGReportRequest
 from app.services.ecg_report_service import ecg_report_service
-from app.core.langsmith_service import langsmith_traceable
 from app.tools.llm_client import coerce_response_text, get_light_llm, get_llm
 from app.tools.tavily_search import get_tavily_search
 

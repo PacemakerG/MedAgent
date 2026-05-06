@@ -112,7 +112,7 @@ def _build_profile_hint(profile: Dict[str, Any]) -> str:
     if style:
         parts.append(f"保持 {style} 的沟通方式")
     if age:
-        parts.append(f"也会尽量结合你目前记录的年龄信息来组织建议")
+        parts.append("也会尽量结合你目前记录的年龄信息来组织建议")
 
     if not parts:
         return ""

@@ -13,14 +13,19 @@ from app.core.config import (
     QUERY_REWRITER_MAX_SUBQUERIES,
     QUERY_REWRITER_USE_LLM,
 )
+from app.core.langsmith_service import langsmith_traceable
 from app.core.logging_config import logger
 from app.core.medical_taxonomy import (
     GENERAL_MEDICAL_DEPARTMENT,
     department_display_name,
     extract_query_terms,
 )
-from app.core.state import AgentState, append_flow_trace, profile_node, set_retrieval_metric
-from app.core.langsmith_service import langsmith_traceable
+from app.core.state import (
+    AgentState,
+    append_flow_trace,
+    profile_node,
+    set_retrieval_metric,
+)
 from app.tools.llm_client import coerce_response_text, get_light_llm
 
 

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 
+from app.core.langsmith_service import langsmith_traceable
 from app.core.logging_config import logger
 from app.core.medical_taxonomy import (
     GENERAL_MEDICAL_DEPARTMENT,
@@ -16,7 +17,6 @@ from app.core.medical_taxonomy import (
     normalize_department_code,
 )
 from app.core.state import AgentState, append_flow_trace, profile_node
-from app.core.langsmith_service import langsmith_traceable
 from app.tools.llm_client import coerce_response_text, get_light_llm
 
 

@@ -27,6 +27,8 @@ pypdf==6.5.0
 wikipedia==1.4.0
 duckduckgo-search==8.1.1
 sqlalchemy==2.0.45
+redis==5.2.1
+psycopg[binary]==3.2.9
 matplotlib==3.10.7
 reportlab==4.4.4
 

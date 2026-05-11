@@ -2,60 +2,70 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-MediGenius is a production-oriented healthcare AI assistant built for real clinical-support workflows, not just single-turn demos.
+MediGenius is a production-oriented healthcare AI assistant that combines multi-agent orchestration, RAG retrieval, streaming interaction, long-term memory, and medical report delivery into one end-to-end system.
 
-It integrates two core pipelines:
+Two core pipelines:
 
-1. Multi-department medical Q&A (`manual department lock + automatic routing + RAG`)
-2. ECG report generation (`cloud fetch or synthetic-normal mode -> structured analysis -> PDF report`)
+1. **Multi-department medical Q&A** -- safety triage -> domain/department routing -> query rewriting -> hybrid retrieval (ChromaDB + keyword) -> reranking -> personalized answer generation, with optional web search
+2. **ECG report generation** -- cloud fetch or synthetic-normal mode -> structured parameter analysis -> professional Chinese report with PDF output
 
-## About
-
-This project combines agent orchestration, retrieval, streaming interaction, long-term memory, and medical report delivery into one end-to-end system.
-
-It is designed for practical scenarios such as:
-
-- Pre-consult triage and symptom guidance
-- Chronic-care follow-up with context continuity
-- Wearable/monitor ECG interpretation support
+Designed for practical scenarios: pre-consult triage, chronic-care follow-up, and wearable/monitor ECG interpretation support.
 
 ## Key Highlights
 
-- Multi-agent workflow with a unified executor sink
-- Department-level RAG routing with manual override support
-- Real-time streaming chat (SSE, token-level updates)
-- ECG end-to-end pipeline with waveform + narrative PDF output
-- Multi-tenant isolation via `tenant_id + user_id + session_id`
-- Config-driven behavior through `.env` switches
+- **9-node LangGraph workflow** with safety triage bypass and single executor sink
+- **Department-level RAG** across 8 medical departments with per-department query rewriting and scoped retrieval
+- **Hybrid retrieval** -- parallel ChromaDB vector search + BM25 keyword search (memory or Elasticsearch backend)
+- **Two-stage reranking** -- rule-based scoring + optional cross-encoder model reranker
+- **Real-time SSE streaming** with token-level delta updates
+- **Multi-tenant isolation** via `tenant_id + user_id + session_id` with PBKDF2 password auth and HMAC-signed tokens
+- **Infrastructure** -- optional Redis with in-memory fallback, semantic cache, rate limiting, async task queue
+- **LangSmith observability** -- tracing, evaluation pipeline with route/retrieval/behavior metrics
+- **ECG end-to-end** -- cloud fetch -> signal parsing -> structured report -> PDF with waveform rendering
 
 ## Tech Stack
 
-- Frontend: React + Vite
-- Backend: FastAPI
-- Orchestration: LangGraph
-- Retrieval: ChromaDB
-- Storage: SQLite + JSON profile store + filesystem artifacts
+| Layer | Technology |
+|---|---|
+| Frontend | React 19 + Vite + Tailwind CSS 4 + daisyUI 5 |
+| Backend | FastAPI + LangGraph |
+| LLM | OpenAI-compatible API (configurable model) |
+| Retrieval | ChromaDB (vector) + BM25 (keyword, in-memory or Elasticsearch) |
+| Storage | SQLite (chat/users) + JSON (profiles) + filesystem (PDF/vectors) |
+| Testing | pytest + vitest |
 
-## Architecture (Simplified)
+## Architecture
 
-```text
-Frontend (React/Vite)
-   ├─ /api/v1/chat/stream (SSE)
-   ├─ /api/v1/ecg/monitor/start
-   └─ /api/v1/ecg/monitor/{task_id}
-
-Backend (FastAPI)
-   ├─ Agent Workflow:
-   │   MemoryRead
-   │    -> HealthConcierge / Router
-   │    -> QueryRewriter
-   │    -> Retriever / Reranker
-   │    -> Executor
-   │    -> MemoryWriteAsync
-   ├─ RAG Vector Store (ChromaDB)
-   ├─ Chat DB (SQLite)
-   └─ ECG Report Service (PDF)
 ```
+Frontend (React/Vite)
+   ├─ POST /api/v1/chat/stream (SSE)
+   ├─ POST /api/v1/auth/login
+   ├─ POST /api/v1/ecg/monitor/start
+   └─ GET  /api/v1/ecg/monitor/{task_id}/events
+
+Backend (FastAPI) ─── LangGraph Workflow (9 nodes):
+
+  memory_read
+      │
+      ▼
+  health_concierge  ←── safety triage + domain classification
+      │
+      ├── EMERGENCY/CLARIFY ────► executor (safety bypass)
+      │
+      ├── department forced ────► query_rewriter → rag → reranker → executor
+      │
+      ├── medical ──► medical_router → query_rewriter → rag → reranker → executor
+      │
+      ├── nutrition/fitness/sleep ──► query_rewriter → rag → reranker → executor
+      │
+      └── general ──► judge_need_rag → (need_rag) query_rewriter → rag → reranker → executor
+                                      └─ (!need_rag) executor
+                                                                           │
+                                                                           ▼
+                                                                    memory_write_async
+```
+
+Key services: ChatService, AuthService, DatabaseService, ProfileService, RedisService, RateLimitService, SemanticCacheService, TaskQueueService, ECGReportService, ECGMonitorService, ECGPdfService
 
 ## Quick Start
 
@@ -68,34 +78,32 @@ conda activate medigenius
 ### 2) Install Dependencies
 
 ```bash
-# backend
 cd backend
 pip install -r requirements.txt
 
-# frontend
 cd ../frontend
 npm install
 ```
 
-### 3) Configure Environment Variables
+### 3) Configure Environment
 
 ```bash
 cp backend/.env.example backend/.env
 ```
 
-Required examples:
+Required variables:
+- `OPENAI_BASE_URL` -- LLM API base URL
+- `OPENAI_API_KEY` -- LLM API key
+- `LLM_MODEL` / `LIGHT_LLM_MODEL` -- main and lightweight model names
+- `OPENAI_WIRE_API` -- `chat` or `responses`
+- `SESSION_SECRET_KEY` / `AUTH_TOKEN_SECRET` -- random secrets for session and token signing
 
-- `OPENAI_BASE_URL`
-- `OPENAI_API_KEY`
-- `OPENAI_WIRE_API` (`chat` or `responses`)
-- `LLM_MODEL`
-- `LIGHT_LLM_MODEL`
-
-ECG-related examples:
-
-- `ECG_SITE_URL` / `ECG_SITE_USER` / `ECG_SITE_PASS`
-- `ECG_MONITOR_TARGET_CREATE_TIME`
-- `ECG_MONITOR_DATA_MODE` (`live` or `synthetic_normal`)
+Optional but recommended:
+- `RAG_ENABLED`, `EMBEDDING_MODEL_NAME` -- RAG configuration
+- `QUERY_REWRITER_ENABLED`, `HYBRID_RETRIEVAL_ENABLED`, `RERANKER_MODEL_ENABLED` -- retrieval quality
+- `TAVILY_API_KEY` -- web search fallback
+- `ECG_SITE_URL` / `ECG_SITE_USER` / `ECG_SITE_PASS` -- ECG cloud fetch
+- `SEMANTIC_CACHE_ENABLED`, `REDIS_ENABLED` -- performance
 
 ### 4) Run
 
@@ -103,22 +111,98 @@ ECG-related examples:
 python run.py
 ```
 
-Default ports:
+Default ports: backend `8000`, frontend `5173` (auto-increments if occupied).
 
-- Backend: `8000`
-- Frontend: `5173` (auto-increments if occupied)
+## API Endpoints
 
-## Core APIs
+### Auth
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/v1/auth/me` | Current login status and identity |
+| POST | `/api/v1/auth/login` | Password login, returns Bearer token |
+| POST | `/api/v1/auth/logout` | Clear session identity |
 
-- `POST /api/v1/chat/stream`
-- `GET /api/v1/sessions`
-- `GET /api/v1/history`
-- `POST /api/v1/new-chat`
-- `POST /api/v1/ecg/report`
-- `GET /api/v1/ecg/report/{report_id}`
-- `GET /api/v1/ecg/report/{report_id}/pdf`
-- `POST /api/v1/ecg/monitor/start`
-- `GET /api/v1/ecg/monitor/{task_id}`
+### Chat & Sessions
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/v1/chat` | Non-streaming chat |
+| POST | `/api/v1/chat/stream` | SSE streaming chat |
+| POST | `/api/v1/chat/jobs` | Queue async chat task |
+| GET | `/api/v1/jobs/{job_id}` | Poll async job status |
+| GET | `/api/v1/sessions` | List sessions (scoped by tenant/user) |
+| GET | `/api/v1/session/{session_id}` | Load session details |
+| DELETE | `/api/v1/session/{session_id}` | Delete session |
+| GET | `/api/v1/history` | Current session chat history |
+| POST | `/api/v1/new-chat` | Create new session |
+| POST | `/api/v1/clear` | Clear conversation state |
+| POST | `/api/v1/welcome` | Generate proactive greeting |
+
+### ECG
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/v1/ecg/report` | Generate ECG report |
+| GET | `/api/v1/ecg/report/{report_id}` | Query report by ID |
+| GET | `/api/v1/ecg/report/{report_id}/pdf` | Download PDF report |
+| POST | `/api/v1/ecg/monitor/start` | Start ECG monitoring task |
+| GET | `/api/v1/ecg/monitor/{task_id}` | Query task status |
+
+### Health
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/v1/health` | Health check |
+| GET | `/api/v1/healthz` | Liveness probe |
+| GET | `/api/v1/readyz` | Readiness probe |
+
+## Testing
+
+```bash
+# Backend
+cd backend
+pytest -v                           # all tests
+pytest tests/test_agents.py -v      # single file
+pytest --cov=app --cov-report=html  # with HTML coverage
+
+# Frontend
+cd frontend
+npm test            # vitest
+npm run build       # production build
+npm run lint        # ESLint
+```
+
+## ECG Usage Flow
+
+1. Log into the system
+2. Click the ECG report button to open the guide modal
+3. Fill in patient info (name, age, gender, height, weight)
+4. Ensure ECG data has been uploaded to the cloud site
+5. System fetches the latest record, analyzes signals, and generates a PDF report with risk stratification
+
+## Project Structure
+
+```
+HardWare-Medicial/
+├── backend/
+│   ├── app/
+│   │   ├── agents/          # 9 LangGraph agents
+│   │   ├── api/v1/endpoints/ # REST API endpoints
+│   │   ├── core/            # State, config, workflow, langsmith
+│   │   ├── models/          # SQLAlchemy models
+│   │   ├── schemas/         # Pydantic schemas
+│   │   ├── services/        # Business logic (chat, auth, ecg, cache, etc.)
+│   │   └── tools/           # LLM client, vector store, search, reranker
+│   ├── data/knowledge/      # Medical textbook EPUBs by department
+│   ├── data/eval/           # LangSmith eval datasets and results
+│   ├── scripts/             # Eval pipeline, RAG profiling
+│   ├── storage/             # SQLite DB, ChromaDB, profiles, ECG PDFs
+│   └── tests/               # 16 test files (pytest)
+├── frontend/
+│   └── src/                 # React 19 single-page app
+├── hardware/                # ECG data pipeline scripts
+├── docs/
+│   ├── engineering/         # Engineering plans and reports
+│   └── evaluation/          # Eval reports and methodology
+└── run.py                   # One-click launcher
+```
 
 ## Acknowledgement
 
@@ -126,17 +210,14 @@ This project was inspired by the original MediGenius prototype by **Md. Emon Has
 
 - https://github.com/Md-Emon-Hasan/MediGenius
 
-On top of that prototype, this repository introduces substantial re-engineering and feature expansion in routing, RAG, streaming, ECG reporting, and multi-user isolation.
+On top of that prototype, this repository introduces substantial re-engineering: multi-department routing with per-department RAG, 9-node agent workflow with safety triage, SSE streaming, hybrid retrieval with reranking, ECG end-to-end pipeline with PDF output, multi-tenant auth, semantic caching, and LangSmith observability.
 
 ## Creators
 
-- ElonGe
-  - GitHub: https://github.com/PacemakerG
-- xhforever
-  - GitHub: https://github.com/xhforever
-- Project:
-  - https://github.com/PacemakerG/HardWare-Medicial
+- **ElonGe** -- [GitHub](https://github.com/PacemakerG)
+- **xhforever** -- [GitHub](https://github.com/xhforever)
+- **Project** -- [HardWare-Medicial](https://github.com/PacemakerG/HardWare-Medicial)
 
 ## Disclaimer
 
-This system is for medical assistance and research demonstration only. It does not replace licensed clinical diagnosis.
+This system is for medical assistance and research demonstration only. It does not replace licensed clinical diagnosis. If you experience acute high-risk symptoms, seek immediate in-person medical care or call emergency services.

@@ -64,7 +64,7 @@ def test_update_profile_persists_schema_constrained_data(tmp_path, monkeypatch):
     assert profile["current_context"]["symptom"] == "咳嗽"
     assert profile["current_context"]["last_ecg_diagnosis"] == "窦性心律"
 
-    expected_file = os.path.join(str(tmp_path), "default__anonymous.json")
+    expected_file = os.path.join(str(tmp_path), "anonymous.json")
     assert os.path.exists(expected_file)
 
 
@@ -74,14 +74,12 @@ def test_profile_scoped_by_user_not_session(tmp_path, monkeypatch):
     ps.update_profile(
         "session-a",
         {"current_context": {"symptom": "胸闷"}},
-        tenant_id="tenant-1",
         user_id="user-1",
     )
 
-    # Same tenant+user, different session should share long-term profile.
+    # Same user, different session should share long-term profile.
     profile_same_user = ps.load_profile(
         "session-b",
-        tenant_id="tenant-1",
         user_id="user-1",
     )
     assert profile_same_user["current_context"]["symptom"] == "胸闷"
@@ -89,7 +87,6 @@ def test_profile_scoped_by_user_not_session(tmp_path, monkeypatch):
     # Different user should be isolated.
     profile_other_user = ps.load_profile(
         "session-c",
-        tenant_id="tenant-1",
         user_id="user-2",
     )
     assert profile_other_user["current_context"] == {}

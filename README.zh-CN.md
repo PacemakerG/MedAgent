@@ -6,21 +6,21 @@
 
 两条核心管线：
 
-1. **多科室医疗问答** -- 安全分诊 -> 领域/科室路由 -> 查询改写 -> 混合检索（ChromaDB + 关键词）-> 重排序 -> 个性化回答生成，可选联网搜索
+1. **多科室医疗问答** -- 医学意图二值识别 -> 科室路由 -> 可选查询改写 -> 混合检索（ChromaDB + 关键词）-> 重排序 -> 个性化回答生成，可选联网搜索
 2. **ECG 报告生成** -- 云端抓取或合成正常模式 -> 结构化参数分析 -> 专业中文报告 + PDF 输出
 
 适用场景：诊前分诊与症状引导、慢病随访上下文连续、可穿戴/监护仪 ECG 解读辅助。
 
 ## 核心特性
 
-- **9 节点 LangGraph 工作流**，含安全分诊短路通道和单执行器汇聚模式
-- **科室级 RAG** 覆盖 8 个临床科室，每科室独立查询改写与范围检索，避免跨科室污染
-- **混合检索** -- ChromaDB 向量检索 + BM25 关键词检索并行（内存或 Elasticsearch 后端）
-- **两阶段重排序** -- 基于规则打分 + 可选交叉编码器模型重排序
+- **9 节点 LangGraph 工作流**，采用医学意图二值路由和单执行器汇聚模式
+- **科室级 RAG** 覆盖 8 个临床科室，支持可选查询改写与范围检索，避免跨科室污染
+- **混合检索** -- ChromaDB 向量检索 + Elasticsearch BM25 并行召回，使用 RRF 融合
+- **两阶段重排序** -- 基于规则打分 + BGE 交叉编码器模型重排序
 - **真 SSE 流式** -- token 级增量更新
-- **多租户隔离** -- `tenant_id + user_id + session_id` 三级隔离，PBKDF2 密码认证 + HMAC 签名令牌
-- **基础设施** -- 可选 Redis（内存自动回退）、语义缓存、速率限制、异步任务队列
-- **LangSmith 可观测性** -- 分布式追踪 + 评估管线（路由/检索/行为指标）
+- **用户/会话隔离** -- `user_id + session_id` 两级隔离，PBKDF2 密码认证 + HMAC 签名令牌
+- **Redis 语义缓存** -- 医学实体归一化与过滤 + 512 维向量 + Redis Stack HNSW 检索
+- **LangSmith 可观测性** -- 分布式追踪 + RAG、路由、Redis 三套独立评测管线
 - **ECG 全流程** -- 云端抓取 -> 信号解析 -> 结构化报告 -> 含波形渲染的 PDF 输出
 
 ## 技术栈
@@ -30,8 +30,8 @@
 | 前端 | React 19 + Vite + Tailwind CSS 4 + daisyUI 5 |
 | 后端 | FastAPI + LangGraph |
 | 大模型 | OpenAI 兼容 API（模型可配置） |
-| 检索 | ChromaDB（向量）+ BM25（关键词，内存或 Elasticsearch） |
-| 存储 | SQLite（聊天/用户）+ JSON（画像）+ 文件系统（PDF/向量库） |
+| 检索 | ChromaDB（向量）+ Elasticsearch（BM25）+ RRF + BGE Reranker |
+| 存储 | SQLite（聊天/用户）+ Redis Stack（语义缓存）+ JSON（画像）+ 文件系统（PDF/向量库） |
 | 测试 | pytest + vitest |
 
 ## 系统架构
@@ -45,24 +45,28 @@
 
 后端 (FastAPI) ─── LangGraph 工作流 (9 节点):
 
+  semantic_cache（语义缓存）
+      ├── 命中 ───────────────────────────────────────────────────► 返回响应
+      └── 未命中
+              │
+              ▼
   memory_read（记忆读取）
       │
       ▼
-  health_concierge（安全分诊 + 领域分类）
-      │
-      ├── EMERGENCY/CLARIFY ────► executor（安全直达，跳过检索）
+  keyword_router（医学 / 非医学二值意图识别）
       │
       ├── 手动锁定科室 ────► query_rewriter → rag → reranker → executor
       │
       ├── medical ──► medical_router → query_rewriter → rag → reranker → executor
       │
-      ├── nutrition/fitness/sleep ──► query_rewriter → rag → reranker → executor
-      │
-      └── general ──► judge_need_rag → (need_rag) query_rewriter → rag → reranker → executor
-                                      └─ (!need_rag) executor
+      └── non-medical ──► judge_need_rag → (need_rag) query_rewriter → rag → reranker → executor
+                                          └─ (!need_rag) executor
                                                                            │
                                                                            ▼
                                                                     memory_write_async（记忆写入）
+                                                                           │
+                                                                           ▼
+                                                              semantic_cache 写入 → 返回响应
 ```
 
 核心服务：ChatService, AuthService, DatabaseService, ProfileService, RedisService, RateLimitService, SemanticCacheService, TaskQueueService, ECGReportService, ECGMonitorService, ECGPdfService
@@ -113,6 +117,10 @@ python run.py
 
 默认端口：后端 `8000`，前端 `5173`（端口占用自动递增）。
 
+### 5) 准备本地医学知识库
+
+医学知识库 PDF 体积较大且受各发布机构使用条款约束，因此只保留在本地，不提交到 GitHub。请按照[官方来源清单](backend/data/knowledge/医学知识库官方下载来源.md)下载文件，并保持清单中的目录和文件名；下载完成后重建向量库。
+
 ## API 接口
 
 ### 认证
@@ -129,7 +137,7 @@ python run.py
 | POST | `/api/v1/chat/stream` | SSE 流式聊天 |
 | POST | `/api/v1/chat/jobs` | 排队异步聊天任务 |
 | GET | `/api/v1/jobs/{job_id}` | 轮询异步任务状态 |
-| GET | `/api/v1/sessions` | 列出会话（按租户/用户范围） |
+| GET | `/api/v1/sessions` | 列出会话（按用户范围） |
 | GET | `/api/v1/session/{session_id}` | 加载会话详情 |
 | DELETE | `/api/v1/session/{session_id}` | 删除会话 |
 | GET | `/api/v1/history` | 当前会话聊天历史 |
@@ -169,6 +177,29 @@ npm run build       # 生产构建
 npm run lint        # ESLint
 ```
 
+## 评测
+
+项目使用三套互不混算的数据集，共 250 个样本：RAG 150 条、全链路路由 50 条、Redis 语义缓存 50 对。完整口径见[评测方案](docs/evaluation/评测方案.md)，逐项结果见[评测结果](docs/evaluation/评测结果.md)。
+
+已完成的主要结果：
+
+| 实验 | 结果 |
+| --- | --- |
+| 最终 RAG 组合 C2 | Hit@1 30.00%、Recall@5 48.67%、MRR 0.4050、平均检索耗时 1067.76 ms |
+| 优化前路由诊断 | 路由准确率 76.00%、科室准确率 65.00%；修正后正式重跑待模型额度恢复 |
+| Redis 语义缓存 | 命中判断准确率 100.00%（50/50），平均耗时由 10676.83 ms 降至 6.70 ms |
+
+最终 RAG 默认采用固定分块、向量/Elasticsearch 并行召回、RRF 和 BGE Reranker。Query Rewrite 因平均增加约 6.3 秒且降低 Hit@1，默认关闭；父子索引因质量下降和复杂度增加而舍弃。部分答案忠实度及修正后路由重跑需要调用模型，当前因额度耗尽暂缓，README 不把它们记为已完成。
+
+```bash
+cd backend
+uv run python scripts/evaluation/build_datasets.py
+uv run python scripts/evaluation/upload_langsmith.py
+uv run python scripts/evaluation/evaluate_rag.py --with-faithfulness
+uv run python scripts/evaluation/evaluate_routing.py
+uv run python scripts/evaluation/evaluate_redis_cache.py
+```
+
 ## ECG 使用流程
 
 1. 登录系统
@@ -190,11 +221,11 @@ HardWare-Medicial/
 │   │   ├── schemas/         # Pydantic 模式
 │   │   ├── services/        # 业务逻辑（chat、auth、ecg、cache 等）
 │   │   └── tools/           # LLM 客户端、向量库、搜索、重排序器
-│   ├── data/knowledge/      # 按科室整理的医学教材 EPUB
+│   ├── data/knowledge/      # 本地医学 PDF（Git 忽略）与官方来源清单
 │   ├── data/eval/           # LangSmith 评测数据集与结果
-│   ├── scripts/             # 评测管线、RAG 性能分析
+│   ├── scripts/evaluation/  # 五个统一评测脚本
 │   ├── storage/             # SQLite 数据库、ChromaDB、用户画像、ECG PDF
-│   └── tests/               # 16 个测试文件 (pytest)
+│   └── tests/               # 20 个测试文件 (pytest)
 ├── frontend/
 │   └── src/                 # React 19 单页应用
 ├── hardware/                # ECG 数据管线脚本
@@ -210,7 +241,7 @@ HardWare-Medicial/
 
 - https://github.com/Md-Emon-Hasan/MediGenius
 
-在此原型基础上，本项目进行了大幅二次开发与系统重构，主要改进包括：多科室路由与科室级 RAG 检索策略、9 节点 Agent 工作流与安全分诊机制、SSE 真流式交互、混合检索与两阶段重排序、ECG 全流程（云端抓取 -> 信号解析 -> 报告生成 -> PDF 交付）、多租户认证体系、语义缓存、速率限制、以及 LangSmith 可观测性与评测管线。
+在此原型基础上，本项目进行了大幅二次开发与系统重构，主要改进包括：8 科室路由与范围化 RAG 检索、采用医学意图二值路由的 9 节点 Agent 工作流、SSE 真流式交互、混合检索与两阶段重排序、ECG 全流程（云端抓取 -> 信号解析 -> 报告生成 -> PDF 交付）、用户级认证体系、语义缓存、速率限制，以及 LangSmith 可观测性与评测管线。
 
 ## 创作者
 

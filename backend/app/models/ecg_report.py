@@ -19,7 +19,6 @@ class ECGReport(Base):
     __tablename__ = "ecg_reports"
 
     report_id = Column(String(64), primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id = Column(String(128), nullable=False, default="default", index=True)
     user_id = Column(String(128), nullable=False, default="anonymous", index=True)
     session_id = Column(String(255), nullable=True, index=True)
     patient_id = Column(String(255), nullable=True, index=True)
@@ -34,7 +33,6 @@ class ECGReport(Base):
     def to_dict(self) -> Dict:
         return {
             "report_id": self.report_id,
-            "tenant_id": self.tenant_id,
             "user_id": self.user_id,
             "session_id": self.session_id,
             "patient_id": self.patient_id,

@@ -32,7 +32,9 @@ class RedisService:
 
             client = redis.Redis.from_url(
                 REDIS_URL,
-                decode_responses=True,
+                # RediSearch VECTOR fields are binary Float32 blobs.  Keep the
+                # shared client binary-safe; JSON helpers decode explicitly.
+                decode_responses=False,
                 socket_timeout=REDIS_SOCKET_TIMEOUT_SECONDS,
                 socket_connect_timeout=REDIS_SOCKET_TIMEOUT_SECONDS,
             )
@@ -61,6 +63,8 @@ class RedisService:
             raw = client.get(key)
             if raw is None:
                 return None
+            if isinstance(raw, bytes):
+                raw = raw.decode("utf-8")
             return json.loads(raw)
         self._purge_if_expired(key)
         item = self._memory.get(key)
@@ -100,7 +104,9 @@ class RedisService:
     def set_nx(self, key: str, value: Any, ex: int) -> bool:
         client = self.client()
         if client:
-            return bool(client.set(key, json.dumps(value, ensure_ascii=False), nx=True, ex=ex))
+            return bool(
+                client.set(key, json.dumps(value, ensure_ascii=False), nx=True, ex=ex)
+            )
         self._purge_if_expired(key)
         if key in self._memory:
             return False

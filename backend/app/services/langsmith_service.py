@@ -88,7 +88,6 @@ def build_langsmith_runnable_config(
     *,
     operation: str,
     session_id: str,
-    tenant_id: str,
     user_id: str,
     selected_department: str | None = None,
     extra_tags: list[str] | None = None,
@@ -98,7 +97,6 @@ def build_langsmith_runnable_config(
     metadata = {
         "operation": operation,
         "session_id": session_id,
-        "tenant_id": tenant_id,
         "user_id": user_id,
     }
     if selected_department:
@@ -112,7 +110,6 @@ def build_langsmith_runnable_config(
         "metadata": metadata,
         "configurable": {
             "thread_id": session_id or "default-thread",
-            "tenant_id": tenant_id,
             "user_id": user_id,
         },
     }

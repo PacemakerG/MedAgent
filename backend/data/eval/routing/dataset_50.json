@@ -1,0 +1,325 @@
+{
+  "metadata": {
+    "name": "medagent-routing-50-v1",
+    "version": "1.0",
+    "total": 50,
+    "split": {
+      "local_rag": 30,
+      "web_search": 10,
+      "non_medical": 10
+    },
+    "medical_per_department": 5,
+    "departments": [
+      "general_medical",
+      "general_surgery",
+      "pediatrics",
+      "neurology",
+      "infectious_disease",
+      "ent",
+      "ophthalmology",
+      "dermatology"
+    ]
+  },
+  "samples": [
+    {
+      "id": "route_001",
+      "question": "高血压长期控制需要关注哪些指标？",
+      "expected_route": "local_rag",
+      "expected_department": "general_medical"
+    },
+    {
+      "id": "route_002",
+      "question": "慢性肾病患者为什么要检查尿白蛋白？",
+      "expected_route": "local_rag",
+      "expected_department": "general_medical"
+    },
+    {
+      "id": "route_003",
+      "question": "孕期铁和叶酸应该怎样补充？",
+      "expected_route": "local_rag",
+      "expected_department": "general_medical"
+    },
+    {
+      "id": "route_004",
+      "question": "2026 年最新高血压治疗指南有哪些变化？",
+      "expected_route": "web_search",
+      "expected_department": "general_medical"
+    },
+    {
+      "id": "route_005",
+      "question": "请联网查一下本周 WHO 发布的慢性病新建议。",
+      "expected_route": "web_search",
+      "expected_department": "general_medical"
+    },
+    {
+      "id": "route_006",
+      "question": "肾结石复发应该怎样预防？",
+      "expected_route": "local_rag",
+      "expected_department": "general_surgery"
+    },
+    {
+      "id": "route_007",
+      "question": "外伤后伤口持续出血要如何处理？",
+      "expected_route": "local_rag",
+      "expected_department": "general_surgery"
+    },
+    {
+      "id": "route_008",
+      "question": "慢性腰痛适合做哪些运动？",
+      "expected_route": "local_rag",
+      "expected_department": "general_surgery"
+    },
+    {
+      "id": "route_009",
+      "question": "2026 年最新尿路结石指南推荐什么治疗？",
+      "expected_route": "web_search",
+      "expected_department": "general_surgery"
+    },
+    {
+      "id": "route_010",
+      "question": "请查最新手术安全核查规范有没有更新。",
+      "expected_route": "web_search",
+      "expected_department": "general_surgery"
+    },
+    {
+      "id": "route_011",
+      "question": "儿童肺炎出现哪些表现需要住院？",
+      "expected_route": "local_rag",
+      "expected_department": "pediatrics"
+    },
+    {
+      "id": "route_012",
+      "question": "宝宝腹泻后怎样判断是否严重脱水？",
+      "expected_route": "local_rag",
+      "expected_department": "pediatrics"
+    },
+    {
+      "id": "route_013",
+      "question": "儿童重度营养不良如何处理？",
+      "expected_route": "local_rag",
+      "expected_department": "pediatrics"
+    },
+    {
+      "id": "route_014",
+      "question": "2026 年儿童肺炎最新治疗建议是什么？",
+      "expected_route": "web_search",
+      "expected_department": "pediatrics"
+    },
+    {
+      "id": "route_015",
+      "question": "儿童细菌性脑膜炎有哪些典型表现？",
+      "expected_route": "local_rag",
+      "expected_department": "pediatrics"
+    },
+    {
+      "id": "route_016",
+      "question": "癫痫患者的治疗缺口是什么意思？",
+      "expected_route": "local_rag",
+      "expected_department": "neurology"
+    },
+    {
+      "id": "route_017",
+      "question": "抽搐后意识不清应该看哪个科？",
+      "expected_route": "local_rag",
+      "expected_department": "neurology"
+    },
+    {
+      "id": "route_018",
+      "question": "脑卒中康复为什么要尽早开始？",
+      "expected_route": "local_rag",
+      "expected_department": "neurology"
+    },
+    {
+      "id": "route_019",
+      "question": "2026 年最新癫痫用药指南有什么变化？",
+      "expected_route": "web_search",
+      "expected_department": "neurology"
+    },
+    {
+      "id": "route_020",
+      "question": "神经系统疾病患者的照护者需要哪些支持？",
+      "expected_route": "local_rag",
+      "expected_department": "neurology"
+    },
+    {
+      "id": "route_021",
+      "question": "慢性乙肝患者为什么要监测肝癌？",
+      "expected_route": "local_rag",
+      "expected_department": "infectious_disease"
+    },
+    {
+      "id": "route_022",
+      "question": "登革热主要通过什么途径传播？",
+      "expected_route": "local_rag",
+      "expected_department": "infectious_disease"
+    },
+    {
+      "id": "route_023",
+      "question": "霍乱暴发时应怎样进行公共卫生处置？",
+      "expected_route": "local_rag",
+      "expected_department": "infectious_disease"
+    },
+    {
+      "id": "route_024",
+      "question": "2026 年最新乙肝抗病毒指南是什么？",
+      "expected_route": "web_search",
+      "expected_department": "infectious_disease"
+    },
+    {
+      "id": "route_025",
+      "question": "乙肝孕妇如何降低母婴传播风险？",
+      "expected_route": "local_rag",
+      "expected_department": "infectious_disease"
+    },
+    {
+      "id": "route_026",
+      "question": "耳鸣伴听力下降应该看哪个科？",
+      "expected_route": "local_rag",
+      "expected_department": "ent"
+    },
+    {
+      "id": "route_027",
+      "question": "新生儿为什么要做听力筛查？",
+      "expected_route": "local_rag",
+      "expected_department": "ent"
+    },
+    {
+      "id": "route_028",
+      "question": "长时间戴耳机怎样保护听力？",
+      "expected_route": "local_rag",
+      "expected_department": "ent"
+    },
+    {
+      "id": "route_029",
+      "question": "2026 年最新人工耳蜗适应证是什么？",
+      "expected_route": "web_search",
+      "expected_department": "ent"
+    },
+    {
+      "id": "route_030",
+      "question": "中耳炎为什么可能影响儿童听力？",
+      "expected_route": "local_rag",
+      "expected_department": "ent"
+    },
+    {
+      "id": "route_031",
+      "question": "糖尿病患者为什么要定期检查眼底？",
+      "expected_route": "local_rag",
+      "expected_department": "ophthalmology"
+    },
+    {
+      "id": "route_032",
+      "question": "视力下降和白内障有什么关系？",
+      "expected_route": "local_rag",
+      "expected_department": "ophthalmology"
+    },
+    {
+      "id": "route_033",
+      "question": "青光眼为什么需要长期随访？",
+      "expected_route": "local_rag",
+      "expected_department": "ophthalmology"
+    },
+    {
+      "id": "route_034",
+      "question": "2026 年近视防控最新指南是什么？",
+      "expected_route": "web_search",
+      "expected_department": "ophthalmology"
+    },
+    {
+      "id": "route_035",
+      "question": "未矫正屈光不正会造成什么影响？",
+      "expected_route": "local_rag",
+      "expected_department": "ophthalmology"
+    },
+    {
+      "id": "route_036",
+      "question": "全身瘙痒并出现皮疹应该看哪个科？",
+      "expected_route": "local_rag",
+      "expected_department": "dermatology"
+    },
+    {
+      "id": "route_037",
+      "question": "疥疮诊断通常关注哪些检查性能？",
+      "expected_route": "local_rag",
+      "expected_department": "dermatology"
+    },
+    {
+      "id": "route_038",
+      "question": "湿疹反复发作应该怎样护理？",
+      "expected_route": "local_rag",
+      "expected_department": "dermatology"
+    },
+    {
+      "id": "route_039",
+      "question": "2026 年最新疥疮诊疗指南有哪些变化？",
+      "expected_route": "web_search",
+      "expected_department": "dermatology"
+    },
+    {
+      "id": "route_040",
+      "question": "疥疮检测为什么要同时关注敏感度和特异度？",
+      "expected_route": "local_rag",
+      "expected_department": "dermatology"
+    },
+    {
+      "id": "route_041",
+      "question": "请帮我写一段求职自我介绍。",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_042",
+      "question": "Python 字典怎样按值排序？",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_043",
+      "question": "北京到上海坐高铁要多久？",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_044",
+      "question": "给我推荐三部科幻电影。",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_045",
+      "question": "如何学习线性代数？",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_046",
+      "question": "帮我设计一个旅行计划。",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_047",
+      "question": "这段 JavaScript 为什么报错？",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_048",
+      "question": "解释一下什么是通货膨胀。",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_049",
+      "question": "写一首关于秋天的短诗。",
+      "expected_route": "non_medical",
+      "expected_department": null
+    },
+    {
+      "id": "route_050",
+      "question": "明天开会的议程怎么安排？",
+      "expected_route": "non_medical",
+      "expected_department": null
+    }
+  ]
+}

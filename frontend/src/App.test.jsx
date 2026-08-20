@@ -48,7 +48,6 @@ describe('App Integration', () => {
                 return jsonResponse({
                     success: true,
                     logged_in: false,
-                    tenant_id: 'default',
                     user_id: 'anonymous',
                     session_id: 'session-1',
                 });
@@ -57,7 +56,6 @@ describe('App Integration', () => {
                 return jsonResponse({
                     success: true,
                     logged_in: true,
-                    tenant_id: 'default',
                     user_id: 'doctor_zhang',
                     session_id: 'session-1',
                     access_token: 'test-access-token',
@@ -109,7 +107,6 @@ describe('App Integration', () => {
                 return jsonResponse({
                     success: true,
                     logged_in: false,
-                    tenant_id: 'default',
                     user_id: 'anonymous',
                     session_id: 'session-1',
                 });
@@ -118,7 +115,6 @@ describe('App Integration', () => {
                 return jsonResponse({
                     success: true,
                     logged_in: true,
-                    tenant_id: 'default',
                     user_id: 'doctor_zhang',
                     session_id: 'session-1',
                     access_token: 'test-access-token',

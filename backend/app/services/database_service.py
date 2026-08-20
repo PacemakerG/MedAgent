@@ -28,40 +28,121 @@ class DatabaseService:
     def init_db(self) -> None:
         """Create all tables if they don't exist."""
         logger.info("Initializing database tables...")
+        self._migrate_legacy_identity_schema()
         Base.metadata.create_all(bind=self.engine)
-        self._ensure_identity_columns()
 
-    def _ensure_identity_columns(self) -> None:
-        """Add tenant/user columns for legacy SQLite tables without migrations."""
+    def _migrate_legacy_identity_schema(self) -> None:
+        """Collapse legacy tenant-scoped SQLite tables to user/session scope."""
         if self.engine.dialect.name != "sqlite":
             return
-        column_specs = {
-            "messages": [
-                ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'default'"),
-                ("user_id", "VARCHAR(128) NOT NULL DEFAULT 'anonymous'"),
-            ],
-            "ecg_reports": [
-                ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'default'"),
-                ("user_id", "VARCHAR(128) NOT NULL DEFAULT 'anonymous'"),
-            ],
-        }
+
         with self.engine.begin() as conn:
-            for table_name, columns in column_specs.items():
-                existing_cols = {
-                    row[1] for row in conn.execute(text(f"PRAGMA table_info({table_name})")).fetchall()
+            tables = {
+                row[0]
+                for row in conn.execute(
+                    text("SELECT name FROM sqlite_master WHERE type='table'")
+                ).fetchall()
+            }
+
+            def columns(table_name: str) -> set[str]:
+                return {
+                    row[1]
+                    for row in conn.execute(
+                        text(f"PRAGMA table_info({table_name})")
+                    ).fetchall()
                 }
-                for col_name, col_def in columns:
-                    if col_name in existing_cols:
-                        continue
-                    conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_def}"))
-                    conn.execute(
-                        text(
-                            f"UPDATE {table_name} "
-                            f"SET {col_name} = :default_value "
-                            f"WHERE {col_name} IS NULL OR TRIM({col_name}) = ''"
-                        ),
-                        {"default_value": "default" if col_name == "tenant_id" else "anonymous"},
+
+            if "messages" in tables and "tenant_id" in columns("messages"):
+                user_expr = (
+                    "COALESCE(NULLIF(TRIM(user_id), ''), 'anonymous')"
+                    if "user_id" in columns("messages")
+                    else "'anonymous'"
+                )
+                conn.execute(
+                    text(
+                        "CREATE TABLE messages_user_scope ("
+                        "id INTEGER NOT NULL PRIMARY KEY, "
+                        "user_id VARCHAR(128) NOT NULL DEFAULT 'anonymous', "
+                        "session_id VARCHAR(255) NOT NULL, role VARCHAR(50) NOT NULL, "
+                        "content TEXT NOT NULL, source VARCHAR(255), timestamp DATETIME NOT NULL)"
                     )
+                )
+                conn.execute(
+                    text(
+                        "INSERT INTO messages_user_scope "
+                        "(id, user_id, session_id, role, content, source, timestamp) "
+                        f"SELECT id, {user_expr}, session_id, role, content, source, timestamp "
+                        "FROM messages"
+                    )
+                )
+                conn.execute(text("DROP TABLE messages"))
+                conn.execute(text("ALTER TABLE messages_user_scope RENAME TO messages"))
+                conn.execute(text("CREATE INDEX ix_messages_user_id ON messages(user_id)"))
+                conn.execute(text("CREATE INDEX ix_messages_session_id ON messages(session_id)"))
+
+            if "ecg_reports" in tables and "tenant_id" in columns("ecg_reports"):
+                user_expr = (
+                    "COALESCE(NULLIF(TRIM(user_id), ''), 'anonymous')"
+                    if "user_id" in columns("ecg_reports")
+                    else "'anonymous'"
+                )
+                conn.execute(
+                    text(
+                        "CREATE TABLE ecg_reports_user_scope ("
+                        "report_id VARCHAR(64) NOT NULL PRIMARY KEY, "
+                        "user_id VARCHAR(128) NOT NULL DEFAULT 'anonymous', "
+                        "session_id VARCHAR(255), patient_id VARCHAR(255), "
+                        "risk_level VARCHAR(32) NOT NULL, report TEXT NOT NULL, "
+                        "key_findings TEXT NOT NULL, recommendations TEXT NOT NULL, "
+                        "disclaimer TEXT NOT NULL, raw_request TEXT NOT NULL, "
+                        "created_at DATETIME NOT NULL)"
+                    )
+                )
+                conn.execute(
+                    text(
+                        "INSERT INTO ecg_reports_user_scope "
+                        "(report_id, user_id, session_id, patient_id, risk_level, report, "
+                        "key_findings, recommendations, disclaimer, raw_request, created_at) "
+                        f"SELECT report_id, {user_expr}, session_id, patient_id, risk_level, "
+                        "report, key_findings, recommendations, disclaimer, raw_request, created_at "
+                        "FROM ecg_reports"
+                    )
+                )
+                conn.execute(text("DROP TABLE ecg_reports"))
+                conn.execute(
+                    text("ALTER TABLE ecg_reports_user_scope RENAME TO ecg_reports")
+                )
+                conn.execute(
+                    text("CREATE INDEX ix_ecg_reports_user_id ON ecg_reports(user_id)")
+                )
+                conn.execute(
+                    text("CREATE INDEX ix_ecg_reports_session_id ON ecg_reports(session_id)")
+                )
+                conn.execute(
+                    text("CREATE INDEX ix_ecg_reports_patient_id ON ecg_reports(patient_id)")
+                )
+
+            if "users" in tables and "tenant_id" in columns("users"):
+                conn.execute(
+                    text(
+                        "CREATE TABLE users_user_scope ("
+                        "id INTEGER NOT NULL PRIMARY KEY, user_id VARCHAR(128) NOT NULL UNIQUE, "
+                        "password_hash VARCHAR(512) NOT NULL, role VARCHAR(64) NOT NULL, "
+                        "is_active BOOLEAN NOT NULL, created_at DATETIME NOT NULL, "
+                        "last_login_at DATETIME)"
+                    )
+                )
+                conn.execute(
+                    text(
+                        "INSERT OR IGNORE INTO users_user_scope "
+                        "(id, user_id, password_hash, role, is_active, created_at, last_login_at) "
+                        "SELECT id, user_id, password_hash, role, is_active, created_at, "
+                        "last_login_at FROM users ORDER BY id"
+                    )
+                )
+                conn.execute(text("DROP TABLE users"))
+                conn.execute(text("ALTER TABLE users_user_scope RENAME TO users"))
+                conn.execute(text("CREATE UNIQUE INDEX ix_users_user_id ON users(user_id)"))
 
     def get_session(self) -> Session:
         return self.SessionLocal()
@@ -76,14 +157,12 @@ class DatabaseService:
         role: str,
         content: str,
         source: Optional[str] = None,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> None:
         logger.debug("Saving %s message for session %s...", role, session_id[:8])
         with self.get_session() as session:
             session.add(
                 Message(
-                    tenant_id=tenant_id,
                     user_id=user_id,
                     session_id=session_id,
                     role=role,
@@ -97,14 +176,12 @@ class DatabaseService:
         self,
         session_id: str,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> List[Dict]:
         with self.get_session() as session:
             stmt = (
                 select(Message)
                 .where(Message.session_id == session_id)
-                .where(Message.tenant_id == tenant_id)
                 .where(Message.user_id == user_id)
                 .order_by(Message.timestamp)
             )
@@ -113,7 +190,6 @@ class DatabaseService:
     def get_all_sessions(
         self,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> List[Dict]:
         with self.get_session() as session:
@@ -123,7 +199,6 @@ class DatabaseService:
                     func.max(Message.timestamp).label("max_ts"),
                 )
                 .where(Message.role == "user")
-                .where(Message.tenant_id == tenant_id)
                 .where(Message.user_id == user_id)
                 .group_by(Message.session_id)
                 .subquery()
@@ -135,7 +210,6 @@ class DatabaseService:
                     (Message.session_id == latest_sub.c.session_id)
                     & (Message.timestamp == latest_sub.c.max_ts),
                 )
-                .where(Message.tenant_id == tenant_id)
                 .where(Message.user_id == user_id)
                 .order_by(desc(Message.timestamp))
             )
@@ -152,7 +226,6 @@ class DatabaseService:
         self,
         session_id: str,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> None:
         logger.info("Deleting session %s...", session_id[:8])
@@ -160,13 +233,11 @@ class DatabaseService:
             session.execute(
                 delete(Message)
                 .where(Message.session_id == session_id)
-                .where(Message.tenant_id == tenant_id)
                 .where(Message.user_id == user_id)
             )
             session.execute(
                 delete(ECGReport)
                 .where(ECGReport.session_id == session_id)
-                .where(ECGReport.tenant_id == tenant_id)
                 .where(ECGReport.user_id == user_id)
             )
             session.commit()
@@ -174,7 +245,6 @@ class DatabaseService:
     def save_ecg_report(
         self,
         session_id: Optional[str],
-        tenant_id: str,
         user_id: str,
         patient_id: Optional[str],
         risk_level: str,
@@ -186,7 +256,6 @@ class DatabaseService:
     ) -> Dict:
         with self.get_session() as session:
             record = ECGReport(
-                tenant_id=tenant_id,
                 user_id=user_id,
                 session_id=session_id,
                 patient_id=patient_id,
@@ -206,39 +275,31 @@ class DatabaseService:
         self,
         report_id: str,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> Optional[Dict]:
         with self.get_session() as session:
             stmt = (
                 select(ECGReport)
                 .where(ECGReport.report_id == report_id)
-                .where(ECGReport.tenant_id == tenant_id)
                 .where(ECGReport.user_id == user_id)
             )
             record = session.execute(stmt).scalar_one_or_none()
             return record.to_dict() if record else None
 
-    def get_user(self, tenant_id: str, user_id: str) -> Optional[User]:
+    def get_user(self, user_id: str) -> Optional[User]:
         with self.get_session() as session:
-            stmt = (
-                select(User)
-                .where(User.tenant_id == tenant_id)
-                .where(User.user_id == user_id)
-            )
+            stmt = select(User).where(User.user_id == user_id)
             return session.execute(stmt).scalar_one_or_none()
 
     def create_user(
         self,
         *,
-        tenant_id: str,
         user_id: str,
         password_hash: str,
         role: str = "user",
     ) -> Dict:
         with self.get_session() as session:
             record = User(
-                tenant_id=tenant_id,
                 user_id=user_id,
                 password_hash=password_hash,
                 role=role,
@@ -248,13 +309,9 @@ class DatabaseService:
             session.refresh(record)
             return record.to_dict()
 
-    def update_user_last_login(self, tenant_id: str, user_id: str) -> None:
+    def update_user_last_login(self, user_id: str) -> None:
         with self.get_session() as session:
-            stmt = (
-                select(User)
-                .where(User.tenant_id == tenant_id)
-                .where(User.user_id == user_id)
-            )
+            stmt = select(User).where(User.user_id == user_id)
             record = session.execute(stmt).scalar_one_or_none()
             if not record:
                 return

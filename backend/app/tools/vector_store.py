@@ -16,6 +16,15 @@ _embeddings = None
 _vectorstore = None
 
 
+def _collection_uses_embedding_model(vectorstore) -> bool:
+    """Return whether a persisted collection matches the configured model."""
+    try:
+        metadata = vectorstore._collection.metadata or {}
+        return metadata.get("embedding_model") == EMBEDDING_MODEL_NAME
+    except Exception:
+        return False
+
+
 def _collection_has_metadata_key(vectorstore, key: str, sample_size: int = 64) -> bool:
     """Check whether existing collection chunks carry a given metadata key."""
     try:
@@ -75,7 +84,10 @@ def get_or_create_vectorstore(
             _vectorstore = Chroma(
                 persist_directory=persist_dir,
                 embedding_function=embeddings,
-                collection_metadata={"hnsw:space": "cosine"},
+                collection_metadata={
+                    "hnsw:space": "cosine",
+                    "embedding_model": EMBEDDING_MODEL_NAME,
+                },
             )
             if _vectorstore._collection.count() == 0:
                 logger.warning("Vector store is empty — needs to be recreated")
@@ -94,9 +106,10 @@ def get_or_create_vectorstore(
                 )
             )
             has_department_metadata = _collection_has_metadata_key(_vectorstore, "department")
-            if has_department_docs and not has_department_metadata:
+            model_matches = _collection_uses_embedding_model(_vectorstore)
+            if has_department_docs and (not has_department_metadata or not model_matches):
                 logger.warning(
-                    "Existing vector store lacks `department` metadata; rebuilding from knowledge library."
+                    "Existing vector store metadata is stale; rebuilding from knowledge library."
                 )
                 _vectorstore = None
                 shutil.rmtree(persist_dir, ignore_errors=True)
@@ -105,7 +118,10 @@ def get_or_create_vectorstore(
                     documents=documents,
                     embedding=embeddings,
                     persist_directory=persist_dir,
-                    collection_metadata={"hnsw:space": "cosine"},
+                    collection_metadata={
+                        "hnsw:space": "cosine",
+                        "embedding_model": EMBEDDING_MODEL_NAME,
+                    },
                 )
                 _vectorstore.persist()
                 logger.info(
@@ -128,7 +144,10 @@ def get_or_create_vectorstore(
                 documents=documents,
                 embedding=embeddings,
                 persist_directory=persist_dir,
-                collection_metadata={"hnsw:space": "cosine"},
+                collection_metadata={
+                    "hnsw:space": "cosine",
+                    "embedding_model": EMBEDDING_MODEL_NAME,
+                },
             )
             _vectorstore.persist()
         except Exception as exc:

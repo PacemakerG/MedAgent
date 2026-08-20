@@ -49,7 +49,7 @@ def _client_ip(req: Request) -> str:
 
 
 def _enforce_chat_rate_limit(req: Request, ctx: RequestContext) -> None:
-    identity = f"{ctx.tenant_id}:{ctx.user_id}:{_client_ip(req)}"
+    identity = f"{ctx.user_id}:{_client_ip(req)}"
     allowed, _remaining = rate_limit_service.allow(
         scope="chat",
         identity=identity,
@@ -69,7 +69,6 @@ async def chat_endpoint(request: ChatRequest, req: Request):
     return await chat_service.process_message(
         ctx.session_id,
         request.message,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
         selected_department=request.selected_department,
     )
@@ -95,7 +94,6 @@ async def chat_stream_endpoint(request: ChatRequest, req: Request):
             async for event in chat_service.process_message_stream(
                 ctx.session_id,
                 request.message,
-                tenant_id=ctx.tenant_id,
                 user_id=ctx.user_id,
                 selected_department=request.selected_department,
             ):
@@ -137,14 +135,12 @@ async def chat_job_endpoint(request: ChatRequest, req: Request):
         return await chat_service.process_message(
             ctx.session_id,
             request.message,
-            tenant_id=ctx.tenant_id,
             user_id=ctx.user_id,
             selected_department=request.selected_department,
         )
 
     job_id = task_queue_service.submit_async(
         task_type="chat",
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
         session_id=ctx.session_id,
         coroutine_factory=_run_chat,
@@ -160,7 +156,7 @@ async def get_job_endpoint(job_id: str, req: Request):
     payload = task_queue_service.get_job(job_id)
     if not payload:
         raise HTTPException(status_code=404, detail="Job not found")
-    if payload.get("tenant_id") != ctx.tenant_id or payload.get("user_id") != ctx.user_id:
+    if payload.get("user_id") != ctx.user_id:
         raise HTTPException(status_code=404, detail="Job not found")
     return JobStatusResponse(**payload, success=True)
 
@@ -171,7 +167,6 @@ async def clear_endpoint(req: Request):
     ctx = _get_request_context(req)
     chat_service.clear_conversation(
         ctx.session_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
     )
     return {"message": "Conversation cleared", "success": True}
@@ -196,6 +191,5 @@ async def welcome_endpoint(request: WelcomeRequest, req: Request):
         longitude=request.longitude,
         timezone_name=request.timezone,
         locale=request.locale,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
     )

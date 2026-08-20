@@ -9,12 +9,10 @@ from pydantic import BaseModel, Field
 class LoginRequest(BaseModel):
     user_id: str = Field(min_length=1, max_length=128)
     password: str = Field(min_length=8, max_length=256)
-    tenant_id: str | None = Field(default=None, max_length=128)
 
 
 class AuthStatusResponse(BaseModel):
     logged_in: bool
-    tenant_id: str
     user_id: str
     session_id: str
     success: bool = True

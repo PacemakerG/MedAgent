@@ -1,4 +1,5 @@
 """Tests for tools — Deep Modular Architecture"""
+
 import os
 import sys
 import types
@@ -7,15 +8,21 @@ from unittest.mock import MagicMock, patch
 
 from langchain_core.documents import Document
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import app.tools.duckduckgo_search as ddg_module  # noqa: E402
+import app.tools.es_keyword_retriever as es_keyword_module  # noqa: E402
 import app.tools.llm_client as llm_module  # noqa: E402
 import app.tools.tavily_search as tavily_module  # noqa: E402
 import app.tools.vector_store as vs_module  # noqa: E402
 import app.tools.wikipedia_search as wiki_module  # noqa: E402
+from app.core.medical_taxonomy import (  # noqa: E402
+    list_department_codes,
+    normalize_department_code,
+)
 from app.tools.duckduckgo_search import get_duckduckgo_search  # noqa: E402
 from app.tools.llm_client import get_llm  # noqa: E402
+from app.tools.keyword_retriever import _build_where_filter  # noqa: E402
 from app.tools.pdf_loader import (  # noqa: E402
     load_epub,
     process_knowledge_library,
@@ -76,7 +83,7 @@ def _write_minimal_epub(epub_path, chapter_text="胸痛需要及时评估。"):
 def test_get_llm_no_key():
     llm_module._llm_instance = None
     llm_module._llm_instances = {}
-    with patch('app.tools.llm_client.OPENAI_API_KEY', None):
+    with patch("app.tools.llm_client.OPENAI_API_KEY", None):
         result = get_llm()
         assert result is None
 
@@ -84,9 +91,11 @@ def test_get_llm_no_key():
 def test_get_llm_with_key():
     llm_module._llm_instance = None
     llm_module._llm_instances = {}
-    with patch('app.tools.llm_client.OPENAI_API_KEY', 'fake-key'):
-        fake_module = types.SimpleNamespace(ChatOpenAI=MagicMock(return_value=MagicMock()))
-        with patch.dict(sys.modules, {'langchain_openai': fake_module}):
+    with patch("app.tools.llm_client.OPENAI_API_KEY", "fake-key"):
+        fake_module = types.SimpleNamespace(
+            ChatOpenAI=MagicMock(return_value=MagicMock())
+        )
+        with patch.dict(sys.modules, {"langchain_openai": fake_module}):
             result = get_llm()
             assert result is not None
     llm_module._llm_instance = None  # reset
@@ -96,7 +105,9 @@ def test_get_llm_with_key():
 def test_get_wikipedia():
     wiki_module._wiki_wrapper = None
     # Patch at the source since WikipediaAPIWrapper is lazily imported inside the function
-    with patch('langchain_community.utilities.wikipedia.WikipediaAPIWrapper') as mock_wiki:
+    with patch(
+        "langchain_community.utilities.wikipedia.WikipediaAPIWrapper"
+    ) as mock_wiki:
         mock_wiki.return_value = MagicMock()
         wrapper = get_wikipedia_wrapper()
         assert wrapper is not None
@@ -107,16 +118,18 @@ def test_get_wikipedia():
 
 def test_get_tavily_no_key():
     tavily_module._tavily_search = None
-    with patch('app.tools.tavily_search.TAVILY_API_KEY', None):
+    with patch("app.tools.tavily_search.TAVILY_API_KEY", None):
         result = get_tavily_search()
         assert result is None
 
 
 def test_get_tavily_with_key():
     tavily_module._tavily_search = None
-    with patch('app.tools.tavily_search.TAVILY_API_KEY', 'fake-key'):
+    with patch("app.tools.tavily_search.TAVILY_API_KEY", "fake-key"):
         # Patch at the source since TavilySearchResults is lazily imported inside the function
-        with patch('langchain_community.tools.tavily_search.TavilySearchResults') as mock_tav:
+        with patch(
+            "langchain_community.tools.tavily_search.TavilySearchResults"
+        ) as mock_tav:
             mock_tav.return_value = MagicMock()
             result = get_tavily_search()
             assert result is not None
@@ -125,12 +138,12 @@ def test_get_tavily_with_key():
 
 def test_pdf_loader():
     # Patch at the source since PyPDFLoader is lazily imported inside the function
-    with patch('langchain_community.document_loaders.PyPDFLoader') as mock_loader_cls:
+    with patch("langchain_community.document_loaders.PyPDFLoader") as mock_loader_cls:
         mock_loader = MagicMock()
         mock_loader.load.return_value = []
         mock_loader_cls.return_value = mock_loader
 
-        with patch('app.tools.pdf_loader.split_documents') as mock_split:
+        with patch("app.tools.pdf_loader.split_documents") as mock_split:
             mock_split.return_value = ["chunk1"]
             res = process_pdf("path.pdf")
             assert res == ["chunk1"]
@@ -152,8 +165,27 @@ def test_process_knowledge_library_empty(tmp_path):
     assert process_knowledge_library(str(tmp_path)) == []
 
 
+def test_department_taxonomy_uses_frontend_eight_departments():
+    assert list_department_codes() == [
+        "general_medical",
+        "general_surgery",
+        "pediatrics",
+        "neurology",
+        "infectious_disease",
+        "ent",
+        "ophthalmology",
+        "dermatology",
+    ]
+
+
+def test_legacy_department_codes_map_to_retained_departments():
+    assert normalize_department_code("cardiology_心内科") == "general_medical"
+    assert normalize_department_code("orthopedics_骨科") == "general_surgery"
+    assert normalize_department_code("emergency") == "general_surgery"
+
+
 def test_process_knowledge_library_supports_pdf_and_epub(tmp_path):
-    department_dir = tmp_path / "cardiology_心内科"
+    department_dir = tmp_path / "neurology_神经内科"
     department_dir.mkdir()
     (department_dir / "guide.pdf").touch()
     (department_dir / "guide.epub").touch()
@@ -176,15 +208,57 @@ def test_process_knowledge_library_supports_pdf_and_epub(tmp_path):
     assert mock_process.call_count == 2
     assert len(docs) == 2
     assert sorted(doc.metadata["source_type"] for doc in docs) == ["epub", "pdf"]
-    assert {doc.metadata["department"] for doc in docs} == {"cardiology"}
+    assert {doc.metadata["department"] for doc in docs} == {"neurology"}
+    assert {doc.metadata["domain"] for doc in docs} == {"medical"}
+
+
+def test_keyword_retriever_general_can_search_all_medical_departments():
+    assert _build_where_filter(
+        "general_medical",
+        "medical",
+        search_all_departments=True,
+    ) == {"domain": "medical"}
+    assert _build_where_filter("general_medical", "medical") == {
+        "department": "general_medical"
+    }
+
+
+def test_es_keyword_retriever_general_can_search_all_medical_departments():
+    response = MagicMock()
+    response.is_success = True
+    response.json.return_value = {"hits": {"hits": []}}
+    client = MagicMock()
+    client.post.return_value = response
+    client_context = MagicMock()
+    client_context.__enter__.return_value = client
+
+    with (
+        patch.object(es_keyword_module, "ensure_es_index", return_value=True),
+        patch.object(
+            es_keyword_module,
+            "_client",
+            return_value=client_context,
+        ),
+    ):
+        es_keyword_module.keyword_search_es(
+            "头痛",
+            scope="general_medical",
+            domain="medical",
+            search_all_departments=True,
+        )
+
+    payload = client.post.call_args.kwargs["json"]
+    assert payload["query"]["bool"]["filter"] == [{"term": {"domain": "medical"}}]
 
 
 def test_get_duckduckgo_no_import():
     ddg_module._ddg_search = None
     # Patch the actual source to trigger ImportError in the local import
-    with patch('langchain_community.tools.DuckDuckGoSearchRun', side_effect=ImportError):
+    with patch(
+        "langchain_community.tools.DuckDuckGoSearchRun", side_effect=ImportError
+    ):
         # We need to be careful with __import__ patching
-        with patch('app.tools.duckduckgo_search.logger') as mock_log:
+        with patch("app.tools.duckduckgo_search.logger") as mock_log:
             res = get_duckduckgo_search()
             assert res is None
             mock_log.warning.assert_called()
@@ -192,7 +266,7 @@ def test_get_duckduckgo_no_import():
 
 def test_get_duckduckgo_success():
     ddg_module._ddg_search = None
-    with patch('langchain_community.tools.DuckDuckGoSearchRun') as mock_ddg:
+    with patch("langchain_community.tools.DuckDuckGoSearchRun") as mock_ddg:
         mock_ddg.return_value = MagicMock()
         res = get_duckduckgo_search()
         assert res is not None
@@ -201,7 +275,7 @@ def test_get_duckduckgo_success():
 
 def test_vector_store_embeddings():
     vs_module._embeddings = None
-    with patch('langchain_huggingface.embeddings.HuggingFaceEmbeddings') as mock_emb:
+    with patch("langchain_huggingface.embeddings.HuggingFaceEmbeddings") as mock_emb:
         mock_emb.return_value = MagicMock()
         res = get_embeddings()
         assert res is not None
@@ -212,22 +286,24 @@ def test_vector_store_get_or_create():
     vs_module._vectorstore = None
     vs_module._embeddings = MagicMock()
 
-    with patch('langchain_community.vectorstores.Chroma') as mock_chroma_cls:
+    with patch("langchain_community.vectorstores.Chroma") as mock_chroma_cls:
         mock_vs = MagicMock()
         mock_vs._collection.count.return_value = 5
         mock_chroma_cls.return_value = mock_vs
 
         # Test loading existing
-        with patch('os.path.exists', return_value=True):
-            with patch('os.listdir', return_value=['chroma.sqlite3']):
+        with patch("os.path.exists", return_value=True):
+            with patch("os.listdir", return_value=["chroma.sqlite3"]):
                 res = get_or_create_vectorstore(persist_dir="fake")
                 assert res is not None
 
         vs_module._vectorstore = None
         # Test creation from docs
-        with patch('os.path.exists', return_value=False):
-            with patch('os.makedirs'):
-                res = get_or_create_vectorstore(documents=[MagicMock()], persist_dir="new")
+        with patch("os.path.exists", return_value=False):
+            with patch("os.makedirs"):
+                res = get_or_create_vectorstore(
+                    documents=[MagicMock()], persist_dir="new"
+                )
                 assert res is not None
 
     vs_module._vectorstore = None
@@ -240,7 +316,7 @@ def test_get_retriever():
     assert res is not None
 
     vs_module._vectorstore = None
-    with patch('app.tools.vector_store.get_or_create_vectorstore', return_value=None):
+    with patch("app.tools.vector_store.get_or_create_vectorstore", return_value=None):
         assert get_retriever() is None
 
 
@@ -248,7 +324,9 @@ def test_split_documents():
     mock_doc = MagicMock()
     mock_doc.page_content = "第一章 总论\n这里是测试内容。" * 20
     mock_doc.metadata = {"source": "demo"}
-    with patch('langchain_text_splitters.RecursiveCharacterTextSplitter') as mock_splitter_cls:
+    with patch(
+        "langchain_text_splitters.RecursiveCharacterTextSplitter"
+    ) as mock_splitter_cls:
         mock_splitter = MagicMock()
         mock_splitter.split_documents.return_value = [mock_doc]
         mock_splitter_cls.return_value = mock_splitter

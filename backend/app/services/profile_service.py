@@ -54,13 +54,16 @@ def _sanitize_identity(value: str, default: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_.@:-]", "_", value)
 
 
-def _profile_path(session_id: str, *, tenant_id: str = "default", user_id: str = "anonymous") -> str:
-    del session_id  # profile is scoped by tenant+user, not chat session
+def _profile_path(session_id: str, *, user_id: str = "anonymous") -> str:
+    del session_id  # profile is scoped by user, not chat session
     if not os.path.exists(PROFILE_STORE_DIR):
         os.makedirs(PROFILE_STORE_DIR, exist_ok=True)
-    safe_tenant = _sanitize_identity(tenant_id, "default")
     safe_user = _sanitize_identity(user_id, "anonymous")
-    return os.path.join(PROFILE_STORE_DIR, f"{safe_tenant}__{safe_user}.json")
+    path = os.path.join(PROFILE_STORE_DIR, f"{safe_user}.json")
+    legacy_path = os.path.join(PROFILE_STORE_DIR, f"default__{safe_user}.json")
+    if not os.path.exists(path) and os.path.exists(legacy_path):
+        os.replace(legacy_path, path)
+    return path
 
 
 def _default_profile() -> Dict[str, Any]:
@@ -78,11 +81,10 @@ def _default_profile() -> Dict[str, Any]:
 def load_profile(
     session_id: str,
     *,
-    tenant_id: str = "default",
     user_id: str = "anonymous",
 ) -> Dict[str, Any]:
     """Load a user profile JSON, returning defaults on first use/corruption."""
-    path = _profile_path(session_id, tenant_id=tenant_id, user_id=user_id)
+    path = _profile_path(session_id, user_id=user_id)
     if not os.path.exists(path):
         return _default_profile()
 
@@ -102,10 +104,9 @@ def _atomic_save_profile(
     session_id: str,
     profile: Dict[str, Any],
     *,
-    tenant_id: str = "default",
     user_id: str = "anonymous",
 ) -> None:
-    path = _profile_path(session_id, tenant_id=tenant_id, user_id=user_id)
+    path = _profile_path(session_id, user_id=user_id)
     temp_path = f"{path}.tmp"
     with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(profile, f, ensure_ascii=True, indent=2)
@@ -210,16 +211,15 @@ def update_profile(
     session_id: str,
     updates: Dict[str, Any],
     *,
-    tenant_id: str = "default",
     user_id: str = "anonymous",
 ) -> Dict[str, Any]:
     """Merge profile updates into persistent JSON profile using atomic writes."""
     normalized_updates = _normalize_profile_updates(updates)
     if not any(normalized_updates.values()):
-        return load_profile(session_id, tenant_id=tenant_id, user_id=user_id)
+        return load_profile(session_id, user_id=user_id)
 
     with _profile_lock:
-        profile = load_profile(session_id, tenant_id=tenant_id, user_id=user_id)
+        profile = load_profile(session_id, user_id=user_id)
         profile["basic_info"] = _merge_dict(
             profile.get("basic_info") or {},
             normalized_updates.get("basic_info") or {},
@@ -240,7 +240,6 @@ def update_profile(
         _atomic_save_profile(
             session_id,
             profile,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         return profile
@@ -258,14 +257,13 @@ def infer_profile_updates(
     question: str,
     answer: str,
     *,
-    tenant_id: str = "default",
     user_id: str = "anonymous",
 ) -> Dict[str, Any]:
     """
     Infer profile updates via a lightweight model.
     Returns a strict JSON-compatible dict or empty dict.
     """
-    llm = get_light_llm(tenant_id=tenant_id, user_id=user_id)
+    llm = get_light_llm(user_id=user_id)
     if not llm:
         return {}
 
@@ -300,7 +298,6 @@ def schedule_profile_update(
     question: str,
     answer: str,
     *,
-    tenant_id: str = "default",
     user_id: str = "anonymous",
 ) -> None:
     """Run profile extraction and write in a background daemon thread."""
@@ -309,7 +306,6 @@ def schedule_profile_update(
         updates = infer_profile_updates(
             question,
             answer,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         if not updates:
@@ -317,12 +313,10 @@ def schedule_profile_update(
         update_profile(
             session_id,
             updates,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         logger.info(
-            "Profile updated asynchronously for tenant=%s user=%s session=%s",
-            tenant_id,
+            "Profile updated asynchronously for user=%s session=%s",
             user_id,
             session_id[:8],
         )

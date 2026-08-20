@@ -135,12 +135,9 @@ def QueryRewriterAgent(state: AgentState) -> AgentState:
 
         if not QUERY_REWRITER_ENABLED:
             retrieval_query = question or fallback_query
-            retrieval_queries = _dedupe_queries([retrieval_query] + fallback_queries, max_queries)
+            retrieval_queries = [retrieval_query]
             department_queries = {scope: retrieval_query for scope in scopes}
-            department_multi_queries = {
-                scope: _dedupe_queries([retrieval_query] + retrieval_queries, max_queries)
-                for scope in scopes
-            }
+            department_multi_queries = {scope: [retrieval_query] for scope in scopes}
             rewrite_reason = "query rewriter disabled by config"
         elif forced_department_mode:
             retrieval_query = fallback_department_queries.get(scopes[0], fallback_query)
@@ -150,7 +147,6 @@ def QueryRewriterAgent(state: AgentState) -> AgentState:
             rewrite_reason = "heuristic keyword normalization (llm disabled)"
         else:
             llm = get_light_llm(
-                tenant_id=state.get("tenant_id", "default"),
                 user_id=state.get("user_id", "anonymous"),
             )
             if llm and scopes:
@@ -167,6 +163,7 @@ def QueryRewriterAgent(state: AgentState) -> AgentState:
                     "约束：\n"
                     "1) retrieval_queries 最多 3 条，不要写完整答案。\n"
                     "2) 查询语句聚焦症状、检查、诊断、治疗关键词。\n"
+                    "3) 保持用户问题的原始语言，不额外承担翻译任务。\n"
                     f"检索范围：{', '.join(scopes)}\n"
                     f"用户问题：{question[:1200]}\n"
                 )

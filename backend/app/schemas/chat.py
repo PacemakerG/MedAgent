@@ -32,7 +32,6 @@ class JobStatusResponse(BaseModel):
     job_id: str
     status: str
     type: str
-    tenant_id: str
     user_id: str
     session_id: str
     result: dict | None = None

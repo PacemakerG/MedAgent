@@ -40,7 +40,6 @@ async def generate_ecg_report_endpoint(request: ECGReportRequest, req: Request):
     return ecg_report_service.generate_report(
         request,
         session_id=ctx.session_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
     )
 
@@ -51,7 +50,6 @@ async def get_ecg_report_endpoint(report_id: str, req: Request):
     ctx = _get_request_context(req)
     report = ecg_report_service.get_report_by_id(
         report_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
     )
     if not report:
@@ -65,7 +63,6 @@ async def download_ecg_report_pdf_endpoint(report_id: str, req: Request):
     ctx = _get_request_context(req)
     report = ecg_report_service.get_report_by_id(
         report_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
     )
     if not report:
@@ -88,7 +85,6 @@ async def start_ecg_monitor_endpoint(request: ECGMonitorStartRequest, req: Reque
     ctx = _get_request_context(req)
     return ecg_monitor_service.start_monitor(
         session_id=ctx.session_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
         intake=request,
     )
@@ -100,7 +96,6 @@ async def get_ecg_monitor_status_endpoint(task_id: str, req: Request):
     ctx = _get_request_context(req)
     status = ecg_monitor_service.get_status(
         task_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
         session_id=ctx.session_id,
     )
@@ -118,7 +113,6 @@ async def stream_ecg_monitor_status_events(task_id: str, req: Request):
     ctx = _get_request_context(req)
     first_status = ecg_monitor_service.get_status(
         task_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
         session_id=ctx.session_id,
     )
@@ -136,7 +130,6 @@ async def stream_ecg_monitor_status_events(task_id: str, req: Request):
             update = await asyncio.to_thread(
                 ecg_monitor_service.wait_for_status_update,
                 task_id,
-                tenant_id=ctx.tenant_id,
                 user_id=ctx.user_id,
                 session_id=ctx.session_id,
                 last_updated_at=last_updated,

@@ -45,7 +45,6 @@ class TaskQueueService:
         self,
         *,
         task_type: str,
-        tenant_id: str,
         user_id: str,
         session_id: str,
         metadata: Optional[dict[str, Any]] = None,
@@ -57,7 +56,6 @@ class TaskQueueService:
                 "job_id": job_id,
                 "status": "queued",
                 "type": task_type,
-                "tenant_id": tenant_id,
                 "user_id": user_id,
                 "session_id": session_id,
                 "metadata": metadata or {},
@@ -74,7 +72,6 @@ class TaskQueueService:
         self,
         *,
         task_type: str,
-        tenant_id: str,
         user_id: str,
         session_id: str,
         fn: Callable[..., Any],
@@ -84,7 +81,6 @@ class TaskQueueService:
     ) -> str:
         job_id = self.create_job(
             task_type=task_type,
-            tenant_id=tenant_id,
             user_id=user_id,
             session_id=session_id,
             metadata=metadata,
@@ -102,7 +98,6 @@ class TaskQueueService:
         self,
         *,
         task_type: str,
-        tenant_id: str,
         user_id: str,
         session_id: str,
         coroutine_factory: Callable[[], Any],
@@ -113,7 +108,6 @@ class TaskQueueService:
 
         return self.submit(
             task_type=task_type,
-            tenant_id=tenant_id,
             user_id=user_id,
             session_id=session_id,
             fn=_runner,

@@ -303,7 +303,6 @@ class ECGMonitorService:
     def start_monitor(
         self,
         session_id: str,
-        tenant_id: str,
         user_id: str,
         intake: ECGMonitorStartRequest,
     ) -> ECGMonitorStartResponse:
@@ -320,7 +319,6 @@ class ECGMonitorService:
             status="queued",
             message=queued_message,
             started_at=now,
-            tenant_id=tenant_id,
             user_id=user_id,
             session_id=session_id,
             report=None,
@@ -341,7 +339,6 @@ class ECGMonitorService:
                     },
                     "preferences": {"preferred_name": intake.patient_name},
                 },
-                tenant_id=tenant_id,
                 user_id=user_id,
             )
         except Exception as exc:
@@ -349,7 +346,7 @@ class ECGMonitorService:
 
         thread = threading.Thread(
             target=self._worker,
-            args=(task_id, session_id, tenant_id, user_id, intake.model_dump()),
+            args=(task_id, session_id, user_id, intake.model_dump()),
             daemon=True,
         )
         thread.start()
@@ -369,18 +366,13 @@ class ECGMonitorService:
         self,
         task_id: str,
         *,
-        tenant_id: str,
         user_id: str,
         session_id: str,
     ) -> Optional[ECGMonitorStatusResponse]:
         task = self._get_task(task_id)
         if not task:
             return None
-        if (
-            task.get("tenant_id") != tenant_id
-            or task.get("user_id") != user_id
-            or task.get("session_id") != session_id
-        ):
+        if task.get("user_id") != user_id or task.get("session_id") != session_id:
             return None
         return ECGMonitorStatusResponse(
             task_id=task_id,
@@ -399,7 +391,6 @@ class ECGMonitorService:
         self,
         task_id: str,
         *,
-        tenant_id: str,
         user_id: str,
         session_id: str,
         last_updated_at: str | None,
@@ -409,11 +400,7 @@ class ECGMonitorService:
             task = self._tasks.get(task_id)
             if not task:
                 return False
-            if (
-                task.get("tenant_id") != tenant_id
-                or task.get("user_id") != user_id
-                or task.get("session_id") != session_id
-            ):
+            if task.get("user_id") != user_id or task.get("session_id") != session_id:
                 return False
             return bool(task.get("updated_at")) and task.get("updated_at") != last_updated_at
 
@@ -440,7 +427,6 @@ class ECGMonitorService:
         self,
         task_id: str,
         session_id: str,
-        tenant_id: str,
         user_id: str,
         intake_data: Dict[str, Any],
     ) -> None:
@@ -457,7 +443,6 @@ class ECGMonitorService:
                     if monitor_mode == "synthetic_normal"
                     else "正在登录ECG医生系统..."
                 ),
-                tenant_id=tenant_id,
                 user_id=user_id,
                 session_id=session_id,
             )
@@ -551,7 +536,6 @@ class ECGMonitorService:
             report = ecg_report_service.generate_report(
                 ecg_request,
                 session_id=session_id,
-                tenant_id=tenant_id,
                 user_id=user_id,
             )
             llm_output_payload = _build_llm_io_payload(skill_payload, report_text=report.report)

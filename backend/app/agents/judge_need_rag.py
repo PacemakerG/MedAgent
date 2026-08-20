@@ -54,7 +54,6 @@ def JudgeNeedRAGAgent(state: AgentState) -> AgentState:
             return state
 
         llm = get_light_llm(
-            tenant_id=state.get("tenant_id", "default"),
             user_id=state.get("user_id", "anonymous"),
         )
         if not llm:

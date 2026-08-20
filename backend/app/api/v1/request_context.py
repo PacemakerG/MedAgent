@@ -1,6 +1,6 @@
 """
 MediGenius — api/v1/request_context.py
-Resolve tenant/user/session identity from request headers + cookie session.
+Resolve user/session identity from access tokens, headers, and cookie sessions.
 """
 
 from __future__ import annotations
@@ -14,7 +14,6 @@ from fastapi import Request
 from app.core.config import AUTH_TRUST_IDENTITY_HEADERS
 from app.services.auth_service import auth_service
 
-DEFAULT_TENANT_ID = "default"
 DEFAULT_USER_ID = "anonymous"
 
 
@@ -52,7 +51,6 @@ def _get_bearer_token(request: Request) -> str | None:
 
 @dataclass(frozen=True)
 class RequestContext:
-    tenant_id: str
     user_id: str
     session_id: str
 
@@ -60,7 +58,6 @@ class RequestContext:
 def get_request_context(request: Request) -> RequestContext:
     token_payload = auth_service.verify_access_token(_get_bearer_token(request))
     if token_payload:
-        tenant_source = token_payload["tenant_id"]
         user_source = token_payload["user_id"]
         session_source = (
             request.headers.get("X-Session-ID")
@@ -69,18 +66,12 @@ def get_request_context(request: Request) -> RequestContext:
             or token_payload["session_id"]
         )
     else:
-        trusted_tenant = request.headers.get("X-Tenant-ID") or _get_query_param(
-            request,
-            "tenant_id",
-        )
         trusted_user = request.headers.get("X-User-ID") or _get_query_param(
             request,
             "user_id",
         )
-        tenant_source = request.session.get("tenant_id")
         user_source = request.session.get("user_id")
         if AUTH_TRUST_IDENTITY_HEADERS:
-            tenant_source = trusted_tenant or tenant_source
             user_source = trusted_user or user_source
         session_source = (
             request.headers.get("X-Session-ID")
@@ -88,7 +79,6 @@ def get_request_context(request: Request) -> RequestContext:
             or request.session.get("session_id")
         )
 
-    tenant_id = _sanitize_id(tenant_source, DEFAULT_TENANT_ID)
     user_id = _sanitize_id(user_source, DEFAULT_USER_ID)
 
     if not session_source:
@@ -96,12 +86,10 @@ def get_request_context(request: Request) -> RequestContext:
     session_id = _sanitize_id(str(session_source), str(uuid.uuid4()), max_len=255)
 
     # Keep cookie session aligned for browser-only clients without custom headers.
-    request.session["tenant_id"] = tenant_id
     request.session["user_id"] = user_id
     request.session["session_id"] = session_id
 
     return RequestContext(
-        tenant_id=tenant_id,
         user_id=user_id,
         session_id=session_id,
     )

@@ -45,19 +45,18 @@
 ### 3.2 Agent工作流（详细）
 系统采用“单汇聚执行器（Executor）”设计，所有分支最终都汇聚到 `ExecutorAgent`，确保回答风格与安全策略一致。
 
-标准工作流（LangGraph定义）：
+完整在线链路：
 
-`MemoryRead -> HealthConcierge(=KeywordRouter) -> [MedicalRouter / JudgeNeedRAG / QueryRewriter / Executor] -> Retriever -> Reranker -> Executor -> MemoryWriteAsync`
+`SemanticCache查找 -> 命中则返回；未命中 -> MemoryRead -> KeywordRouter -> [MedicalRouter / JudgeNeedRAG] -> QueryRewriter -> Retriever -> Reranker -> Executor -> MemoryWriteAsync -> SemanticCache写入 -> 返回`
 
 各节点职责如下：
 
 1. `MemoryReadAgent`
 - 读取最近会话历史、用户画像和长期记忆摘要。
-- 初始化本轮 `AgentState`（tenant/user/session 隔离上下文）。
+- 初始化本轮 `AgentState`（user/session 隔离上下文）。
 
-2. `HealthConciergeAgent (KeywordRouterAgent)`
-- 做安全分级：`SAFE / CLARIFY / EMERGENCY`。
-- 做领域判断（medical/general...）与是否优先用 RAG 的初判。
+2. `KeywordRouterAgent`
+- 通过关键词做一次医学/非医学二值意图识别，不做安全分级。
 - 识别前端是否手动锁定科室（`selected_department_forced`）。
 
 3. `MedicalRouterAgent`
@@ -86,23 +85,20 @@
 ### 3.3 Agent路由决策过程（条件分支）
 后端核心路由逻辑可归纳为以下规则：
 
-1. 安全优先
-- 若 `safety_level in {EMERGENCY, CLARIFY}`，直接进入 `Executor` 输出风险提示，不再走检索链路。
+1. 缓存优先
+- `SemanticCache` 命中后直接返回；未命中才进入 LangGraph。
 
 2. 手动科室优先
 - 若 `selected_department_forced=true`，直接进入 `QueryRewriter -> Retriever -> Reranker -> Executor`。
 - 检索范围强制限定到用户点击的科室知识库。
 
 3. 医疗域自动路由
-- 若 `domain=medical` 且未手动锁定科室，先走 `MedicalRouter` 确定科室范围，再决定是否检索。
+- 若 `domain=medical` 且未手动锁定科室，先走 `MedicalRouter` 确定科室范围，再进入检索链路。
 
-4. 非强检索场景兜底
-- 若 `use_rag=false`，进入 `JudgeNeedRAG`：
+4. 非医疗场景兜底
+- 若医学意图识别结果为非医疗，进入 `JudgeNeedRAG`：
 - `need_rag=true` 则补走检索链路；
 - `need_rag=false` 则直达 `Executor`。
-
-5. 非医疗域但需要检索
-- 若 `domain!=medical` 且 `use_rag=true`，可直接进入 `QueryRewriter -> Retriever -> Reranker`。
 
 ### 3.4 在线流式执行路径（SSE）
 在线接口 `/api/v1/chat/stream` 采用与主工作流对齐的“前置节点 + 流式执行器”模式：

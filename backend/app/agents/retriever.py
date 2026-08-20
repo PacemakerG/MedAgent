@@ -38,10 +38,25 @@ from app.tools.keyword_retriever import keyword_search
 from app.tools.vector_store import get_retriever
 
 
-def _build_scope_filter(scope: str, domain: str) -> dict:
+def _should_search_all_departments(state: AgentState) -> bool:
+    return bool(
+        state.get("domain") == "medical"
+        and (
+            state.get("primary_department") == GENERAL_MEDICAL_DEPARTMENT
+            or state.get("selected_department") == GENERAL_MEDICAL_DEPARTMENT
+        )
+    )
+
+
+def _build_scope_filter(
+    scope: str,
+    domain: str,
+    *,
+    search_all_departments: bool = False,
+) -> dict:
     if domain == "medical":
-        if scope == GENERAL_MEDICAL_DEPARTMENT:
-            return {"department": GENERAL_MEDICAL_DEPARTMENT}
+        if search_all_departments:
+            return {"domain": "medical"}
         return {"department": scope}
     return {"domain": domain}
 
@@ -52,17 +67,12 @@ def _resolve_scopes(state: AgentState) -> list[str]:
 
     domain = state.get("domain", "general")
     if domain == "medical":
-        scopes = []
         primary_department = state.get("primary_department")
+        if primary_department == GENERAL_MEDICAL_DEPARTMENT:
+            return [GENERAL_MEDICAL_DEPARTMENT]
         if primary_department:
-            scopes.append(primary_department)
-        for item in state.get("department_candidates", []):
-            scope = item.get("name") if isinstance(item, dict) else None
-            if scope and scope not in scopes:
-                scopes.append(scope)
-        if GENERAL_MEDICAL_DEPARTMENT not in scopes:
-            scopes.append(GENERAL_MEDICAL_DEPARTMENT)
-        return scopes[:3]
+            return [primary_department]
+        return [GENERAL_MEDICAL_DEPARTMENT]
 
     if state.get("use_rag") or state.get("need_rag"):
         return [domain]
@@ -150,10 +160,17 @@ def _run_vector_search(
     primary_department: str | None,
     query: str,
     vector_top_k: int,
+    search_all_departments: bool = False,
 ) -> list[Document]:
     retriever = get_retriever(
         k=max(vector_top_k, _score_scope_k(scope, primary_department)),
-        search_kwargs={"filter": _build_scope_filter(scope, domain)},
+        search_kwargs={
+            "filter": _build_scope_filter(
+                scope,
+                domain,
+                search_all_departments=search_all_departments,
+            )
+        },
     )
     if not retriever:
         logger.warning("RAG: No retriever available for scope=%s", scope)
@@ -176,12 +193,25 @@ def _run_keyword_search(
     domain: str,
     query: str,
     keyword_top_k: int,
+    search_all_departments: bool = False,
 ) -> list[Document]:
     backend = _keyword_backend_name()
     try:
         if backend == "elasticsearch":
-            return keyword_search_es(query, scope=scope, domain=domain, top_k=keyword_top_k)
-        return keyword_search(query, scope=scope, domain=domain, top_k=keyword_top_k)
+            return keyword_search_es(
+                query,
+                scope=scope,
+                domain=domain,
+                top_k=keyword_top_k,
+                search_all_departments=search_all_departments,
+            )
+        return keyword_search(
+            query,
+            scope=scope,
+            domain=domain,
+            top_k=keyword_top_k,
+            search_all_departments=search_all_departments,
+        )
     except Exception as exc:
         logger.warning(
             "RAG: Keyword retrieval failed for scope=%s backend=%s: %s",
@@ -214,6 +244,7 @@ def RetrieverAgent(state: AgentState) -> AgentState:
     with profile_node(state, "rag"):
         domain = state.get("domain", "general")
         scopes = _resolve_scopes(state)
+        search_all_departments = _should_search_all_departments(state)
         state["retrieval_scopes"] = scopes
 
         if not scopes:
@@ -233,7 +264,9 @@ def RetrieverAgent(state: AgentState) -> AgentState:
 
         documents: list[Document] = []
         merged_rag_context: list[dict] = []
-        retrieval_results_by_scope: dict[str, list[dict]] = {scope: [] for scope in scopes}
+        retrieval_results_by_scope: dict[str, list[dict]] = {
+            scope: [] for scope in scopes
+        }
         seen_docs = set()
         vector_hits = 0
         keyword_hits = 0
@@ -263,6 +296,7 @@ def RetrieverAgent(state: AgentState) -> AgentState:
                                 primary_department=primary_department,
                                 query=query,
                                 vector_top_k=vector_top_k,
+                                search_all_departments=search_all_departments,
                             ),
                         )
                     )
@@ -280,6 +314,7 @@ def RetrieverAgent(state: AgentState) -> AgentState:
                                     domain=domain,
                                     query=query,
                                     keyword_top_k=keyword_top_k,
+                                    search_all_departments=search_all_departments,
                                 ),
                             )
                         )
@@ -330,6 +365,11 @@ def RetrieverAgent(state: AgentState) -> AgentState:
         set_retrieval_metric(state, "keyword_hits", keyword_hits)
         set_retrieval_metric(state, "merged_chunks", len(merged_rag_context))
         set_retrieval_metric(state, "keyword_backend", keyword_backend)
+        set_retrieval_metric(
+            state,
+            "search_all_departments",
+            search_all_departments,
+        )
         set_retrieval_metric(state, "parallel_enabled", RETRIEVAL_PARALLEL_ENABLED)
         set_retrieval_metric(state, "parallel_workers", workers)
         if merged_rag_context:

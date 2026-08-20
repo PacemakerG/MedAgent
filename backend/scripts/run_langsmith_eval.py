@@ -1,3 +1,4 @@
+# isort: skip_file
 """
 Run MediGenius full-workflow evaluation with LangSmith tracing metadata.
 
@@ -46,9 +47,15 @@ from app.services.chat_service import ChatService  # noqa: E402
 from build_langsmith_eval_dataset import DATASET_VERSION, load_jsonl  # noqa: E402
 from evaluate_rag_pipeline import _judge_answer, _retrieval_metrics  # noqa: E402
 
-DEFAULT_DATASET_PATH = BACKEND_ROOT / "data" / "eval" / "langsmith_eval_dataset_v1.jsonl"
-DEFAULT_OUTPUT_PATH = BACKEND_ROOT / "data" / "eval" / "langsmith_eval_result_v1.json"
-DEFAULT_REPORT_PATH = PROJECT_ROOT / "docs" / "evaluation" / "langsmith_eval_report_v1.md"
+DEFAULT_DATASET_PATH = (
+    BACKEND_ROOT / "data" / "eval" / "langsmith_eval_dataset_v2_180.jsonl"
+)
+DEFAULT_OUTPUT_PATH = (
+    BACKEND_ROOT / "data" / "eval" / "langsmith_eval_result_v2_180.json"
+)
+DEFAULT_REPORT_PATH = (
+    PROJECT_ROOT / "docs" / "evaluation" / "langsmith_eval_report_v2_180.md"
+)
 
 REFUSAL_MARKERS = (
     "不能",
@@ -110,8 +117,12 @@ def _behavior_pass(sample: Dict[str, Any], answer: str, result: Dict[str, Any]) 
     normalized = _normalize_text(answer)
 
     if category in {"single_hop", "multi_hop"}:
-        keyword_result = _keyword_hit(answer, list(sample.get("expected_keywords") or []))
-        return bool(keyword_result) if keyword_result is not None else bool(answer.strip())
+        keyword_result = _keyword_hit(
+            answer, list(sample.get("expected_keywords") or [])
+        )
+        return (
+            bool(keyword_result) if keyword_result is not None else bool(answer.strip())
+        )
 
     if category == "open_domain":
         if not answer.strip() or len(answer.strip()) < 20:
@@ -142,7 +153,9 @@ def _build_initial_state(sample: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def _invoke_workflow(workflow_app: Any, state: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
+def _invoke_workflow(
+    workflow_app: Any, state: Dict[str, Any], config: Dict[str, Any]
+) -> Dict[str, Any]:
     # Evaluation should not mutate persistent user profiles.
     with patch("app.agents.memory.schedule_profile_update"):
         return workflow_app.invoke(state, config=config)
@@ -182,7 +195,9 @@ def run_single_sample(
         result = dict(state)
         result["generation"] = ""
         result["source"] = "Evaluation Error"
-        result["flow_trace"] = list(result.get("flow_trace") or []) + ["evaluation_error"]
+        result["flow_trace"] = list(result.get("flow_trace") or []) + [
+            "evaluation_error"
+        ]
         error = str(exc)
 
     contexts = _extract_contexts(result)
@@ -241,7 +256,9 @@ def _mean_float(results: List[Dict[str, Any]], field: str) -> float:
     return round(mean(values), 4) if values else 0.0
 
 
-def _build_summary(results: List[Dict[str, Any]], top_k: int, with_judge: bool) -> Dict[str, Any]:
+def _build_summary(
+    results: List[Dict[str, Any]], top_k: int, with_judge: bool
+) -> Dict[str, Any]:
     category_counts = Counter(str(item.get("category", "unknown")) for item in results)
     by_category: Dict[str, Dict[str, Any]] = {}
     for category in sorted(category_counts):
@@ -276,7 +293,9 @@ def _build_summary(results: List[Dict[str, Any]], top_k: int, with_judge: bool) 
         "error_count": sum(1 for item in results if item.get("error")),
         "rag_expected_samples": len(rag_results),
         "top1_accuracy": _mean_bool(rag_results, "top1_hit") if rag_results else 0.0,
-        f"recall@{top_k}": _mean_bool(rag_results, "recall_hit") if rag_results else 0.0,
+        f"recall@{top_k}": (
+            _mean_bool(rag_results, "recall_hit") if rag_results else 0.0
+        ),
         "mrr": _mean_float(rag_results, "mrr") if rag_results else 0.0,
         "avg_elapsed_ms": _mean_float(results, "elapsed_ms"),
         "langsmith_tracing_enabled": is_langsmith_enabled(),
@@ -335,7 +354,9 @@ def run_eval(
             encoding="utf-8",
         )
     if report_path:
-        write_eval_report(payload, dataset_path, output_path, report_path, top_k=max(1, int(top_k)))
+        write_eval_report(
+            payload, dataset_path, output_path, report_path, top_k=max(1, int(top_k))
+        )
     return payload
 
 
@@ -427,7 +448,9 @@ def write_eval_report(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run MediGenius LangSmith-style evaluation.")
+    parser = argparse.ArgumentParser(
+        description="Run MediGenius LangSmith-style evaluation."
+    )
     parser.add_argument("--dataset", default=str(DEFAULT_DATASET_PATH))
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT_PATH))
     parser.add_argument("--report", default=str(DEFAULT_REPORT_PATH))

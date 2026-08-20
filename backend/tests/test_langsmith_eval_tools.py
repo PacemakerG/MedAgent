@@ -2,10 +2,13 @@ import json
 from pathlib import Path
 
 from scripts.build_langsmith_eval_dataset import (
+    DATASET_VERSION,
     build_dataset,
     load_jsonl,
+    validate_dataset,
     write_jsonl,
 )
+from scripts.evaluate_routing import evaluate_route
 from scripts.run_langsmith_eval import run_single_sample
 from scripts.upload_langsmith_dataset import upload_dataset
 
@@ -39,6 +42,7 @@ def test_build_langsmith_eval_dataset_balances_categories(tmp_path: Path):
         multi_hop_count=2,
         open_domain_count=2,
         negative_count=2,
+        routing_count=3,
     )
 
     categories = [item["category"] for item in dataset]
@@ -46,6 +50,7 @@ def test_build_langsmith_eval_dataset_balances_categories(tmp_path: Path):
     assert categories.count("multi_hop") == 2
     assert categories.count("open_domain") == 2
     assert categories.count("negative") == 2
+    assert categories.count("routing") == 3
     assert all(item["question"] for item in dataset)
     assert all("expected_behavior" in item for item in dataset)
     assert all("metadata" in item for item in dataset)
@@ -53,6 +58,40 @@ def test_build_langsmith_eval_dataset_balances_categories(tmp_path: Path):
     multi_hop = [item for item in dataset if item["category"] == "multi_hop"][0]
     assert multi_hop["should_use_rag"] is True
     assert len(multi_hop["expected_sources"]) == 2
+
+
+def test_build_180_row_dataset_passes_quality_gate(tmp_path: Path):
+    source_path = tmp_path / "source.jsonl"
+    departments = ("dermatology", "ent", "neurology", "ophthalmology")
+    rows = [
+        _source_row(idx, department=departments[(idx - 1) % len(departments)])
+        for idx in range(1, 49)
+    ]
+    write_jsonl(rows, source_path)
+
+    dataset = build_dataset(
+        [source_path],
+        single_hop_count=48,
+        multi_hop_count=42,
+        open_domain_count=30,
+        negative_count=30,
+        routing_count=30,
+    )
+    quality = validate_dataset(
+        dataset,
+        expected_counts={
+            "single_hop": 48,
+            "multi_hop": 42,
+            "open_domain": 30,
+            "negative": 30,
+            "routing": 30,
+        },
+    )
+
+    assert len(dataset) == 180
+    assert quality["passed"] is True
+    assert quality["unique_id_count"] == 180
+    assert quality["unique_question_count"] == 180
 
 
 def test_langsmith_upload_skips_without_real_api_key(tmp_path: Path, monkeypatch):
@@ -133,7 +172,7 @@ def test_run_single_sample_scores_fake_workflow():
         "reference_answer": "参考答案",
         "expected_behavior": "grounded_medical_answer",
         "should_use_rag": True,
-        "dataset_version": "langsmith_eval_v1",
+        "dataset_version": DATASET_VERSION,
         "metadata": {},
     }
 
@@ -149,6 +188,23 @@ def test_run_single_sample_scores_fake_workflow():
     assert item["recall_hit"] == 1
     assert item["behavior_pass"] is True
     assert item["retrieved_context_count"] == 1
+
+
+def test_evaluate_route_scores_non_medical_probe_without_llm():
+    item = evaluate_route(
+        {
+            "id": "ls_routing_test",
+            "routing_type": "non_medical",
+            "question": "请用 Python 写一个冒泡排序示例。",
+            "expected_domain": "general",
+            "expected_use_rag": False,
+            "expected_web_search": False,
+            "expected_safety_level": "SAFE",
+        }
+    )
+
+    assert item["actual_domain"] == "general"
+    assert item["strict_match"] is True
 
 
 def test_load_jsonl_rejects_invalid_json(tmp_path: Path):

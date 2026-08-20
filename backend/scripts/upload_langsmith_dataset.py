@@ -30,8 +30,10 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from build_langsmith_eval_dataset import DATASET_VERSION, load_jsonl  # noqa: E402
 
-DEFAULT_DATASET_PATH = BACKEND_ROOT / "data" / "eval" / "langsmith_eval_dataset_v1.jsonl"
-DEFAULT_LANGSMITH_DATASET_NAME = "medigenius-rag-eval-v1"
+DEFAULT_DATASET_PATH = (
+    BACKEND_ROOT / "data" / "eval" / "langsmith_eval_dataset_v2_180.jsonl"
+)
+DEFAULT_LANGSMITH_DATASET_NAME = "medigenius-rag-eval-v2-180"
 
 
 def _load_backend_env() -> None:
@@ -89,6 +91,11 @@ def _example_metadata(row: Dict[str, Any]) -> Dict[str, Any]:
             "expected_department": row.get("expected_department", ""),
             "expected_source_book": row.get("expected_source_book", ""),
             "should_use_rag": bool(row.get("should_use_rag", False)),
+            "routing_type": row.get("routing_type", ""),
+            "expected_domain": row.get("expected_domain", ""),
+            "expected_use_rag": row.get("expected_use_rag"),
+            "expected_web_search": row.get("expected_web_search"),
+            "expected_safety_level": row.get("expected_safety_level", ""),
         }
     )
     expected_sources = row.get("expected_sources") or []
@@ -172,8 +179,8 @@ def upload_dataset(
         client,
         dataset_name,
         description=(
-            "MediGenius four-category evaluation dataset: single-hop, "
-            "multi-hop, open-domain, and negative safety probes."
+            "MediGenius five-category evaluation dataset: single-hop, multi-hop, "
+            "open-domain, negative safety, and explicit routing probes."
         ),
     )
     dataset_id = getattr(dataset, "id", None)
@@ -207,13 +214,20 @@ def write_upload_report(status: Dict[str, Any], output_path: Optional[Path]) -> 
     if not output_path:
         return
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
+    output_path.write_text(
+        json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Upload MediGenius eval dataset to LangSmith.")
+    parser = argparse.ArgumentParser(
+        description="Upload MediGenius eval dataset to LangSmith."
+    )
     parser.add_argument("--dataset", default=str(DEFAULT_DATASET_PATH))
-    parser.add_argument("--name", default=os.getenv("LANGSMITH_EVAL_DATASET", DEFAULT_LANGSMITH_DATASET_NAME))
+    parser.add_argument(
+        "--name",
+        default=os.getenv("LANGSMITH_EVAL_DATASET", DEFAULT_LANGSMITH_DATASET_NAME),
+    )
     parser.add_argument("--output", default="")
     parser.add_argument(
         "--require-upload",

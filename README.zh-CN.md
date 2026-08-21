@@ -1,8 +1,8 @@
-# 医枢智疗 (HardWare-Medicial)
+# MedAgent
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-医枢智疗是一个面向真实医疗场景的生产级 AI 助手系统，将多 Agent 协作、RAG 检索、流式交互、长期记忆和医疗报告交付整合为一个端到端工作台。
+MedAgent 是一个面向真实医疗场景的生产级 AI 助手系统，将多 Agent 协作、RAG 检索、流式交互、长期记忆和医疗报告交付整合为一个端到端工作台。
 
 两条核心管线：
 
@@ -211,7 +211,7 @@ uv run python scripts/evaluation/evaluate_redis_cache.py
 ## 项目结构
 
 ```
-HardWare-Medicial/
+MedAgent/
 ├── backend/
 │   ├── app/
 │   │   ├── agents/          # 9 个 LangGraph Agent
@@ -247,7 +247,7 @@ HardWare-Medicial/
 
 - **ElonGe** -- [GitHub](https://github.com/PacemakerG)
 - **xhforever** -- [GitHub](https://github.com/xhforever)
-- **项目地址** -- [HardWare-Medicial](https://github.com/PacemakerG/HardWare-Medicial)
+- **项目地址** -- [MedAgent](https://github.com/PacemakerG/MedAgent)
 
 ## 免责声明
 

@@ -186,10 +186,10 @@ Key completed results:
 | Experiment | Result |
 | --- | --- |
 | Final RAG combination C2 | Hit@1 30.00%, Recall@5 48.67%, MRR 0.4050, mean retrieval latency 1067.76 ms |
-| Pre-fix routing diagnostic | Route accuracy 76.00%, department accuracy 65.00%; the post-fix formal rerun awaits model quota |
+| Pre-fix routing diagnostic | Route accuracy 76.00%, department accuracy 65.00%; this row records the pre-fix diagnostic snapshot only |
 | Redis semantic cache | 100.00% hit-decision accuracy (50/50), with mean latency reduced from 10676.83 ms to 6.70 ms |
 
-The default RAG path uses fixed chunks, parallel vector/Elasticsearch retrieval, RRF, and the BGE Reranker. Query Rewrite is disabled by default because it added about 6.3 seconds on average while reducing Hit@1; parent-child indexing was dropped because it reduced quality and increased complexity. Some answer-faithfulness scoring and the post-fix routing rerun require model calls and remain pending because the model quota is exhausted; they are not presented as completed results.
+The default RAG path uses fixed chunks, parallel vector/Elasticsearch retrieval, RRF, and the BGE Reranker. Query Rewrite is disabled by default because it added about 6.3 seconds on average while reducing Hit@1; parent-child indexing was dropped because it reduced quality and increased complexity. A sampled answer-faithfulness evaluation was also run. The sampled answers consistently showed high faithfulness to retrieved evidence, so expanding this test further had limited marginal value and the faithfulness experiment was stopped rather than repeated at larger scale.
 
 ```bash
 cd backend

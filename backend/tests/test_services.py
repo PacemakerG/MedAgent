@@ -39,7 +39,7 @@ class TestChatService:
             "generation": "Test response",
             "source": "Test Source"
         })
-        from app.services import db_service
+        from app.services.database_service import db_service
         with patch.object(db_service, 'save_message'):
             result = await service.process_message("test-session", "Hello")
             assert result["success"] is True
@@ -55,7 +55,7 @@ class TestChatService:
             "source": "Test Source",
         })
 
-        from app.services import db_service
+        from app.services.database_service import db_service
         with patch.object(db_service, "save_message"), \
              patch.object(
                  db_service,
@@ -89,7 +89,7 @@ class TestChatService:
             "generation": "Sync response",
             "source": "Sync Source"
         })
-        from app.services import db_service
+        from app.services.database_service import db_service
         with patch.object(db_service, 'save_message'):
             result = await service.process_message("test-session", "Hello")
             assert result["success"] is True
@@ -97,9 +97,9 @@ class TestChatService:
 
     def test_clear_conversation(self):
         service = ChatService()
-        service.conversation_states["default::anonymous::test-session"] = {"question": "old"}
+        service.conversation_states["anonymous::test-session"] = {"question": "old"}
         service.clear_conversation("test-session")
-        assert service.conversation_states["default::anonymous::test-session"]["question"] == ""
+        assert service.conversation_states["anonymous::test-session"]["question"] == ""
 
     def test_clear_conversation_nonexistent(self):
         service = ChatService()

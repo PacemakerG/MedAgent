@@ -10,6 +10,7 @@ import json
 from app.core.langsmith_service import langsmith_traceable
 from app.core.logging_config import logger
 from app.core.medical_taxonomy import (
+    DEPARTMENT_TAXONOMY,
     GENERAL_MEDICAL_DEPARTMENT,
     department_display_name,
     infer_department_candidates,
@@ -28,7 +29,9 @@ def _extract_json_block(text: str) -> str:
     return text[start : end + 1]
 
 
-def _normalize_candidates(raw_candidates, fallback_candidates: list[dict]) -> list[dict]:
+def _normalize_candidates(
+    raw_candidates, fallback_candidates: list[dict]
+) -> list[dict]:
     normalized = []
     seen = set()
     for item in raw_candidates or []:
@@ -80,27 +83,36 @@ def MedicalRouterAgent(state: AgentState) -> AgentState:
 
         question = (state.get("question") or "").strip()
         fallback_candidates = infer_department_candidates(question, top_k=3)
-        fallback_primary = fallback_candidates[0]["name"] if fallback_candidates else GENERAL_MEDICAL_DEPARTMENT
+        fallback_primary = (
+            fallback_candidates[0]["name"]
+            if fallback_candidates
+            else GENERAL_MEDICAL_DEPARTMENT
+        )
         primary_department = fallback_primary
         department_candidates = fallback_candidates
         routing_reason = "heuristic keyword fallback"
 
         llm = get_light_llm(
-            tenant_id=state.get("tenant_id", "default"),
             user_id=state.get("user_id", "anonymous"),
         )
         if llm:
-            allowed_departments = ", ".join(code for code in list_department_codes() if code != GENERAL_MEDICAL_DEPARTMENT)
+            allowed_departments = ", ".join(list_department_codes())
+            department_guide = "；".join(
+                f"{code}={info['zh']}（{','.join(info.get('keywords', [])[:10])}）"
+                for code, info in DEPARTMENT_TAXONOMY.items()
+            )
             prompt = (
                 "你负责把医疗问题路由到医院科室。\n"
                 "只返回如下 JSON：\n"
                 "{"
-                "\"primary_department\": \"...\", "
-                "\"department_candidates\": [{\"name\": \"...\", \"score\": 0.0}], "
-                "\"routing_reason\": \"...\""
+                '"primary_department": "...", '
+                '"department_candidates": [{"name": "...", "score": 0.0}], '
+                '"routing_reason": "..."'
                 "}\n"
                 f"允许的科室代码：{allowed_departments}。\n"
+                f"科室边界参考：{department_guide}。\n"
                 "最多给出 3 个候选科室，score 取值范围必须在 0 到 1 之间。\n"
+                "无法明确归入专业科室时，使用 general_medical。\n"
                 f"用户问题：{question[:1200]}\n"
             )
             try:
@@ -119,6 +131,13 @@ def MedicalRouterAgent(state: AgentState) -> AgentState:
                 routing_reason = str(parsed.get("routing_reason") or routing_reason)
             except Exception as exc:
                 logger.warning("MedicalRouter fallback used: %s", exc)
+
+        if (
+            fallback_primary != GENERAL_MEDICAL_DEPARTMENT
+            and primary_department == GENERAL_MEDICAL_DEPARTMENT
+        ):
+            primary_department = fallback_primary
+            routing_reason = "explicit specialty keyword overrides general fallback"
 
         if primary_department not in {item["name"] for item in department_candidates}:
             department_candidates.insert(

@@ -26,7 +26,6 @@ from app.core.state import (
     set_retrieval_metric,
 )
 from app.schemas.ecg import ECGReportRequest
-from app.services.ecg_report_service import ecg_report_service
 from app.tools.llm_client import coerce_response_text, get_light_llm, get_llm
 from app.tools.tavily_search import get_tavily_search
 
@@ -174,13 +173,14 @@ def _maybe_run_ecg_skill(
     question: str,
     session_id: str = "",
     *,
-    tenant_id: str = "default",
     user_id: str = "anonymous",
 ):
     """
     If question contains ECG JSON payload, run ECG report skill directly.
     Expected payload keys include at least patient_info and features.
     """
+    from app.services.ecg_report_service import ecg_report_service
+
     q = question.lower()
     if "ecg" not in q and "心电" not in q:
         return None
@@ -196,7 +196,6 @@ def _maybe_run_ecg_skill(
         return ecg_report_service.generate_report(
             request,
             session_id=session_id,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
     except Exception as exc:
@@ -427,7 +426,6 @@ def _decide_web_search(state: AgentState) -> tuple[bool, str]:
         return False, ""
 
     light_llm = get_light_llm(
-        tenant_id=state.get("tenant_id", "default"),
         user_id=state.get("user_id", "anonymous"),
     )
     if not light_llm:
@@ -498,7 +496,6 @@ def build_executor_plan(state: AgentState) -> Dict[str, Any]:
     """Prepare executor generation plan so sync/stream paths share the same logic."""
     append_flow_trace(state, "executor")
     question = state["question"]
-    safety_level = state.get("safety_level", "SAFE")
     domain = state.get("domain", "general")
     primary_department = state.get("primary_department") or "未细分"
     source_info = state.get("source") or f"{str(domain).capitalize()} AI Coach"
@@ -511,54 +508,6 @@ def build_executor_plan(state: AgentState) -> Dict[str, Any]:
     ecg_info = state.get("ecg_metrics", "").strip() or "暂无最新数据"
     rag_source = state.get("source") if state.get("rag_context") else ""
     web_evidence = ""
-
-    if safety_level == "EMERGENCY":
-        answer = (
-            "⚠️ 检测到你描述的情况可能存在紧急医疗风险。"
-            "请立即停止当前活动，尽快前往最近急诊或拨打当地急救电话。"
-        )
-        return {
-            "mode": "shortcut",
-            "answer": _normalize_answer(answer, question, preferred_name=preferred_name),
-            "source_info": "Safety Guard",
-            "question": question,
-            "preferred_name": preferred_name,
-        }
-
-    if safety_level == "CLARIFY":
-        llm = get_llm(
-            tenant_id=state.get("tenant_id", "default"),
-            user_id=state.get("user_id", "anonymous"),
-        )
-        if not llm:
-            clarify = (
-                "我需要先确认风险，再决定是否适合继续讨论。"
-                "这个症状是你现在正在发生的吗？已经持续多久，是否在加重？"
-            )
-        else:
-            prompt = (
-                "你是一个负责的健康助手。用户提到了敏感健康症状，但是否急症不明确。\n"
-                "不要给出任何诊断、治疗或用药建议。\n"
-                "请只提出 1 到 2 个关键澄清问题，用简体中文、简洁关切语气。\n\n"
-                f"用户问题：{question}\n"
-                f"历史对话：\n{history_text or '暂无历史对话'}\n"
-            )
-            try:
-                result = llm.invoke(prompt)
-                clarify = coerce_response_text(result).strip()
-            except Exception:
-                clarify = (
-                    "我先不急着给建议。这个症状是你现在正在发生的吗？"
-                    "它大概持续了多久，程度是在加重还是已经缓解？"
-                )
-
-        return {
-            "mode": "shortcut",
-            "answer": clarify,
-            "source_info": "Safety Clarification",
-            "question": question,
-            "preferred_name": preferred_name,
-        }
 
     # Decide web-search usage under strict stop conditions.
     need_web_search, search_query = _decide_web_search(state)
@@ -575,7 +524,6 @@ def build_executor_plan(state: AgentState) -> Dict[str, Any]:
     ecg_skill_output = _maybe_run_ecg_skill(
         question,
         state.get("session_id", ""),
-        tenant_id=state.get("tenant_id", "default"),
         user_id=state.get("user_id", "anonymous"),
     )
     if ecg_skill_output is not None:
@@ -660,7 +608,6 @@ def ExecutorAgent(state: AgentState) -> AgentState:
     """Generate final answer with optional internal web-search tool usage."""
     with profile_node(state, "executor"):
         llm = get_llm(
-            tenant_id=state.get("tenant_id", "default"),
             user_id=state.get("user_id", "anonymous"),
         )
         plan = build_executor_plan(state)

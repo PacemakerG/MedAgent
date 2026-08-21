@@ -106,7 +106,7 @@ def _normalize_routing_block(block: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _resolve_llm_config(tenant_id: str, user_id: str) -> Dict[str, Any]:
+def _resolve_llm_config(user_id: str) -> Dict[str, Any]:
     resolved = {
         "api_key": OPENAI_API_KEY,
         "base_url": OPENAI_BASE_URL,
@@ -122,18 +122,15 @@ def _resolve_llm_config(tenant_id: str, user_id: str) -> Dict[str, Any]:
         _normalize_routing_block(routing.get("default") or {}),
     )
 
-    tenant_cfg = ((routing.get("tenants") or {}).get(tenant_id) or {})
-    resolved = _merge_non_empty(resolved, _normalize_routing_block(tenant_cfg))
-
-    user_cfg = ((tenant_cfg.get("users") or {}).get(user_id) or {})
+    user_cfg = ((routing.get("users") or {}).get(user_id) or {})
     resolved = _merge_non_empty(resolved, _normalize_routing_block(user_cfg))
     return resolved
 
 
-def get_llm(*, tenant_id: str = "default", user_id: str = "anonymous"):
-    """Return a cached ChatOpenAI instance for main generation (tenant/user isolated)."""
+def get_llm(*, user_id: str = "anonymous"):
+    """Return a cached ChatOpenAI instance for main generation."""
     global _llm_instance
-    cfg = _resolve_llm_config(tenant_id, user_id)
+    cfg = _resolve_llm_config(user_id)
     api_key = cfg.get("api_key")
     model = cfg.get("model") or LLM_MODEL
     base_url = cfg.get("base_url")
@@ -142,11 +139,11 @@ def get_llm(*, tenant_id: str = "default", user_id: str = "anonymous"):
         logger.warning("OPENAI_API_KEY not found in environment variables")
         return None
 
-    cache_key = ("main", tenant_id, user_id, model, base_url, api_key)
+    cache_key = ("main", user_id, model, base_url, api_key)
     with _instances_lock:
         cached = _llm_instances.get(cache_key)
         if cached is not None:
-            if tenant_id == "default" and user_id == "anonymous":
+            if user_id == "anonymous":
                 _llm_instance = cached
             return cached
 
@@ -171,21 +168,20 @@ def get_llm(*, tenant_id: str = "default", user_id: str = "anonymous"):
 
         instance = ChatOpenAI(**kwargs)
         _llm_instances[cache_key] = instance
-        if tenant_id == "default" and user_id == "anonymous":
+        if user_id == "anonymous":
             _llm_instance = instance
         logger.info(
-            "LLM client initialized (tenant=%s user=%s / %s)",
-            tenant_id,
+            "LLM client initialized (user=%s / %s)",
             user_id,
             model,
         )
         return instance
 
 
-def get_light_llm(*, tenant_id: str = "default", user_id: str = "anonymous"):
-    """Return cached lightweight LLM instance (tenant/user isolated)."""
+def get_light_llm(*, user_id: str = "anonymous"):
+    """Return a cached lightweight LLM instance."""
     global _light_llm_instance
-    cfg = _resolve_llm_config(tenant_id, user_id)
+    cfg = _resolve_llm_config(user_id)
     api_key = cfg.get("api_key")
     model = cfg.get("light_model") or cfg.get("model") or LIGHT_LLM_MODEL
     base_url = cfg.get("base_url")
@@ -194,11 +190,11 @@ def get_light_llm(*, tenant_id: str = "default", user_id: str = "anonymous"):
         logger.warning("OPENAI_API_KEY not found in environment variables")
         return None
 
-    cache_key = ("light", tenant_id, user_id, model, base_url, api_key)
+    cache_key = ("light", user_id, model, base_url, api_key)
     with _instances_lock:
         cached = _light_llm_instances.get(cache_key)
         if cached is not None:
-            if tenant_id == "default" and user_id == "anonymous":
+            if user_id == "anonymous":
                 _light_llm_instance = cached
             return cached
 
@@ -223,11 +219,10 @@ def get_light_llm(*, tenant_id: str = "default", user_id: str = "anonymous"):
 
         instance = ChatOpenAI(**kwargs)
         _light_llm_instances[cache_key] = instance
-        if tenant_id == "default" and user_id == "anonymous":
+        if user_id == "anonymous":
             _light_llm_instance = instance
         logger.info(
-            "Light LLM client initialized (tenant=%s user=%s / %s)",
-            tenant_id,
+            "Light LLM client initialized (user=%s / %s)",
             user_id,
             model,
         )

@@ -1,0 +1,414 @@
+{
+  "metadata": {
+    "name": "medagent-redis-cache-50-v1",
+    "version": "1.0",
+    "total": 50,
+    "unit": "cached_question_probe_question_pair",
+    "split": {
+      "semantic_equivalent": 25,
+      "non_reusable": 25
+    }
+  },
+  "samples": [
+    {
+      "id": "cache_001",
+      "category": "semantic_equivalent",
+      "cached_question": "高血压患者可以喝咖啡吗？",
+      "cached_answer": "多数人可少量饮用，并观察血压反应。",
+      "probe_question": "血压高的人能不能喝咖啡？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_002",
+      "category": "semantic_equivalent",
+      "cached_question": "糖尿病患者如何控制饮食？",
+      "cached_answer": "控制总能量，优先全谷物、蔬菜和优质蛋白。",
+      "probe_question": "血糖高的人平时吃饭要注意什么？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_003",
+      "category": "semantic_equivalent",
+      "cached_question": "感冒后一直咳嗽怎么办？",
+      "cached_answer": "可先补液和观察，持续或加重时就医评估。",
+      "probe_question": "上呼吸道感染后咳个不停该怎么处理？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_004",
+      "category": "semantic_equivalent",
+      "cached_question": "儿童发烧什么时候需要就医？",
+      "cached_answer": "精神反应差、呼吸困难或持续高热时应及时就医。",
+      "probe_question": "孩子发热到什么情况应去医院？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_005",
+      "category": "semantic_equivalent",
+      "cached_question": "慢性肾病为什么要查尿蛋白？",
+      "cached_answer": "白蛋白尿有助于评估肾损伤和进展风险。",
+      "probe_question": "CKD 患者检测白蛋白尿有什么用？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_006",
+      "category": "semantic_equivalent",
+      "cached_question": "糖尿病患者为什么要查眼底？",
+      "cached_answer": "眼底检查有助于早期发现糖尿病视网膜病变。",
+      "probe_question": "血糖高的人定期做视网膜检查有什么意义？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_007",
+      "category": "semantic_equivalent",
+      "cached_question": "近视如何保护视力？",
+      "cached_answer": "增加户外活动并减少连续近距离用眼。",
+      "probe_question": "眼睛近视后日常怎样避免进一步加深？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_008",
+      "category": "semantic_equivalent",
+      "cached_question": "耳鸣伴听力下降怎么办？",
+      "cached_answer": "需要耳鼻喉科评估耳道、中耳和听力。",
+      "probe_question": "耳朵响而且听不清应该如何处理？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_009",
+      "category": "semantic_equivalent",
+      "cached_question": "肾结石患者应该多喝水吗？",
+      "cached_answer": "充足饮水有助于增加尿量并降低复发风险。",
+      "probe_question": "泌尿系结石增加饮水量有帮助吗？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_010",
+      "category": "semantic_equivalent",
+      "cached_question": "慢性腰痛适合运动吗？",
+      "cached_answer": "多数患者可在评估后进行循序渐进的结构化运动。",
+      "probe_question": "长期下腰背疼能不能进行锻炼？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_011",
+      "category": "semantic_equivalent",
+      "cached_question": "乙肝患者为什么要监测肝癌？",
+      "cached_answer": "慢性乙肝会增加肝细胞癌风险，需要风险分层监测。",
+      "probe_question": "慢性 HBV 感染为何要定期筛查 HCC？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_012",
+      "category": "semantic_equivalent",
+      "cached_question": "孕期为什么要补叶酸？",
+      "cached_answer": "叶酸有助于预防胎儿神经管缺陷并支持孕期造血。",
+      "probe_question": "怀孕后吃叶酸有什么作用？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_013",
+      "category": "semantic_equivalent",
+      "cached_question": "儿童腹泻怎样判断脱水？",
+      "cached_answer": "可观察精神、口渴、眼窝、皮肤弹性和尿量。",
+      "probe_question": "宝宝拉肚子后怎么知道有没有缺水？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_014",
+      "category": "semantic_equivalent",
+      "cached_question": "青光眼为什么要长期随访？",
+      "cached_answer": "持续监测眼压和视神经有助于减慢不可逆视损伤。",
+      "probe_question": "得了青光眼为何需要持续复查？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_015",
+      "category": "semantic_equivalent",
+      "cached_question": "白内障会导致视力下降吗？",
+      "cached_answer": "白内障可使进入眼内的光线受阻并降低视力。",
+      "probe_question": "晶状体混浊是不是会看不清？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_016",
+      "category": "semantic_equivalent",
+      "cached_question": "安全使用耳机要注意什么？",
+      "cached_answer": "控制音量和时长，并在嘈杂环境中避免继续加大音量。",
+      "probe_question": "戴耳机怎样减少噪声性听力损伤？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_017",
+      "category": "semantic_equivalent",
+      "cached_question": "疥疮是怎样传播的？",
+      "cached_answer": "疥疮主要通过较长时间的密切皮肤接触传播。",
+      "probe_question": "疥螨感染通常通过什么方式传给别人？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_018",
+      "category": "semantic_equivalent",
+      "cached_question": "癫痫患者为什么会受到污名影响？",
+      "cached_answer": "污名可影响教育、就业、社会关系和就医。",
+      "probe_question": "社会偏见会给癫痫病人带来什么问题？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_019",
+      "category": "semantic_equivalent",
+      "cached_question": "总体心血管风险评估有什么用？",
+      "cached_answer": "综合评估可结合多种危险因素决定干预强度。",
+      "probe_question": "为什么心血管管理不能只看血压一个指标？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_020",
+      "category": "semantic_equivalent",
+      "cached_question": "癌症早期诊断和筛查一样吗？",
+      "cached_answer": "早期诊断针对有症状者，筛查针对无症状目标人群。",
+      "probe_question": "肿瘤早诊是不是就等于给无症状人群做筛查？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_021",
+      "category": "semantic_equivalent",
+      "cached_question": "孕期低钙人群需要补钙吗？",
+      "cached_answer": "低膳食钙人群补钙可帮助降低子痫前期风险。",
+      "probe_question": "饮食钙不足的孕妇是否应额外补充钙？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_022",
+      "category": "semantic_equivalent",
+      "cached_question": "手术前为什么要核查患者身份？",
+      "cached_answer": "重复核查可降低错误患者、错误部位和错误术式风险。",
+      "probe_question": "进手术室后为何还要再次确认姓名和术式？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_023",
+      "category": "semantic_equivalent",
+      "cached_question": "新生儿为什么要做听力筛查？",
+      "cached_answer": "早期筛查有助于尽早识别听力损失并开展干预。",
+      "probe_question": "婴儿出生后检查听觉有什么必要？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_024",
+      "category": "semantic_equivalent",
+      "cached_question": "慢性呼吸病为什么要戒烟？",
+      "cached_answer": "戒烟可减少持续气道损伤和疾病恶化风险。",
+      "probe_question": "哮喘或 COPD 患者停止吸烟有什么意义？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_025",
+      "category": "semantic_equivalent",
+      "cached_question": "急诊为什么采用 ABCDE 顺序？",
+      "cached_answer": "固定顺序有助于优先发现和处理立即威胁生命的问题。",
+      "probe_question": "危重患者为何先按气道呼吸循环依次检查？",
+      "expected_hit": true
+    },
+    {
+      "id": "cache_026",
+      "category": "non_reusable",
+      "cached_question": "高血压患者可以喝咖啡吗？",
+      "cached_answer": "多数人可少量饮用，并观察血压反应。",
+      "probe_question": "低血压患者可以喝咖啡吗？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_027",
+      "category": "non_reusable",
+      "cached_question": "糖尿病患者如何控制饮食？",
+      "cached_answer": "控制总能量，优先全谷物、蔬菜和优质蛋白。",
+      "probe_question": "妊娠期糖尿病患者如何控制饮食？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_028",
+      "category": "non_reusable",
+      "cached_question": "成人感冒后一直咳嗽怎么办？",
+      "cached_answer": "可先补液和观察，持续或加重时就医评估。",
+      "probe_question": "三个月婴儿感冒后一直咳嗽怎么办？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_029",
+      "category": "non_reusable",
+      "cached_question": "儿童发烧什么时候需要就医？",
+      "cached_answer": "精神反应差、呼吸困难或持续高热时应及时就医。",
+      "probe_question": "成年人低热什么时候需要就医？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_030",
+      "category": "non_reusable",
+      "cached_question": "慢性肾病为什么要查尿蛋白？",
+      "cached_answer": "白蛋白尿有助于评估肾损伤和进展风险。",
+      "probe_question": "尿路感染为什么要查尿培养？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_031",
+      "category": "non_reusable",
+      "cached_question": "糖尿病患者为什么要查眼底？",
+      "cached_answer": "眼底检查有助于早期发现糖尿病视网膜病变。",
+      "probe_question": "高血压患者为什么要查眼底？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_032",
+      "category": "non_reusable",
+      "cached_question": "近视如何保护视力？",
+      "cached_answer": "增加户外活动并减少连续近距离用眼。",
+      "probe_question": "青光眼如何保护视力？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_033",
+      "category": "non_reusable",
+      "cached_question": "耳鸣伴听力下降怎么办？",
+      "cached_answer": "需要耳鼻喉科评估耳道、中耳和听力。",
+      "probe_question": "耳鸣伴剧烈眩晕怎么办？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_034",
+      "category": "non_reusable",
+      "cached_question": "肾结石患者应该多喝水吗？",
+      "cached_answer": "充足饮水有助于增加尿量并降低复发风险。",
+      "probe_question": "心力衰竭患者应该多喝水吗？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_035",
+      "category": "non_reusable",
+      "cached_question": "慢性腰痛适合运动吗？",
+      "cached_answer": "多数患者可在评估后进行循序渐进的结构化运动。",
+      "probe_question": "急性腰椎骨折适合运动吗？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_036",
+      "category": "non_reusable",
+      "cached_question": "乙肝患者为什么要监测肝癌？",
+      "cached_answer": "慢性乙肝会增加肝细胞癌风险，需要风险分层监测。",
+      "probe_question": "丙肝患者为什么要监测肝癌？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_037",
+      "category": "non_reusable",
+      "cached_question": "孕期为什么要补叶酸？",
+      "cached_answer": "叶酸有助于预防胎儿神经管缺陷并支持孕期造血。",
+      "probe_question": "备孕男性为什么要补叶酸？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_038",
+      "category": "non_reusable",
+      "cached_question": "儿童腹泻怎样判断脱水？",
+      "cached_answer": "可观察精神、口渴、眼窝、皮肤弹性和尿量。",
+      "probe_question": "儿童呕吐怎样判断脑膜炎？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_039",
+      "category": "non_reusable",
+      "cached_question": "青光眼为什么要长期随访？",
+      "cached_answer": "持续监测眼压和视神经有助于减慢不可逆视损伤。",
+      "probe_question": "白内障为什么要长期随访？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_040",
+      "category": "non_reusable",
+      "cached_question": "白内障会导致视力下降吗？",
+      "cached_answer": "白内障可使进入眼内的光线受阻并降低视力。",
+      "probe_question": "干眼症会导致视力下降吗？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_041",
+      "category": "non_reusable",
+      "cached_question": "安全使用耳机要注意什么？",
+      "cached_answer": "控制音量和时长，并在嘈杂环境中避免继续加大音量。",
+      "probe_question": "使用助听器要注意什么？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_042",
+      "category": "non_reusable",
+      "cached_question": "疥疮是怎样传播的？",
+      "cached_answer": "疥疮主要通过较长时间的密切皮肤接触传播。",
+      "probe_question": "湿疹是怎样传播的？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_043",
+      "category": "non_reusable",
+      "cached_question": "癫痫患者为什么会受到污名影响？",
+      "cached_answer": "污名可影响教育、就业、社会关系和就医。",
+      "probe_question": "偏头痛患者为什么会受到污名影响？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_044",
+      "category": "non_reusable",
+      "cached_question": "总体心血管风险评估有什么用？",
+      "cached_answer": "综合评估可结合多种危险因素决定干预强度。",
+      "probe_question": "单次心电图检查有什么用？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_045",
+      "category": "non_reusable",
+      "cached_question": "癌症早期诊断和筛查一样吗？",
+      "cached_answer": "早期诊断针对有症状者，筛查针对无症状目标人群。",
+      "probe_question": "传染病早期诊断和筛查一样吗？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_046",
+      "category": "non_reusable",
+      "cached_question": "孕期低钙人群需要补钙吗？",
+      "cached_answer": "低膳食钙人群补钙可帮助降低子痫前期风险。",
+      "probe_question": "肾结石孕妇需要补钙吗？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_047",
+      "category": "non_reusable",
+      "cached_question": "手术前为什么要核查患者身份？",
+      "cached_answer": "重复核查可降低错误患者、错误部位和错误术式风险。",
+      "probe_question": "门诊取药前为什么要核查患者身份？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_048",
+      "category": "non_reusable",
+      "cached_question": "新生儿为什么要做听力筛查？",
+      "cached_answer": "早期筛查有助于尽早识别听力损失并开展干预。",
+      "probe_question": "成年人为什么要做听力筛查？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_049",
+      "category": "non_reusable",
+      "cached_question": "慢性呼吸病为什么要戒烟？",
+      "cached_answer": "戒烟可减少持续气道损伤和疾病恶化风险。",
+      "probe_question": "慢性肾病为什么要戒烟？",
+      "expected_hit": false
+    },
+    {
+      "id": "cache_050",
+      "category": "non_reusable",
+      "cached_question": "急诊为什么采用 ABCDE 顺序？",
+      "cached_answer": "固定顺序有助于优先发现和处理立即威胁生命的问题。",
+      "probe_question": "常规体检为什么采用 ABCDE 顺序？",
+      "expected_hit": false
+    }
+  ]
+}

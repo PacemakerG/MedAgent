@@ -1,0 +1,321 @@
+{
+  "metadata": {
+    "dataset": "medagent-redis-cache-50-v1",
+    "samples": 50,
+    "implementation": "entity normalization + exact entity-set TAG filter + Redis Stack HNSW cosine search",
+    "metric_definitions": {
+      "cache_hit_accuracy": "50对问题中命中/未命中判断正确的样本数 / 50",
+      "average_latency": "成功命中的正样本分别走完整RAG与实体抽取、向量化、Redis Search和读取回答链路的平均耗时"
+    }
+  },
+  "metrics": {
+    "cache_hit_accuracy": 100,
+    "average_latency_ms": {
+      "full_rag": 10676.8332,
+      "cache_hit": 6.6952,
+      "reduction": 99.9373
+    }
+  },
+  "samples": [
+    {
+      "id": "cache_001",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_002",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_003",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_004",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_005",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_006",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_007",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_008",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_009",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_010",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_011",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_012",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_013",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_014",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_015",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_016",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_017",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_018",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_019",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_020",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_021",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_022",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_023",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_024",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_025",
+      "expected_hit": true,
+      "actual_hit": true,
+      "correct": true
+    },
+    {
+      "id": "cache_026",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_027",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_028",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_029",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_030",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_031",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_032",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_033",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_034",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_035",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_036",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_037",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_038",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_039",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_040",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_041",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_042",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_043",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_044",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_045",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_046",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_047",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_048",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_049",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    },
+    {
+      "id": "cache_050",
+      "expected_hit": false,
+      "actual_hit": false,
+      "correct": true
+    }
+  ]
+}

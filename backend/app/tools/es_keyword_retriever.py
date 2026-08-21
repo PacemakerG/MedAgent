@@ -43,15 +43,16 @@ def keyword_search_es(
     scope: str,
     domain: str,
     top_k: int = 3,
+    search_all_departments: bool = False,
 ) -> List[Document]:
-    """Run BM25 keyword retrieval in Elasticsearch with strict scope/domain filtering."""
+    """Run BM25 keyword retrieval in Elasticsearch with scope/domain filtering."""
     if not query.strip():
         return []
     if not ensure_es_index():
         return []
 
     filters = [{"term": {"domain": domain}}]
-    if domain == "medical":
+    if domain == "medical" and not search_all_departments:
         filters.append({"term": {"department": scope}})
 
     payload = {
@@ -62,7 +63,11 @@ def keyword_search_es(
                     {
                         "multi_match": {
                             "query": query,
-                            "fields": ["content^3", "source_book^1.2", "parent_excerpt"],
+                            "fields": [
+                                "content^3",
+                                "source_book^1.2",
+                                "parent_excerpt",
+                            ],
                             "type": "best_fields",
                         }
                     }
@@ -84,7 +89,9 @@ def keyword_search_es(
                 return []
             hits = (response.json().get("hits") or {}).get("hits") or []
     except Exception as exc:
-        logger.warning("Elasticsearch keyword search failed for scope=%s: %s", scope, exc)
+        logger.warning(
+            "Elasticsearch keyword search failed for scope=%s: %s", scope, exc
+        )
         return []
 
     documents: List[Document] = []
@@ -95,7 +102,6 @@ def keyword_search_es(
             continue
         metadata = {
             "chunk_id": source.get("chunk_id"),
-            "tenant_id": source.get("tenant_id"),
             "domain": source.get("domain"),
             "department": source.get("department"),
             "source_book": source.get("source_book"),

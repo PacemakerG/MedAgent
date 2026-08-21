@@ -169,14 +169,13 @@ class ECGReportService:
         request: ECGReportRequest,
         session_id: str = "",
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> ECGReportResponse:
         risk_level = _infer_risk_level(request)
         key_findings = _extract_key_findings(request)
         recommendations = _build_recommendations(risk_level)
 
-        llm = get_llm(tenant_id=tenant_id, user_id=user_id)
+        llm = get_llm(user_id=user_id)
         report = ""
         if llm:
             prompt = _build_prompt(request)
@@ -193,7 +192,6 @@ class ECGReportService:
         raw_request_payload = request.model_dump(exclude={"waveform"})
         saved = db_service.save_ecg_report(
             session_id=session_id or None,
-            tenant_id=tenant_id,
             user_id=user_id,
             patient_id=request.patient_info.patient_id,
             risk_level=risk_level,
@@ -231,7 +229,6 @@ class ECGReportService:
                 update_profile(
                     session_id,
                     _build_profile_updates(request, risk_level, report_id),
-                    tenant_id=tenant_id,
                     user_id=user_id,
                 )
             except Exception as exc:
@@ -253,12 +250,10 @@ class ECGReportService:
         self,
         report_id: str,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> ECGReportResponse | None:
         record = db_service.get_ecg_report(
             report_id,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         if not record:

@@ -9,7 +9,7 @@ from app.agents.executor import ExecutorAgent
 from app.agents.judge_need_rag import JudgeNeedRAGAgent
 from app.agents.medical_router import MedicalRouterAgent
 from app.agents.memory import MemoryReadAgent, MemoryWriteAsyncAgent
-from app.agents.planner import HealthConciergeAgent
+from app.agents.planner import KeywordRouterAgent
 from app.agents.query_rewriter import QueryRewriterAgent
 from app.agents.reranker import RerankerAgent
 from app.agents.retriever import RetrieverAgent
@@ -17,15 +17,11 @@ from app.core.state import AgentState
 
 
 # ── Routing Functions ──────────────────────────────────────────────────────────
-def _route_after_concierge(state: AgentState) -> str:
-    if state.get("safety_level") in {"EMERGENCY", "CLARIFY"}:
-        return "executor"
+def _route_after_keyword_router(state: AgentState) -> str:
     if state.get("selected_department_forced"):
         return "query_rewriter"
-    if state.get("domain") == "medical":
+    if state.get("domain") == "medical" and state.get("use_rag"):
         return "medical_router"
-    if state.get("use_rag"):
-        return "query_rewriter"
     return "judge_need_rag"
 
 
@@ -44,7 +40,7 @@ def create_workflow():
 
     # Register nodes
     workflow.add_node("memory_read", MemoryReadAgent)
-    workflow.add_node("health_concierge", HealthConciergeAgent)
+    workflow.add_node("keyword_router", KeywordRouterAgent)
     workflow.add_node("medical_router", MedicalRouterAgent)
     workflow.add_node("judge_need_rag", JudgeNeedRAGAgent)
     workflow.add_node("query_rewriter", QueryRewriterAgent)
@@ -57,12 +53,11 @@ def create_workflow():
     workflow.set_entry_point("memory_read")
 
     # Edges
-    workflow.add_edge("memory_read", "health_concierge")
+    workflow.add_edge("memory_read", "keyword_router")
     workflow.add_conditional_edges(
-        "health_concierge",
-        _route_after_concierge,
+        "keyword_router",
+        _route_after_keyword_router,
         {
-            "executor": "executor",
             "medical_router": "medical_router",
             "query_rewriter": "query_rewriter",
             "judge_need_rag": "judge_need_rag",
@@ -85,6 +80,3 @@ def create_workflow():
     workflow.add_edge("memory_write_async", END)
 
     return workflow.compile()
-
-
-_route_after_keyword_router = _route_after_concierge

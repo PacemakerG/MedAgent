@@ -1,0 +1,931 @@
+{
+  "metadata": {
+    "dataset": "medagent-routing-50-v1",
+    "samples": 50,
+    "execution": "compiled LangGraph + live LLM + local RAG + live Elasticsearch + live Tavily",
+    "metric_definitions": {
+      "route_accuracy": "本地RAG、联网搜索、非医疗三种最终路径判断正确的样本数 / 50",
+      "department_accuracy": "40条医疗问题中主科室判断正确的样本数 / 40"
+    }
+  },
+  "metrics": {
+    "route_accuracy": 76.0,
+    "department_accuracy": 65.0
+  },
+  "samples": [
+    {
+      "id": "route_001",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "general_medical",
+      "actual_department": "general_medical",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_002",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "general_medical",
+      "actual_department": "general_medical",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_003",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "general_medical",
+      "actual_department": "general_medical",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_004",
+      "expected_route": "web_search",
+      "actual_route": "web_search",
+      "route_correct": true,
+      "expected_department": "general_medical",
+      "actual_department": "general_medical",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_005",
+      "expected_route": "web_search",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "general_medical",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_006",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "general_surgery",
+      "actual_department": "general_medical",
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_007",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "general_surgery",
+      "actual_department": "general_surgery",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_008",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "general_surgery",
+      "actual_department": "general_medical",
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_009",
+      "expected_route": "web_search",
+      "actual_route": "web_search",
+      "route_correct": true,
+      "expected_department": "general_surgery",
+      "actual_department": "general_surgery",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_010",
+      "expected_route": "web_search",
+      "actual_route": "web_search",
+      "route_correct": true,
+      "expected_department": "general_surgery",
+      "actual_department": "general_medical",
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_011",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "pediatrics",
+      "actual_department": "pediatrics",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_012",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "pediatrics",
+      "actual_department": "pediatrics",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_013",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "pediatrics",
+      "actual_department": "pediatrics",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_014",
+      "expected_route": "web_search",
+      "actual_route": "web_search",
+      "route_correct": true,
+      "expected_department": "pediatrics",
+      "actual_department": "pediatrics",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_015",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "pediatrics",
+      "actual_department": "pediatrics",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_016",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "neurology",
+      "actual_department": "neurology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_017",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "neurology",
+      "actual_department": "neurology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_018",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "neurology",
+      "actual_department": "neurology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_019",
+      "expected_route": "web_search",
+      "actual_route": "local_rag",
+      "route_correct": false,
+      "expected_department": "neurology",
+      "actual_department": "neurology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_020",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "neurology",
+      "actual_department": "neurology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_021",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "infectious_disease",
+      "actual_department": "infectious_disease",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_022",
+      "expected_route": "local_rag",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "infectious_disease",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_023",
+      "expected_route": "local_rag",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "infectious_disease",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_024",
+      "expected_route": "web_search",
+      "actual_route": "web_search",
+      "route_correct": true,
+      "expected_department": "infectious_disease",
+      "actual_department": "infectious_disease",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_025",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "infectious_disease",
+      "actual_department": "infectious_disease",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_026",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "ent",
+      "actual_department": "ent",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_027",
+      "expected_route": "local_rag",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "ent",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_028",
+      "expected_route": "local_rag",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "ent",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_029",
+      "expected_route": "web_search",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "ent",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_030",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "ent",
+      "actual_department": "ent",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_031",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "ophthalmology",
+      "actual_department": "ophthalmology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_032",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "ophthalmology",
+      "actual_department": "ophthalmology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_033",
+      "expected_route": "local_rag",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "ophthalmology",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_034",
+      "expected_route": "web_search",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "ophthalmology",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_035",
+      "expected_route": "local_rag",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "ophthalmology",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_036",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "dermatology",
+      "actual_department": "dermatology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_037",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "dermatology",
+      "actual_department": "dermatology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_038",
+      "expected_route": "local_rag",
+      "actual_route": "local_rag",
+      "route_correct": true,
+      "expected_department": "dermatology",
+      "actual_department": "dermatology",
+      "department_correct": true,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "medical_router",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_039",
+      "expected_route": "web_search",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "dermatology",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_040",
+      "expected_route": "local_rag",
+      "actual_route": "non_medical",
+      "route_correct": false,
+      "expected_department": "dermatology",
+      "actual_department": null,
+      "department_correct": false,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "query_rewriter",
+        "rag",
+        "reranker",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_041",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_042",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_043",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_044",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_045",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_046",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_047",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_048",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_049",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    },
+    {
+      "id": "route_050",
+      "expected_route": "non_medical",
+      "actual_route": "non_medical",
+      "route_correct": true,
+      "expected_department": null,
+      "actual_department": null,
+      "department_correct": null,
+      "flow_trace": [
+        "memory_read",
+        "keyword_router",
+        "judge_need_rag",
+        "executor",
+        "memory_write_async"
+      ]
+    }
+  ]
+}

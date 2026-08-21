@@ -67,7 +67,6 @@ def ensure_es_index() -> bool:
             "properties": {
                 "chunk_id": {"type": "keyword"},
                 "content": {"type": "text"},
-                "tenant_id": {"type": "keyword"},
                 "domain": {"type": "keyword"},
                 "department": {"type": "keyword"},
                 "source_book": {"type": "keyword"},
@@ -125,7 +124,6 @@ def _document_to_es_payload(doc: Document) -> dict[str, Any]:
     return {
         "chunk_id": metadata.get("chunk_id"),
         "content": doc.page_content,
-        "tenant_id": metadata.get("tenant_id", "default"),
         "domain": metadata.get("domain", ""),
         "department": metadata.get("department", ""),
         "source_book": metadata.get("source_book", ""),

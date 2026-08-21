@@ -51,8 +51,8 @@ class ChatService:
         logger.info("ChatService initialized")
 
     @staticmethod
-    def _context_key(tenant_id: str, user_id: str, session_id: str) -> str:
-        return f"{tenant_id}::{user_id}::{session_id}"
+    def _context_key(user_id: str, session_id: str) -> str:
+        return f"{user_id}::{session_id}"
 
     def initialize_workflow(self) -> None:
         """Compile and cache the LangGraph workflow (called once at startup)."""
@@ -62,8 +62,8 @@ class ChatService:
             logger.info("LangGraph workflow initialized successfully")
 
     @staticmethod
-    def _legacy_context_key(tenant_id: str, user_id: str, session_id: str) -> str | None:
-        if tenant_id == "default" and user_id == "anonymous":
+    def _legacy_context_key(user_id: str, session_id: str) -> str | None:
+        if user_id == "anonymous":
             return session_id
         return None
 
@@ -77,13 +77,11 @@ class ChatService:
         self,
         session_id: str,
         *,
-        tenant_id: str,
         user_id: str,
     ) -> list[dict]:
         """Bootstrap in-memory conversation history from persisted chat records."""
         history = db_service.get_chat_history(
             session_id,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         restored = []
@@ -102,18 +100,16 @@ class ChatService:
         *,
         session_id: str,
         message: str,
-        tenant_id: str,
         user_id: str,
         selected_department: str | None,
     ) -> tuple[str, Dict[str, Any]]:
-        context_key = self._context_key(tenant_id, user_id, session_id)
-        legacy_key = self._legacy_context_key(tenant_id, user_id, session_id)
+        context_key = self._context_key(user_id, session_id)
+        legacy_key = self._legacy_context_key(user_id, session_id)
         with self._lock:
             if context_key not in self.conversation_states:
                 state = initialize_conversation_state()
                 state["conversation_history"] = self._load_persisted_history(
                     session_id,
-                    tenant_id=tenant_id,
                     user_id=user_id,
                 )
                 self.conversation_states[context_key] = state
@@ -121,7 +117,6 @@ class ChatService:
                     self.conversation_states[legacy_key] = state
             state = self.conversation_states[context_key]
         state = reset_query_state(state)
-        state["tenant_id"] = tenant_id
         state["user_id"] = user_id
         state["session_id"] = session_id
         state["question"] = message
@@ -135,8 +130,8 @@ class ChatService:
             if context_key not in self.conversation_states:
                 self.conversation_states[context_key] = initialize_conversation_state()
             self.conversation_states[context_key].update(result)
-            tenant_id, user_id, session_id = context_key.split("::", 2)
-            legacy_key = self._legacy_context_key(tenant_id, user_id, session_id)
+            user_id, session_id = context_key.split("::", 1)
+            legacy_key = self._legacy_context_key(user_id, session_id)
             if legacy_key:
                 self.conversation_states[legacy_key] = self.conversation_states[context_key]
 
@@ -221,14 +216,12 @@ class ChatService:
         session_id: str,
         message: str,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
         selected_department: str | None = None,
     ) -> Dict[str, Any]:
         """Run the agentic pipeline for a single user message."""
         logger.info(
-            "Processing message tenant=%s user=%s session=%s...",
-            tenant_id,
+            "Processing message user=%s session=%s...",
             user_id,
             session_id[:8],
         )
@@ -242,14 +235,12 @@ class ChatService:
             session_id,
             "user",
             message,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
 
         cache_lookup = semantic_cache_service.build_lookup(
             query=message,
-            tenant_id=tenant_id,
-            selected_department=selected_department,
+            user_id=user_id,
         )
         cached_answer = semantic_cache_service.get_answer(cache_lookup)
         if cached_answer:
@@ -261,7 +252,6 @@ class ChatService:
                 "assistant",
                 response_text,
                 source,
-                tenant_id=tenant_id,
                 user_id=user_id,
             )
             append_flow_trace_record(
@@ -269,7 +259,6 @@ class ChatService:
                 question=message,
                 flow_trace=flow_trace,
                 source=source,
-                safety_level="SAFE",
                 domain="medical",
                 primary_department=selected_department or "",
                 use_rag=False,
@@ -288,14 +277,12 @@ class ChatService:
         context_key, state = self._prepare_query_state(
             session_id=session_id,
             message=message,
-            tenant_id=tenant_id,
             user_id=user_id,
             selected_department=selected_department,
         )
         workflow_config = build_langsmith_runnable_config(
             operation="chat.process_message",
             session_id=session_id,
-            tenant_id=tenant_id,
             user_id=user_id,
             selected_department=selected_department,
             extra_tags=["chat", "sync"],
@@ -317,7 +304,6 @@ class ChatService:
             "assistant",
             response_text,
             source,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         append_flow_trace_record(
@@ -325,7 +311,6 @@ class ChatService:
             question=message,
             flow_trace=flow_trace,
             source=source,
-            safety_level=result.get("safety_level", "SAFE"),
             domain=result.get("domain", "general"),
             primary_department=result.get("primary_department", "") or "",
             use_rag=bool(result.get("use_rag", False)),
@@ -355,14 +340,12 @@ class ChatService:
         session_id: str,
         message: str,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
         selected_department: str | None = None,
     ) -> AsyncGenerator[Dict[str, Any], None]:
         """Run shared pre-processing and stream LLM tokens as they are generated."""
         logger.info(
-            "Streaming message tenant=%s user=%s session=%s...",
-            tenant_id,
+            "Streaming message user=%s session=%s...",
             user_id,
             session_id[:8],
         )
@@ -374,13 +357,11 @@ class ChatService:
             session_id,
             "user",
             message,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         cache_lookup = semantic_cache_service.build_lookup(
             query=message,
-            tenant_id=tenant_id,
-            selected_department=selected_department,
+            user_id=user_id,
         )
         cached_answer = semantic_cache_service.get_answer(cache_lookup)
         if cached_answer:
@@ -394,7 +375,6 @@ class ChatService:
                 "assistant",
                 answer,
                 source_info,
-                tenant_id=tenant_id,
                 user_id=user_id,
             )
             append_flow_trace_record(
@@ -402,7 +382,6 @@ class ChatService:
                 question=message,
                 flow_trace=flow_trace,
                 source=source_info,
-                safety_level="SAFE",
                 domain="medical",
                 primary_department=selected_department or "",
                 use_rag=False,
@@ -424,7 +403,6 @@ class ChatService:
         context_key, state = self._prepare_query_state(
             session_id=session_id,
             message=message,
-            tenant_id=tenant_id,
             user_id=user_id,
             selected_department=selected_department,
         )
@@ -432,7 +410,6 @@ class ChatService:
         state["profiling"]["trace_context"] = build_langsmith_runnable_config(
             operation="chat.process_message_stream",
             session_id=session_id,
-            tenant_id=tenant_id,
             user_id=user_id,
             selected_department=selected_department,
             extra_tags=["chat", "stream"],
@@ -442,22 +419,9 @@ class ChatService:
         state = MemoryReadAgent(state)
         state = KeywordRouterAgent(state)
 
-        if state.get("safety_level") in {"EMERGENCY", "CLARIFY"}:
-            pass
-        elif state.get("domain") == "medical":
-            if state.get("use_rag"):
-                if not state.get("selected_department_forced", False):
-                    state = MedicalRouterAgent(state)
-                state = QueryRewriterAgent(state)
-                state = RetrieverAgent(state)
-                state = RerankerAgent(state)
-            else:
-                state = JudgeNeedRAGAgent(state)
-                if state.get("need_rag"):
-                    state = QueryRewriterAgent(state)
-                    state = RetrieverAgent(state)
-                    state = RerankerAgent(state)
-        elif state.get("use_rag"):
+        if state.get("domain") == "medical" and state.get("use_rag"):
+            if not state.get("selected_department_forced", False):
+                state = MedicalRouterAgent(state)
             state = QueryRewriterAgent(state)
             state = RetrieverAgent(state)
             state = RerankerAgent(state)
@@ -486,7 +450,7 @@ class ChatService:
             if answer:
                 yield {"event": "delta", "delta": answer}
         else:
-            llm = get_llm(tenant_id=tenant_id, user_id=user_id)
+            llm = get_llm(user_id=user_id)
             if not llm:
                 answer = normalize_executor_answer(
                     "当前医疗助手服务暂时不可用，建议你先进行基础观察，必要时尽快咨询线下医生。",
@@ -565,7 +529,6 @@ class ChatService:
             "assistant",
             answer,
             source_info,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         append_flow_trace_record(
@@ -573,7 +536,6 @@ class ChatService:
             question=message,
             flow_trace=flow_trace,
             source=source_info,
-            safety_level=state.get("safety_level", "SAFE"),
             domain=state.get("domain", "general"),
             primary_department=state.get("primary_department", "") or "",
             use_rag=bool(state.get("use_rag", False)),
@@ -602,12 +564,11 @@ class ChatService:
         self,
         session_id: str,
         *,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> None:
         """Reset the in-memory conversation state for a session."""
-        context_key = self._context_key(tenant_id, user_id, session_id)
-        legacy_key = self._legacy_context_key(tenant_id, user_id, session_id)
+        context_key = self._context_key(user_id, session_id)
+        legacy_key = self._legacy_context_key(user_id, session_id)
         with self._lock:
             if context_key in self.conversation_states:
                 reset_state = initialize_conversation_state()
@@ -615,8 +576,7 @@ class ChatService:
                 if legacy_key:
                     self.conversation_states[legacy_key] = reset_state
                 logger.info(
-                    "Conversation cleared tenant=%s user=%s session=%s",
-                    tenant_id,
+                    "Conversation cleared user=%s session=%s",
                     user_id,
                     session_id[:8],
                 )

@@ -29,7 +29,6 @@ async def get_history_endpoint(req: Request):
     return {
         "messages": db_service.get_chat_history(
             ctx.session_id,
-            tenant_id=ctx.tenant_id,
             user_id=ctx.user_id,
         ),
         "session_id": ctx.session_id,
@@ -43,7 +42,6 @@ async def get_sessions_endpoint(req: Request):
     ctx = _get_request_context(req)
     return {
         "sessions": db_service.get_all_sessions(
-            tenant_id=ctx.tenant_id,
             user_id=ctx.user_id,
         ),
         "success": True,
@@ -58,7 +56,6 @@ async def load_session_endpoint(session_id: str, req: Request):
     return {
         "messages": db_service.get_chat_history(
             session_id,
-            tenant_id=ctx.tenant_id,
             user_id=ctx.user_id,
         ),
         "session_id": session_id,
@@ -72,7 +69,6 @@ async def delete_session_endpoint(session_id: str, req: Request):
     ctx = _get_request_context(req)
     db_service.delete_session(
         session_id,
-        tenant_id=ctx.tenant_id,
         user_id=ctx.user_id,
     )
     if req.session.get("session_id") == session_id:

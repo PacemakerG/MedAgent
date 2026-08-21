@@ -186,10 +186,9 @@ def _render_with_llm(
     context_used: List[str],
     day_period: str,
     *,
-    tenant_id: str,
     user_id: str,
 ) -> str:
-    llm = get_light_llm(tenant_id=tenant_id, user_id=user_id)
+    llm = get_light_llm(user_id=user_id)
     if not llm:
         return ""
 
@@ -271,12 +270,10 @@ class GreetingService:
         longitude: float | None = None,
         timezone_name: str | None = None,
         locale: str | None = None,
-        tenant_id: str = "default",
         user_id: str = "anonymous",
     ) -> Dict[str, Any]:
         history = db_service.get_chat_history(
             session_id,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         existing = _find_existing_welcome(history)
@@ -303,7 +300,7 @@ class GreetingService:
 
         now = _resolve_now(timezone_name)
         day_period = _day_period(now)
-        profile = load_profile(session_id, tenant_id=tenant_id, user_id=user_id)
+        profile = load_profile(session_id, user_id=user_id)
         weather_hint = _fetch_weather(latitude, longitude, timezone_name)
         history_hint = _extract_last_user_topic(history)
         profile_hint = _build_profile_hint(profile)
@@ -326,7 +323,6 @@ class GreetingService:
             context,
             context_used,
             day_period,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         if not greeting:
@@ -337,7 +333,6 @@ class GreetingService:
             "assistant",
             greeting,
             WELCOME_SOURCE,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         return {

@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
-from app.services import chat_service, db_service
+from app.services.chat_service import chat_service
+from app.services.database_service import db_service
 from app.services.greeting_service import WELCOME_SOURCE, greeting_service
 
 
@@ -141,7 +142,6 @@ def test_delete_session(test_client):
         mock_del.assert_called_once()
         args, kwargs = mock_del.call_args
         assert args[0] == "test-id"
-        assert kwargs["tenant_id"] == "default"
         assert kwargs["user_id"] == "anonymous"
 
 

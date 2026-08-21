@@ -21,7 +21,7 @@ from app.schemas.ecg import (
 
 
 def _mock_ctx():
-    return MagicMock(session_id="sess-1", tenant_id="tenant-a", user_id="user-a")
+    return MagicMock(session_id="sess-1", user_id="user-a")
 
 
 def test_ecg_report_endpoint():

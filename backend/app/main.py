@@ -106,7 +106,6 @@ async def lifespan(app: FastAPI):
                     knowledge_docs = process_pdf_with_metadata(
                         PDF_PATH,
                         {
-                            "tenant_id": "default",
                             "domain": "medical",
                             "department": GENERAL_MEDICAL_DEPARTMENT,
                             "source_book": Path(PDF_PATH).stem,

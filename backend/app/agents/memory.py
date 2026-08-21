@@ -25,11 +25,9 @@ def MemoryReadAgent(state: AgentState) -> AgentState:
         state["conversation_history"] = history
 
         session_id = state.get("session_id", "")
-        tenant_id = state.get("tenant_id", "default")
         user_id = state.get("user_id", "anonymous")
         profile = load_profile(
             session_id,
-            tenant_id=tenant_id,
             user_id=user_id,
         )
         state["memory_context"] = render_profile_as_text(profile)
@@ -44,7 +42,6 @@ def MemoryWriteAsyncAgent(state: AgentState) -> AgentState:
     append_flow_trace(state, "memory_write_async")
     with profile_node(state, "memory_write_async"):
         session_id = state.get("session_id", "")
-        tenant_id = state.get("tenant_id", "default")
         user_id = state.get("user_id", "anonymous")
         question = state.get("question", "")
         answer = state.get("generation", "")
@@ -54,7 +51,6 @@ def MemoryWriteAsyncAgent(state: AgentState) -> AgentState:
                 session_id,
                 question,
                 answer,
-                tenant_id=tenant_id,
                 user_id=user_id,
             )
 

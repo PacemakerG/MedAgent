@@ -1,0 +1,1569 @@
+{
+  "metadata": {
+    "sample_size": 40,
+    "model_scored_samples": 0,
+    "status": "pending_model_scoring"
+  },
+  "samples": [
+    {
+      "id": "rag_single_001",
+      "question": "What is the target sensitivity for confirmatory scabies testing?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 17
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 17
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 8
+        }
+      ],
+      "evidence": [
+        " and Pediculus humanus capitis) · Phthirius spp. (e.g. Phthirius pubis) · Cimex spp. (e.g. the common bed bug Cimex lectula- rius) 3.2 Diagnostic/clin- ical sensitivity For initial clinical screen of Se=70%/Sp=70%, confirmatory test sensitivity: ≥ 93% For initial clinical screen of Se=80%/Sp=80%, confirmatory test sens",
+        "vity: ≥ 93% For initial clinical screen of Se=80%/Sp=80%, confirmatory test sensitivity: ≥ 81% For initial clinical screen, single-test sensitivity: ≥ 80% Assumptions made for performance requirements: · The sensitivity performance values at left assume a 95% power of accurate detection of prevalence at 2%, i.e. there ",
+        "e of scabies is < 2%, then MDA can be stopped. In 2021, the first national programmes were initiated in Fiji and the Solomon Islands supported by the World Scabies Programme. The new road map for neglected tropical diseases 2021–2030 has set a target for 25 countries to have rolled out MDA for scabies control by 2030 (",
+        "t a target for 25 countries to have rolled out MDA for scabies control by 2030 (5). 3. Available diagnostic tools Currently, clinical examination is the mainstay of scabies diagnosis. In high-income settings, dermatoscopy and other diagnostic tests are occasionally used to supplement clinical examination. However, thes",
+        "ed in due course. One of the recommendations was to prepare target product profiles (TPPs) for diagnostics to support emerging scabies control programmes and, specifically, TPPs for both starting and stopping MDA. These TPPs are therefore focused on diagnosis of ‘common scabies’ and not crusted scabies. 5. Purpose of t"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_004",
+      "question": "What is the diagnostic product used for when stopping mass drug administration for scabies?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 15
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 1
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 3
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 10
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        }
+      ],
+      "evidence": [
+        "9 Scabies Diagnosis TPP – Mass Drug Administration Stop 1. Product use summary Minimum Ideal Background, annotation re requirement risk, etc. 1.1 Intended use An in vitro laboratory-based test that detects S. scabiei-specific analyte(s) for the purpose of \"scabies mapping\" to identify areas with < 2% disease prevalence",
+        "WHO | NEGLECTED TROPICAL DISEASES TARGET PRODUCT PROFILE for scabies to start and stop mass drug administration",
+        "TARGET PRODUCT PROFILE for scabies to start and stop mass drug administration",
+        "4 Scabies Diagnosis TPP – Mass Drug Administration Start 1. Product use summary Minimum Ideal Background, annotation re requirement risk, etc. 1.1 Intended use An in vitro laboratory-based test that detects S. scabiei-specific analyte(s) for the purpose of \"scabies mapping\" to identify areas with ≥ 10% disease prevalen",
+        "st informal consultation on a framework for the public health control of scabies (3). In areas where the prevalence of scabies is particularly high, the best available evidence supports the use of ivermectin-based mass drug administration (MDA) to control scabies. This strategy consists of two doses of oral ivermectin "
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_008",
+      "question": "What common interventions do hearing assistive technologies include?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 131
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 103
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 131
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 131
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 261
+        }
+      ],
+      "evidence": [
+        "SISTIVE TECHNOLOGY In addition to rehabilitation, hearing assistive technology is useful in improving access to communication. By improving sound quality and speech discrimination, it supports a person’s interaction with the environment. Hearing assistive technology includes both software and hardware that can be used ",
+        "informational support for families of children diagnosed with permanent hearing loss; • medical referral for etiologic investigation and management as indicated; • assistive hearing technologies including hearing aids, cochlear implants, FM systems; adjunctive counselling, information, and training to support the techn",
+        "aring assistive technology includes both software and hardware that can be used in a variety of environments, including home, work, school, social gatherings, meetings, hospitals, places of worship, and theatres. The different types of hearing assistive technologies available include devices for enhanced listening that",
+        "ing assistive technologies available include devices for enhanced listening that improve the signal to noise ratio for improved listening in a noisy surrounding; alerting devices; and telecommunication devices. DEVICES FOR ENHANCED LISTENING These devices enhance the use of hearing aids and cochlear implants, and can a",
+        "f, increased availability of sign language translation, captioning services and assistive technologies (e.g. loop systems). The above list of priority areas for EHC research is not exhaustive: it focuses mainly on the public health aspects of ear and hearing care which relate to the H.E.A.R.I.N.G. interventions and hea"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_011",
+      "question": "How does uncorrected refractive error affect vision?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 95
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 84
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 44
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 95
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 95
+        }
+      ],
+      "evidence": [
+        "espite being more feasibly addressed, cataract and uncorrected refractive error remain major items on the unfinished agenda of public health (44, 45). Close to 200 million people worldwide currently have moderate to severe presenting distance vision impairment or blindness caused by cataract or uncorrected refractive e",
+        "der to avoid the negative impact of uncorrected refractive error on academic performance (12). Reduced visual acuity from refractive error can be effectively compensated for with spectacles or contact lenses. Laser refractive surgery and, less commonly, intraocular lenses are used to correct the refractive error. Type ",
+        " vision impairment due to unaddressed refractive error, it is possible that there is some overlap between the 123.7 million people with vision impairment or blindness due to unaddressed refractive error and the 1.8 people with near vision impairment caused by presbyopia.",
+        "ce vision impairment or blindness caused by cataract or uncorrected refractive error, while an estimated 826 million have near vision impairment caused by unaddressed presbyopia. This figure is expected to increase substantially since cataract and presbyopia development are an inevitable part of ageing. Projected incre",
+        "nce of vision impairment described earlier, the combination of a growing and ageing population will significantly increase the total number of people with eye conditions and vision impairment, since prevalence increases as people age (5). Despite being more feasibly addressed, cataract and uncorrected refractive error "
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_015",
+      "question": "Why does myopia require public health attention?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 61
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 71
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 70
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 60
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 48
+        }
+      ],
+      "evidence": [
+        "43 Health systems face unprecedented challenges in meeting the current and projected demands of eye care needs. Figure 2.7 Projected number of people estimated to have myopia and high myopia for each decade, 2000–2030 2000 2010 2020 Number (millions) 2030 1,406 1,950 2,620 3,361 163 277 399 516 Myopia High Myopia Adapt",
+        "gery) (Box 3.1) (14). Preventative lifestyle changes among children, including a combination of increased time spent outdoors and decreased near-work activities, can slow the progression of myopia which reduces the risk of high myopia and its complications (9, 15) . Interventions to prevent health conditions such as vi",
+        "g a combination of increased time spent outdoors and decreased near-work activities, can slow the progression of myopia which reduces the risk of high myopia and its complications (9, 15) . Interventions to prevent health conditions such as vitamin A deficiency, measles and rubella, through vitamin A supplementation an",
+        " increased rates of urbanization, among other factors, may contribute towards a substantial increase globally in the number of people with myopia. According to estimates that take into account the growth in urbanization and in the human development index, the number of people with myopia will increase from 1.95 billion",
+        "erall prevalence of myopia is highest in high-income countries of the Asia-Pacific region (53.4%), closely followed by East Asia (51.6%)"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_018",
+      "question": "Why is rehabilitation needed in continuous care for neurological disorders?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 29
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 29
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 29
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 31
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 9
+        }
+      ],
+      "evidence": [
+        "dolescents with neurological disorders as they adapt to the challenges of transitioning into adulthood. 51. Neurological conditions impact people’s functioning and often reduce their mobility, communication, cognitive functioning and self-care, which requires rehabilitation. However, the rehabilitation needs for people",
+        "are, which requires rehabilitation. However, the rehabilitation needs for people with neurological disorders are largely unmet, with only 16% of countries reporting specialized neurorehabilitation services and only 17% reporting general rehabilitation units that offer neurorehabilitation.1 52. Due to the complex needs ",
+        "abilitation units that offer neurorehabilitation.1 52. Due to the complex needs and high levels of dependency and morbidity of people with neurological disorders, a range of coordinated health and social care is essential, including interventions such as palliative care to provide relief from pain; psychosocial, spirit",
+        "tion, diagnosis, treatment (including management of comorbid conditions), rehabilitation and palliative care for people with neurological disorders. (c) Offer technical assistance and policy guidance to support emergency preparedness and enable access to safe, supportive services for those with neurological conditions.",
+        " to improve access to care and treatment for people living with neurological disorders, while preventing new cases and promoting brain health and development across the life course. It seeks to support the recovery, well-being and participation of people living with neurological conditions, while reducing associated mo"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_022",
+      "question": "How is severe dehydration in children identified and treated?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 153
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 153
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 156
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 156
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 156
+        }
+      ],
+      "evidence": [
+        "129 5. DIARRHOEA 5.2.1 Severe dehydration Children with severe dehydration require rapid IV rehydration with close moni- toring, followed by oral rehydration and zinc once the child starts to improve sufﬁ ciently. In areas where there is a cholera outbreak, give an antibiotic effective against cholera (p. 130). Diagnos",
+        "cholera outbreak, give an antibiotic effective against cholera (p. 130). Diagnosis Severe dehydration should be diagnosed if any two signs or symptoms of severe dehydration are present in a child with diarrhoea (see Table 12). Treatment Children with severe dehydration should be given rapid IV rehydration followed by o",
+        "s of severe dehydration (e.g. restlessness or irritable and drinking poorly), then the child also has some dehydration. Treatment /L50776In the ﬁ rst 4 h, give the child ORS solution according to the child’s weight ( or age if the weight is not known), as shown in Chart 14. If the child wants more to drink, give more. ",
+        "e dehydration In general, children with some dehydration should be given ORS solution for the ﬁ rst 4 h at a clinic, while the child is monitored and the mother is taught how to prepare and give ORS solution. Diagnosis If the child has two or more of the following signs, he or she has some de- hydration: ■restlessness ",
+        "culty (usually within 3–4 h for infants and 1–2 h for older children). ORS provides additional base and potassium, which may not be adequately supplied by IV ﬂ uid. When severe dehydration is corrected, prescribe zinc (pp. 133–4). 5.2.2 Some dehydration In general, children with some dehydration should be given ORS sol"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_026",
+      "question": "When should pregnant women with hepatitis B consider TDF to prevent mother-to-child transmission?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 6
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 6
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 111
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 105
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 31
+        }
+      ],
+      "evidence": [
+        "marate (TDF)b is recommended for all HBV-positive (HBsAg-positive) pregnant women with HBV DNA ≥200 000 IU/mL or positive HBeAga (preferably from the second trimester of pregnancy until at least delivery or completion of the infant HBV vaccination series), to prevent the mother-to-child transmission (MTCT) of HBV. Inse",
+        "ination series), to prevent the mother-to-child transmission (MTCT) of HBV. Insert: In settings where HBV DNA or HBeAg testing is available, prophylaxis with tenofovir disoproxil fumarate (TDF)b is recommended for all HBV-positive (HBsAg-positive) pregnant women (preferably from the second trimester of pregnancy until ",
+        "63 7. Preventing mother-to-child transmission of hepatitis B using antiviral prophylaxis 7.1 Recommendations Antiviral prophylaxis among pregnant women and adolescent girls (3) Updated recommendation In settings where HBV DNA or HBeAg testing is available , prophylaxis with tenofovir disoproxil fumarate (TDF) is recomm",
+        "regnant women with CHB Pregnant women with hepatitis B infection have been treated with TDF, TDF + FTC or TAF in randomized trials and non-randomized studies (38–44). A meta-analysis of nine studies involving 1046 pregnant mothers with high HBV DNA levels who received TDF during pregnancy found that TDF significantly r",
+        " hepatitis B infant vaccination, including hepatitis B birth dose for HBV PMTCT. It provides the option to continue TDF for mothers who meet the criteria for antiviral therapy for their own health and among women of childbearing age planning additional pregnancies."
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_029",
+      "question": "Why do patients with chronic hepatitis B need hepatocellular carcinoma surveillance?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 267
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 259
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 265
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 265
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 266
+        }
+      ],
+      "evidence": [
+        "Kim JH, Kang SH, Lee M, Choi HS, Jun BG, Kim TS et al. Individualized surveillance of chronic hepatitis B patients according to hepatocellular carcinoma risk based on PAGE-B scores. Eur J Gastroenterol Hepatol. 2021;33:1564– 72. doi: 10.1097/MEG.0000000000001870. 63. Jeng WJ, Chien RN, Chen YC, Lin CL, Wu CY, Liu YC et",
+        ", Bancroft T, Ozbay AB, Singal AG. Gaps in hepatocellular carcinoma surveillance among insured patients with hepatitis B infection without cirrhosis in the United States. Hepatol Commun. 2022;6:3443–56. doi: 10.1002/hep4.2087. 4. Ma GX, Zhu L, Lu W, Handorf E, Tan Y, Yeh MC et al. Improving long-term adherence to monit",
+        "lular carcinoma in patients with chronic viral hepatitis in the United States of America. J Gastroenterol Hepatol. 2010;16:553 –9. doi: 10.1046/j.1440- 1746.2001.02470.x. 34. Yu EW, Chie WC, Chen TH. Does screening or surveillance for primary hepatocellular carcinoma with ultrasonography improve the prognosis of patien",
+        "00042-5. 20. Nguyen MH, Roberts LR, Engel-Nitz NM, Bancroft T, Ozbay AB, Singal AG. Gaps in hepatocellular carcinoma surveillance among insured patients with hepatitis B infection without cirrhosis in the United States. Hepatol Commun. 2022;6:3443–56. doi: 10.1002/hep4.2087. 21. Zhang BH, Yang BH, Tang ZY. Randomized c",
+        "ver ultrasonography for screening of hepatocellular carcinoma in patients with chronic hepatitis B. Cochrane Database Syst Rev. 2012;2012:CD002799. doi: 10.1002/14651858.CD002799.pub2. 39. Singal AG, Lampertico P, Nahon P. Epidemiology and surveillance for hepatocellular carcinoma: new trends. J Hepatol. 2020;72:250–61"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_033",
+      "question": "How should obstructive stones with sepsis or anuria be managed?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 18
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 17
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 2
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 87
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 18
+        }
+      ],
+      "evidence": [
+        "phrostomy catheters are equally effective. 1b Recommendations Strength rating Urgently decompress the collecting system in case of sepsis with obstructing stones using percutaneous drainage or ureteral stenting. Strong Delay definitive treatment of the stone until sepsis is resolved. Strong Collect (again) urine for an",
+        "tazocine or tramadol) or ketamine in the acute setting as second choice. Weak Offer renal decompression or ureteroscopic stone removal in case of analgesia-refractory colic pain. Strong 3.4.2 Management of sepsis and/or anuria in obstructed kidney The obstructed kidney with all signs of urinary tract infection (UTI) an",
+        "ement 16 3.4.1 Renal colic 16 3.4.1.a Summary of evidence and recommendations for the management of renal colic 17 3.4.2 Management of sepsis and/or anuria in obstructed kidney 17 3.4.2.a Summary of evidence and recommendations for the management of sepsis and anuria 18 3.4.3 Medical expulsive therapy 18 3.4.3.a Summar",
+        "us Double J Ureteral Catheterization in Patients with Obstructive Urolithiasis-Which Method Is Superior? J Endourol, 2019. 33: 777. https://www.ncbi.nlm.nih.gov/pubmed/31250680 127. Wang, C.J., et al. Percutaneous nephrostomy versus ureteroscopic management of sepsis associated with ureteral stone impaction: a randomiz",
+        "UROLITHIASIS - LIMITED UPDATE MARCH 2026 18 3.4.2.a Summary of evidence and recommendations for the management of sepsis and anuria Summary of evidence LE For decompression of the renal collecting system, ureteral stents and percutaneous nephrostomy catheters are equally effective. 1b Recommendations Strength rating Ur"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_036",
+      "question": "Why is structured exercise recommended for chronic primary low back pain?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Chronic_Primary_Low_Back_Pain_Guideline_2023.pdf",
+          "page": 70
+        },
+        {
+          "source": "WHO_Chronic_Primary_Low_Back_Pain_Guideline_2023.pdf",
+          "page": 42
+        },
+        {
+          "source": "WHO_Chronic_Primary_Low_Back_Pain_Guideline_2023.pdf",
+          "page": 14
+        },
+        {
+          "source": "WHO_Chronic_Primary_Low_Back_Pain_Guideline_2023.pdf",
+          "page": 33
+        },
+        {
+          "source": "WHO_Chronic_Primary_Low_Back_Pain_Guideline_2023.pdf",
+          "page": 82
+        }
+      ],
+      "evidence": [
+        "rsonally relevant. Among the trials identified to inform the guideline, the intervention was delivered by health practitioners. A.1 Structured and standardized education and/or advice 40 WHO guideline for non-surgical management of chronic primary low back pain in adults in primary and community care settings",
+        "guideline structure - cont. WHO guideline for non-surgical management of chronic primary low back pain in adults in primary and community care settings",
+        " classification system for chronic pain identifies chronic pain as either primary (MG30.0) or secondary owing to an underlying disease or structural lesion or deformity (MG30.3-MG30.6). Chronic primary low back pain (CPLBP) is a subclassification of chronic primary musculoskeletal pain (MG30.02), under the parent class",
+        "Definition of chronic primary low back pain Chronic primary low back pain (CPLBP) is defined as a persistent or recurrent pain experience of greater than three months that is not reliably attributed to an underlying disease process (e.g. an inflammatory auto- immune condition such as axial spondyloarthritis, malignancy",
+        "ompared to no intervention or where the effect of exercise could be isolated, by exercise modality, are summarized in Table 8. 52 WHO guideline for non-surgical management of chronic primary low back pain in adults in primary and community care settings"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_040",
+      "question": "What are the recommended doses and purposes of daily iron and folic acid supplementation during pregnancy?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 41
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 126
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 43
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 13
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 13
+        }
+      ],
+      "evidence": [
+        "Chapter 3. Evidence and recommendations 23 A.2: Iron and folic acid supplements A.2.1: Daily iron and folic acid supplements RECOMMENDATION A.2.1: Daily oral iron and folic acid supplementation with 30 mg to 60 mg of elemental irona and 400 µg (0.4 mg) folic acidb is recommended for pregnant women to prevent maternal a",
+        "olic acid supplements A.2.1: Daily oral iron and folic acid supplementation with 30 mg to 60 mg of elemental iron b and 400 µg (0.4 mg) of folic acidc is recommended for pregnant women to prevent maternal anaemia, puerperal sepsis, low birth weight, and preterm birth. d Recommended X X X X X X X X",
+        " oral iron and folic acid supplementation with 120 mg of elemental irona and 2800 µg (2.8 mg) of folic acid once weekly is recommended for pregnant women to improve maternal and neonatal outcomes if daily iron is not acceptable due to side- effects, and in populations with an anaemia prevalence among pregnant women of ",
+        "mittent oral iron and folic acid supplementation with 120 mg of elemental iron e and 2800 g (2.8 mg) of folic acid once weekly is recommended for pregnant women to improve maternal and neonatal outcomes if daily iron is not acceptable due to side-effects, and in populations with an anaemia prevalence among pregnant wom",
+        " acid supplementation with 30 mg to 60 mg of elemental iron b and 400 g (0.4 mg) of folic acidc is recommended for pregnant women to prevent maternal anaemia, puerperal sepsis, low birth weight, and preterm birth. d Recommended A.2.2: Intermittent oral iron and folic acid supplementation with 120 mg of elemental iron e"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_043",
+      "question": "Why is albuminuria important in the evaluation of chronic kidney disease?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 75
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 5
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 103
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 83
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 103
+        }
+      ],
+      "evidence": [
+        "linical Practice Guideline for the Evaluation and Management of Chronic Kidney Disease, 1 clinical terminology was changed to focus on albuminuria rather than proteinuria as albumin is the principal component of urinary protein in most kidney diseases. Epidemiologic data demonstrate a strong relationship between the qu",
+        "d GFR (eGFR) S197 Figure 13. Frequency of monitoring glomerular ﬁltration rate (GFR) and albuminuria in people with chronic kidney disease (CKD) S199 Figure 14. (a) Predicted risk of kidney failure and(b) ‡40% decline in estimated glomerularﬁltration rate (eGFR) by chronic kidney disease (CKD) eGFR (G1–G5) and albumin-",
+        "th higher levels of albuminuria. The slow rate of progression and small number of outcomes in the A1 subgroup limited the power for EMPA-KIDNEY to assess effects on the primary outcome in this subgroup. There were, however, important effects on the chronic (i.e., long-term) slope in all albuminuria subgroups, and signi",
+        "s Study Impact of albuminuria/proteinuria ESCAPE228 A 50% reduction of proteinuria within theﬁrst 2 months of treatment initiation more than halved the risk of progression of kidney disease over 5 years. Gluck et al.225 In a cohort of over 7 million children, 0.1% had CKD G2 or higher. The relative risk of CKD progress",
+        "ults. The certainty of the evidence for kidney failure was downgraded to moderate due to imprecision. Values and preferences. The Work Group judged that fully informed adults without diabetes and low levels of albuminuria (urine ACR<200 mg/g [<20 mg/mmol]) who have established CKD and an eGFR of 20–45 ml/min per 1.73 m"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_single_047",
+      "question": "Why should primary care assess overall cardiovascular risk?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 16
+        },
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 59
+        },
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 63
+        },
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 62
+        },
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 30
+        }
+      ],
+      "evidence": [
+        "mprehensive management of cardiovascular risk factors in primary health care",
+        "ia B, Luyten A, Cameron A, Celletti F, Nishtar S et al. Can non- physician health-care workers assess and manage cardiovascular risk in primary care? Bull World Health Organ. 2007;85:432–40. 46. Some D, Edwards JK, Reid T, Van den Bergh R, Kosgei RJ, Wilkinson E et al. Task shifting the management of non-communicable d",
+        "se, physical activity, healthy diet, medications etc • Action 2 Assess (Physical exam) • Action 3 Estimate cardiovascular risk • Action 4 Refer if necessary • Action 5 Counsel all and treat as shown in protocol References: Prevention and control of noncommunicable diseases; Guidelines for primary health care, World Hea",
+        "62 HEARTS: Technical package for cardiovascular disease management in primary health care FIRST VISIT ACTION 5. COUNSEL ALL AND TREAT AS SHOWN BELOWRisk < 20% • Counsel on diet, physical activity, smoking cessation and avoiding harmful use of alcohol • If risk < 10% follow up in 12 months • If risk 10 - < 20% follow up",
+        "style counselling, self-care and referral care will also be part of the overall package for CVD management (Annex 1). The approach includes guidance for adapting protocols to the local context and using the appropriate protocols for managing individuals at high risk, including cardiovascular risk assessment, counsellin"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_001",
+      "question": "Use both pieces of evidence to answer: What is the target sensitivity for confirmatory scabies testing? Also, What is the target specificity for confirmatory scabies testing?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 18
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 17
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 17
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 8
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 8
+        }
+      ],
+      "evidence": [
+        "12 3.3 Diagnostic/clin- ical specificity For 1st clinical screen of Se=70%/Sp=70%, confirmatory test specificity: ≥ 95% For 1st clinical screen of Se=80%/Sp=80%, confirmatory test specificity: ≥ 93% For no initial clinical screen, single-test specificity: ≥ 99% Assumptions made for performance requirements: The sensiti",
+        " and Pediculus humanus capitis) · Phthirius spp. (e.g. Phthirius pubis) · Cimex spp. (e.g. the common bed bug Cimex lectula- rius) 3.2 Diagnostic/clin- ical sensitivity For initial clinical screen of Se=70%/Sp=70%, confirmatory test sensitivity: ≥ 93% For initial clinical screen of Se=80%/Sp=80%, confirmatory test sens",
+        "vity: ≥ 93% For initial clinical screen of Se=80%/Sp=80%, confirmatory test sensitivity: ≥ 81% For initial clinical screen, single-test sensitivity: ≥ 80% Assumptions made for performance requirements: · The sensitivity performance values at left assume a 95% power of accurate detection of prevalence at 2%, i.e. there ",
+        "ed in due course. One of the recommendations was to prepare target product profiles (TPPs) for diagnostics to support emerging scabies control programmes and, specifically, TPPs for both starting and stopping MDA. These TPPs are therefore focused on diagnosis of ‘common scabies’ and not crusted scabies. 5. Purpose of t",
+        "on in Manilla (2019). The major areas of consensus were on strategies when the prevalence of scabies was high (≥ 10%) and therefore the initial programmatic needs are framed around these areas. The purpose of this TPP is to lead to development of new diagnostic tools to measure when there is evidence to support startin"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_004",
+      "question": "Use both pieces of evidence to answer: What is the diagnostic product used for when stopping mass drug administration for scabies? Also, What product requirements does the WHO target product profile for scabies diagnostics focus on?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 3
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 8
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 1
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 15
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        }
+      ],
+      "evidence": [
+        "TARGET PRODUCT PROFILE for scabies to start and stop mass drug administration",
+        "ed in due course. One of the recommendations was to prepare target product profiles (TPPs) for diagnostics to support emerging scabies control programmes and, specifically, TPPs for both starting and stopping MDA. These TPPs are therefore focused on diagnosis of ‘common scabies’ and not crusted scabies. 5. Purpose of t",
+        "WHO | NEGLECTED TROPICAL DISEASES TARGET PRODUCT PROFILE for scabies to start and stop mass drug administration",
+        "9 Scabies Diagnosis TPP – Mass Drug Administration Stop 1. Product use summary Minimum Ideal Background, annotation re requirement risk, etc. 1.1 Intended use An in vitro laboratory-based test that detects S. scabiei-specific analyte(s) for the purpose of \"scabies mapping\" to identify areas with < 2% disease prevalence",
+        "st informal consultation on a framework for the public health control of scabies (3). In areas where the prevalence of scabies is particularly high, the best available evidence supports the use of ivermectin-based mass drug administration (MDA) to control scabies. This strategy consists of two doses of oral ivermectin "
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_008",
+      "question": "Use both pieces of evidence to answer: What common interventions do hearing assistive technologies include? Also, Why is otitis media an important issue in ear and hearing care?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 83
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 34
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 88
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 192
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 227
+        }
+      ],
+      "evidence": [
+        "ettings; and – rational use of medicines to prevent ototoxic hearing loss. O Common ear conditions, such as otitis media, can be treated medically and surgically; treatment lowers the rates of associated morbidity and mortality and can prevent or reverse the hearing loss attributed to such conditions.",
+        "ild to moderate conductive hearing loss as a result of disruption in transmission of sound vibrations through the middle ear due to the accumulated fluid, ruptured ear drum or erosion of middle ear ossicles (bones). It may, at times, lead to sensorineural or severe hearing loss. IMPORTANT CONSIDERATIONS Otitis media is",
+        " prevent or reverse the auditory effects, while also mitigating the risk of recurrent infections (25, 27). Key considerations when identifying and treating otitis media include: • Acute otitis media – While the virtues of antibiotic use versus expectant observation approach are debated, it is important that in places w",
+        "WORLD REPORT ON HEARING 174 • identification and care for common ear diseases at primary level (for example of ear conditions such as impacted wax; acute and chronic otitis media); • hearing assessment and screening; and • hearing aid fitting and post- fitting counselling. The roles traditionally played by different ca",
+        "media). ACCESS TO TECHNOLOGIES Objective: To improve access to hearing aids, cochlear implants or hearing assistive technologies and related services to all those in need. Life course: across all ages. What is included: • access to affordable, high-quality hearing aids and cochlear implants, along with batteries and se"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_012",
+      "question": "Use both pieces of evidence to answer: How does cataract affect vision? Also, Why does glaucoma require early detection and ongoing management?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 73
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 81
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 26
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 81
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 25
+        }
+      ],
+      "evidence": [
+        "other noncommunicable eye conditions are often more challenging, with longer-term follow-up essential to slow the progression of the condition. For example, the prevention of vision impairment from diabetic retinopathy, glaucoma and retinopathy of prematurity, requires early detection, often before the patient is sympt",
+        "an cause vision impairment: Yes Promotion: Given glaucoma is asymptomatic in the early stages, appropriately designed health promotion initiatives targeting early detection through improved awareness of the importance of regular eye examinations can be effective in increasing the use of eye care services among older po",
+        "me medications increase the susceptibility of developing certain eye conditions; the long-term use of steroids, for example, increases the risk of developing cataract (51) and glaucoma (52). The origins of many eye conditions are multifactorial, with a range of risk factors interacting to increase both the susceptibili",
+        "63 Glaucoma Dry eye Conjunctivitis Pterygium Blepharitis Refractive error Sub-conjunctival haemorrhage Cataract Macular degeneration Glaucoma Corneal opacity Onchocerciasis Diabetic retinopathy T rachoma Chalazion Xerophthalmia Neonatorum Can cause vision impairment: Yes Promotion: Given glaucoma is asymptomatic in the",
+        "efractive error Sub-conjunctival haemorrhage Cataract Macular degeneration Glaucoma Corneal opacity Onchocerciasis Diabetic retinopathy T rachoma Chalazion Xerophthalmia Neonatorum Glaucoma Progressive damage to the optic nerve. Initially, loss of vision occurs in the periphery and can progress to severe vision impairm"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_016",
+      "question": "Use both pieces of evidence to answer: How large is the epilepsy treatment gap in low- and middle-income countries? Also, How do stigma and discrimination affect people with neurological disorders?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 59
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 10
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 10
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 19
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 58
+        }
+      ],
+      "evidence": [
+        "dicines. Despite this, the current treatment gap for epilepsy is estimated at 75% in low-income countries and is substantially higher in rural than in urban areas.1 144. Wide treatment gaps may result from a combination of decreased capacity in health care systems, the inequitable distribution of resources and the low ",
+        "s and 95% of these children lived in low- and middle- income countries. 3 5. The high burden associated with neurological disorders is compounded by profound health inequities. For example, nearly 80% of the 50 million people with epilepsy live in low- and middle-income countries, where treatment gaps exceed 75% in mos",
+        "live in low- and middle-income countries, where treatment gaps exceed 75% in most low-income countries and exceed 50% in most middle-income countries. 4 Disabilities associated with neurological conditions inordinately affect women, older people, those living in poverty, rural or remote areas and other vulnerable popul",
+        "n poverty and those in emergency settings, are crucial to realizing the rights of people with neurological disorders and reducing stigma and discrimination. The implementation of the intersectoral global action plan on epilepsy and other neurological disorders 2022–2031 must explicitly address disparities specific to e",
+        "ate disease burden, which poses a threat to public health and economic and social development. 140. In many parts of the world, people with epilepsy and their families suffer from stigmatization and discrimination due to ignorance, misconceptions and negative attitudes surrounding the disease. They often face serious d"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_020",
+      "question": "Use both pieces of evidence to answer: What support do caregivers of people with neurological disorders need? Also, How large is the epilepsy treatment gap in low- and middle-income countries?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 59
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 10
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 10
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 52
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 11
+        }
+      ],
+      "evidence": [
+        "dicines. Despite this, the current treatment gap for epilepsy is estimated at 75% in low-income countries and is substantially higher in rural than in urban areas.1 144. Wide treatment gaps may result from a combination of decreased capacity in health care systems, the inequitable distribution of resources and the low ",
+        "s and 95% of these children lived in low- and middle- income countries. 3 5. The high burden associated with neurological disorders is compounded by profound health inequities. For example, nearly 80% of the 50 million people with epilepsy live in low- and middle-income countries, where treatment gaps exceed 75% in mos",
+        "live in low- and middle-income countries, where treatment gaps exceed 75% in most low-income countries and exceed 50% in most middle-income countries. 4 Disabilities associated with neurological conditions inordinately affect women, older people, those living in poverty, rural or remote areas and other vulnerable popul",
+        "rgeted interventions. Yet significant data gaps on neurological disorders exist not only in low- and middle-income countries but also in high-income countries. Intersectoral global action plan on epilepsy and other neurological disorders 2022–2031 44",
+        "-Brief- Neurology-2021.1, accessed 6 April 2022). 10. Health systems have not yet adequately responded to the burden of neurological disorders. While approximately 70% of people with neurological disorders live in low- and middle-income countries ,8 their needs are poorly recognized, with only 28% of low-income countri"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_024",
+      "question": "Use both pieces of evidence to answer: What emergency management is required for severe malaria in children? Also, How is pediatric bacterial meningitis diagnosed and treated?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 181
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 173
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 188
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 181
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 191
+        }
+      ],
+      "evidence": [
+        "illness (including severe bacterial infections). If the rapid diagnostic test is negative, malaria is unlikely to be the cause of illness, and an alternative diagnosis must be sought. Treatment Emergency measures, to be taken within the ﬁ rst hour /L50776If the child is unconscious, minimize the risk for aspiration pne",
+        "nfants (< 2 months) is described in Chapter 3, p. 45. 6.1 Child presenting with fever 150 6.1.1 Fever lasting 7 days or less 150 6.1.2 Fever lasting longer than 7 days 153 6.2 Malaria 156 6.2.1 Severe malaria 156 6.2.2 Uncomplicated malaria 163 6.3 Meningitis 167 6.3.1 Bacterial meningitis 167 6.3.2 Meningococcal epide",
+        "164 6. FEVER Note: If a child in a malarious area has fever with no obvious cause and it is not possible to conﬁ rm malaria on a blood ﬁ lm or with a rapid diagnostic test, treat the child for malaria. Treatment Treat with a ﬁ rst-line antimalarial agent, as in the national guidelines, with one of the following recomme",
+        "reatment (see p. 169). If severe malaria is suspected and the initial blood smear is negative, perform a rapid diagnostic test, if available. If the test is positive, treat for severe malaria but continue to look for other causes of severe illness (including severe bacterial infections). If the rapid diagnostic test is",
+        "167 6. FEVER 6.3 Meningitis Early diagnosis is essential for effective treatment. This section refers to children and infants > 2 months. For diagnosis and treatment of meningitis in young infants, see section 3.9, p. 55. 6.3.1 Bacterial meningitis Bacterial meningitis is a serious illness that is responsible for consi"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_027",
+      "question": "Use both pieces of evidence to answer: What is the role of entecavir in chronic hepatitis B treatment? Also, Why is antiviral therapy important in chronic hepatitis B with cirrhosis?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 231
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 268
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 270
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 260
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 251
+        }
+      ],
+      "evidence": [
+        "e with hepatitis B–related cirrhosis to detect further disease progression, including decompensation and evidence of HCC. All people with compensated or decompensated cirrhosis should receive and indefinite antiviral therapy with TDF or ETV, even if the HBV DNA level is low or undetectable, to improve clinical outcomes",
+        "52:420–4. doi: 10.1136/gut.52.3.420. 22. Shouval D, Lai CL, Chang TT, Cheinquer H, Martin P, Carosi G et al. Relapse of hepatitis B in HBeAg-negative chronic hepatitis B patients who discontinued successful entecavir treatment: the case for continuous antiviral therapy. J Hepatol. 2009;50:289–95. doi: 10.1016/j.jhep.20",
+        " Zachou K, Xourafas V, Gatselis N et al. DARING -B: discontinuation of effective entecavir or tenofovir disoproxil fumarate long -term therapy before HBsAg loss in non - cirrhotic HBeAg-negative chronic hepatitis B. Antiviral Ther. 2018;23:677–85. doi: 10.3851/IMP3256. 48. Papatheodoridis G, Vlachogiannakos I, Cholongi",
+        "10.04.052. 20. Liang J, Tang YF, Wu FS, Deng X. Entecavir versus lamivudine for the treatment of chronic hepatitis B: a systematic review. Pharmazie. 2012;67:883–90. 21. Liu H, Wang X, Wan G, Yang Z, Zeng H. Telbivudine versus entecavir for nucleos(t)ide-naive HBeAg-positive chronic hepatitis B: a meta-analysis. Am J M",
+        "positive chronic hepatitis B. Gastroenterology. 2006;130:2039–49. doi: 10.1053/j.gastro.2006.04.007. 13. Heo J, Park JY, Lee HJ, Tak WY, Um SH, Kim DY et al. A 96-week randomized trial of switching to entecavir in chronic hepatitis B patients with a partial virological response to lamivudine. Antivir Ther. 2012;17:1563"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_031",
+      "question": "Use both pieces of evidence to answer: During a dengue epidemic, what transmission and control features matter? Also, When should pregnant women with hepatitis B consider TDF to prevent mother-to-child transmission?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 6
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 6
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 115
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 115
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 105
+        }
+      ],
+      "evidence": [
+        "marate (TDF)b is recommended for all HBV-positive (HBsAg-positive) pregnant women with HBV DNA ≥200 000 IU/mL or positive HBeAga (preferably from the second trimester of pregnancy until at least delivery or completion of the infant HBV vaccination series), to prevent the mother-to-child transmission (MTCT) of HBV. Inse",
+        "ination series), to prevent the mother-to-child transmission (MTCT) of HBV. Insert: In settings where HBV DNA or HBeAg testing is available, prophylaxis with tenofovir disoproxil fumarate (TDF)b is recommended for all HBV-positive (HBsAg-positive) pregnant women (preferably from the second trimester of pregnancy until ",
+        ") (3,11). No transmission was reported when the maternal HBV DNA was below 200 000 IU/ mL. The evidence was rated moderate certainty. A recent study from the WHO African Region (Democratic Republic of the Congo) demonstrated high protective efficacy of TDF in addition to infant hepatitis B birth dose without hepatitis ",
+        "67 7.3 Summary of the evidence 7.3.1 Existing and maintained recommendation – efficacy and safety of maternal TDF prophylaxis to prevent mother-to-child HBV transmission among those with HBV DNA >200 000 IU/mL or HBeAg positive (alongside infant HBV vaccination) For the 2020 WHO guidelines on antiviral prophylaxis in p",
+        "regnant women with CHB Pregnant women with hepatitis B infection have been treated with TDF, TDF + FTC or TAF in randomized trials and non-randomized studies (38–44). A meta-analysis of nine studies involving 1046 pregnant mothers with high HBV DNA levels who received TDF during pregnancy found that TDF significantly r"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_035",
+      "question": "Use both pieces of evidence to answer: What is the role of water intake in preventing urinary stone recurrence? Also, Why is structured exercise recommended for chronic primary low back pain?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 50
+        },
+        {
+          "source": "WHO_Chronic_Primary_Low_Back_Pain_Guideline_2023.pdf",
+          "page": 90
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 48
+        },
+        {
+          "source": "WHO_Chronic_Primary_Low_Back_Pain_Guideline_2023.pdf",
+          "page": 124
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 79
+        }
+      ],
+      "evidence": [
+        "nce and recommendation for recurrence prevention Summary of evidence LE Increasing water intake reduces the risk of stone recurrence. 1a Recommendation Strength rating Advise patients that a generous intake of fluids, preferably water, is to be maintained, allowing for a 24-hour urine volume > 2.5L. Strong 4.3 Stone-sp",
+        "f physical activity. The GDG also noted evidence of the benefit of structured physical activity in preventing mobility disability in older people (93). Annex 3 (Table C2) provides a summary of the judgements made by the GDG for each EtD domain. 60 WHO guideline for non-surgical management of chronic primary low back pa",
+        "ophylaxis for recurrence, which is usually pharmacological treatment based on stone analysis and urinary risk profile. Table 4.5: General preventive measures Fluid intake (drinking advice) Fluid amount: 2.5–3.0L/day Water is the preferred fluid Diuresis: 2.0–2.5L/day Specific weight of urine: < 1,010g/day Nutritional a",
+        "th CPLBP (conditional recommendation in favour of use, very low certainty evidence). 94 WHO guideline for non-surgical management of chronic primary low back pain in adults in primary and community care settings",
+        "the prevention of bladder stone recurrence. Recommendations in the EAU Guidelines on Urolithiasis, based on evidence from upper tract stones, constitute the best available recommendations, especially for migratory bladder stones (see Chapter 4). Where it is possible to address the cause of secondary bladder stones (e.g"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_039",
+      "question": "Use both pieces of evidence to answer: Why does the surgical safety checklist confirm the timing of prophylactic antibiotic administration? Also, What is the role of unenhanced CT in diagnosing urinary stones?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 13
+        },
+        {
+          "source": "WHO_Surgical_Safety_Checklist_Implementation_Manual.pdf",
+          "page": 8
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 28
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 100
+        },
+        {
+          "source": "WHO_Surgical_Safety_Checklist_Implementation_Manual.pdf",
+          "page": 17
+        }
+      ],
+      "evidence": [
+        " diagnosed urolithiasis with a pooled sensitivity of 93.1% (95% CI: 91.5–94.4) and a specificity of 96.6% (95% CI: 95.1–97.7%). Dual-energy CT can differentiate uric-acid- containing stones from calcium-containing stones [50]. Summary of evidence LE Non-contrast-enhanced CT is used to confirm stone diagnosis in patient",
+        "itical elements of their plans for the operation, using the Checklist for guidance. They will also confirm that prophylactic antibiotics have been administered within the previous 60 minutes and that essential imaging is displayed, as appropriate. Before leaving the operating room, the team will review the operation th",
+        "everal days before starting stone removal. A urine culture or urinary microscopy should be performed before treatment [367]. Perioperative antibiotic prophylaxis The available evidence for prevention of infection following URS and percutaneous stone removal remains limited [368, 369]. Administration of a single dose of",
+        "70. Chew, B.H., et al. A Single Dose of Intraoperative Antibiotics Is Sufficient to Prevent Urinary Tract Infection During Ureteroscopy. J Endourol, 2016. 30: 63. https://www.ncbi.nlm.nih.gov/pubmed/26413885 371. Schnabel, M.J., et al. Perioperative antibiotic prophylaxis for stone therapy. Curr Opin Urol, 2019. 29: 89",
+        "aders. For the Checklist to succeed, the chiefs of surgery, anaesthesia and nursing departments must publicly embrace the belief that safety is a priority and that use of the WHO Surgical Safety Checklist can help make it a reality. To demonstrate this, they should use the Checklist in their own cases and regularly ask"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_043",
+      "question": "Use both pieces of evidence to answer: Why is albuminuria important in the evaluation of chronic kidney disease? Also, What is the role of SGLT2 inhibitors in chronic kidney disease management?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 75
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 101
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 103
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 185
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 4
+        }
+      ],
+      "evidence": [
+        "linical Practice Guideline for the Evaluation and Management of Chronic Kidney Disease, 1 clinical terminology was changed to focus on albuminuria rather than proteinuria as albumin is the principal component of urinary protein in most kidney diseases. Epidemiologic data demonstrate a strong relationship between the qu",
+        " effects on kidney disease progression appeared to be larger among people with higher levels of albuminuria who are at highest ab- solute risk of progression. The size of RR reductions Mean baseline eGFR, ml/min per 1.73 m2 Events/participants SGLT2 inhibitor Placebo Cardiovascular death or hospitalization for heart fa",
+        "s on the chronic (i.e., long-term) slope in all albuminuria subgroups, and signiﬁcant reductions in progression using total slope analyses over the 2 years of follow-up in the A2 and A3 groups were considered separately (Figure 25 403). Certainty of evidence. The overall certainty of evidence for the efﬁcacy of SGLT2i ",
+        "05;28:164–176. 267. Ninomiya T, Perkovic V, de Galan BE, et al. Albuminuria and kidney function independently predict cardiovascular and renal outcomes in diabetes. J Am Soc Nephrol. 2009;20:1813–1821. 268. Shihabi ZK, Konen JC, O ’Connor ML. Albuminuria vs urinary total protein for detecting chronic renal disorders.Cl",
+        "TABLES S137 Table 1. Criteria for chronic kidney disease S137 Table 2. GFR categories in CKD S137 Table 3. Albuminuria categories in chronic kidney disease (CKD) S169 Table 4. Use of GFR and albuminuria S171 Table 5. Risk factors for CKD S174 Table 6. Guidance for selection of additional tests for evaluation of cause S"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_multi_047",
+      "question": "Use both pieces of evidence to answer: Why should primary care assess overall cardiovascular risk? Also, What folic acid supplementation is recommended for pregnant women with sickle cell disease?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Sickle_Cell_Disease_Pregnancy_Childbirth_2025.pdf",
+          "page": 31
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 41
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 41
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 43
+        },
+        {
+          "source": "WHO_Antenatal_Care_Positive_Pregnancy_Experience.pdf",
+          "page": 13
+        }
+      ],
+      "evidence": [
+        "ght infants in high-burden areas ( low certainty ). Therefore, in the absence of direct evidence regarding the use of folic acid supplementation for pregnant women with SCD, the GDG considered the Recommendations and supporting evidence 13 WHO recommendations: Management of sickle-cell disease during pregnancy, childbi",
+        "Chapter 3. Evidence and recommendations 23 A.2: Iron and folic acid supplements A.2.1: Daily iron and folic acid supplements RECOMMENDATION A.2.1: Daily oral iron and folic acid supplementation with 30 mg to 60 mg of elemental irona and 400 µg (0.4 mg) folic acidb is recommended for pregnant women to prevent maternal a",
+        " µg (0.4 mg) folic acidb is recommended for pregnant women to prevent maternal anaemia, puerperal sepsis, low birth weight, and preterm birth.c (Recommended) Remarks • This recommendation supersedes the 2012 WHO Guideline: daily iron and folic acid supplementation in pregnant women (36) and should be considered alongsi",
+        " oral iron and folic acid supplementation with 120 mg of elemental irona and 2800 µg (2.8 mg) of folic acid once weekly is recommended for pregnant women to improve maternal and neonatal outcomes if daily iron is not acceptable due to side- effects, and in populations with an anaemia prevalence among pregnant women of ",
+        " acid supplementation with 30 mg to 60 mg of elemental iron b and 400 g (0.4 mg) of folic acidc is recommended for pregnant women to prevent maternal anaemia, puerperal sepsis, low birth weight, and preterm birth. d Recommended A.2.2: Intermittent oral iron and folic acid supplementation with 120 mg of elemental iron e"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_001",
+      "question": "When confirming scabies after initial screening, what detection capability target should avoid missed cases?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 8
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 8
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 10
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        }
+      ],
+      "evidence": [
+        "on in Manilla (2019). The major areas of consensus were on strategies when the prevalence of scabies was high (≥ 10%) and therefore the initial programmatic needs are framed around these areas. The purpose of this TPP is to lead to development of new diagnostic tools to measure when there is evidence to support startin",
+        "ed in due course. One of the recommendations was to prepare target product profiles (TPPs) for diagnostics to support emerging scabies control programmes and, specifically, TPPs for both starting and stopping MDA. These TPPs are therefore focused on diagnosis of ‘common scabies’ and not crusted scabies. 5. Purpose of t",
+        "t a target for 25 countries to have rolled out MDA for scabies control by 2030 (5). 3. Available diagnostic tools Currently, clinical examination is the mainstay of scabies diagnosis. In high-income settings, dermatoscopy and other diagnostic tests are occasionally used to supplement clinical examination. However, thes",
+        "4 Scabies Diagnosis TPP – Mass Drug Administration Start 1. Product use summary Minimum Ideal Background, annotation re requirement risk, etc. 1.1 Intended use An in vitro laboratory-based test that detects S. scabiei-specific analyte(s) for the purpose of \"scabies mapping\" to identify areas with ≥ 10% disease prevalen",
+        "e of scabies is < 2%, then MDA can be stopped. In 2021, the first national programmes were initiated in Fiji and the Solomon Islands supported by the World Scabies Programme. The new road map for neglected tropical diseases 2021–2030 has set a target for 25 countries to have rolled out MDA for scabies control by 2030 ("
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_004",
+      "question": "After multiple rounds of mass scabies treatment, what testing purpose supports the stop decision?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 15
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 10
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 8
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        },
+        {
+          "source": "WHO_Scabies_Diagnostic_TPP_2022.pdf",
+          "page": 7
+        }
+      ],
+      "evidence": [
+        "9 Scabies Diagnosis TPP – Mass Drug Administration Stop 1. Product use summary Minimum Ideal Background, annotation re requirement risk, etc. 1.1 Intended use An in vitro laboratory-based test that detects S. scabiei-specific analyte(s) for the purpose of \"scabies mapping\" to identify areas with < 2% disease prevalence",
+        "4 Scabies Diagnosis TPP – Mass Drug Administration Start 1. Product use summary Minimum Ideal Background, annotation re requirement risk, etc. 1.1 Intended use An in vitro laboratory-based test that detects S. scabiei-specific analyte(s) for the purpose of \"scabies mapping\" to identify areas with ≥ 10% disease prevalen",
+        "on in Manilla (2019). The major areas of consensus were on strategies when the prevalence of scabies was high (≥ 10%) and therefore the initial programmatic needs are framed around these areas. The purpose of this TPP is to lead to development of new diagnostic tools to measure when there is evidence to support startin",
+        "t a target for 25 countries to have rolled out MDA for scabies control by 2030 (5). 3. Available diagnostic tools Currently, clinical examination is the mainstay of scabies diagnosis. In high-income settings, dermatoscopy and other diagnostic tests are occasionally used to supplement clinical examination. However, thes",
+        "st informal consultation on a framework for the public health control of scabies (3). In areas where the prevalence of scabies is particularly high, the best available evidence supports the use of ivermectin-based mass drug administration (MDA) to control scabies. This strategy consists of two doses of oral ivermectin "
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_008",
+      "question": "After hearing loss, what devices and communication supports are available besides medication or surgery?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 84
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 264
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 84
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 103
+        },
+        {
+          "source": "WHO_World_Report_on_Hearing.pdf",
+          "page": 20
+        }
+      ],
+      "evidence": [
+        "dividual’s communication needs and preferences, as well as available resources. O Measures available to rehabilitate people with hearing loss include: – the use of hearing technology through hearing aids, cochlear implants and middle ear implants; – the use of sign language and other means of sensory substitution, such",
+        "ocial workers, etc.) on hearing loss, its impact, and their roles in supporting access to effective communication. • Improve access to high-quality, affordable hearing technologies (hearing aids, cochlear implants and other assistive devices) and services required for their effective use. RECOMMENDATION 3: UNDERTAKE AW",
+        "d linguistic abilities. O The use of hearing assistive technology, and services such as frequency modulation and loop systems, alerting devices, telecommunication devices, captioning services and sign language interpretation, can further improve access to communication and education for people with hearing loss. The he",
+        "informational support for families of children diagnosed with permanent hearing loss; • medical referral for etiologic investigation and management as indicated; • assistive hearing technologies including hearing aids, cochlear implants, FM systems; adjunctive counselling, information, and training to support the techn",
+        "2 WORLD REPORT ON HEARING seen game-changing advances in the field of hearing technology, diagnostics and telemedicine with innovations that enable ear diseases and hearing loss to be identified at any age and in any setting. Medical and surgical management, hearing aids, cochlear implants, rehabilitative therapy, sign"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_012",
+      "question": "When lens opacity reduces sight, how does the report describe this eye disease burden?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 169
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 73
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 25
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 22
+        },
+        {
+          "source": "WHO_World_Report_on_Vision.pdf",
+          "page": 25
+        }
+      ],
+      "evidence": [
+        "data on the burden and trends of eye conditions and vision impairment. Conducting periodic population surveys that include measurement of vision impairment, as defined in this report, and integrate variables relevant to eye care in general health surveys, ensuring that effective coverage of cataract surgery and refract",
+        "rated that the treatment of eye conditions that do not typically cause vision impairment can pose a substantial economic burden on the patient and on society (38).",
+        "7 Common eye conditions that can cause vision impairment including blindness (Table 1.2) Dry eye Conjunctivitis Pterygium Blepharitis Refractive error Sub-conjunctival haemorrhage Cataract Macular degeneration Glaucoma Corneal opacity Onchocerciasis Diabetic retinopathy T rachoma Chalazion Xerophthalmia Neonatorum Age-",
+        " Some eye conditions cause vision impairment, many do not.",
+        " Refractive error Sub-conjunctival haemorrhage Cataract Macular degeneration Glaucoma Corneal opacity Onchocerciasis Diabetic retinopathy T rachoma Chalazion Xerophthalmia Neonatorum Refractive error Due to an abnormal shape or length of the eye ball; light does not focus on the retina resulting in blurred vision. Ther"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_016",
+      "question": "In resource-limited settings, many epilepsy patients receive no treatment—what scale of gap does the action plan identify?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 59
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 59
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 59
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 75
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 64
+        }
+      ],
+      "evidence": [
+        "dicines. Despite this, the current treatment gap for epilepsy is estimated at 75% in low-income countries and is substantially higher in rural than in urban areas.1 144. Wide treatment gaps may result from a combination of decreased capacity in health care systems, the inequitable distribution of resources and the low ",
+        "highly treatable condition and more than 70% of people with epilepsy could live seizure-free lives if they had access to appropriate anti-seizure treatment, the most cost-effective of which are included in the WHO Model List of Essential Medicines. Despite this, the current treatment gap for epilepsy is estimated at 75",
+        "y in health care systems, the inequitable distribution of resources and the low priority assigned to epilepsy care. Factors that widen this gap include staff shortage, limited access to anti-seizure medicines, lack of knowledge and confidence of PHC workers in the management of epilepsy, misconceptions and stigma. 145.",
+        "averted by scaling up the routine availability of antiseizure medicines. Strategic Objective 2: Provide effective, timely and responsive diagnosis, treatment, and care (continued) Annex 2: Indicators for measuring progress towards defined targets of the Intersectoral Global Action Plan on Epilepsy and Other Neurologica",
+        "or comorbidities (i.e., physical and mental health conditions) as an integral part of epilepsy treatment and care services. Intersectoral global action plan on epilepsy and other neurological disorders 2022–2031 56"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_020",
+      "question": "Why do family members providing long-term care also need skills training and social support?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 38
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 37
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 32
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 37
+        },
+        {
+          "source": "WHO_Intersectoral_Action_Plan_Epilepsy_Neurological_Disorders.pdf",
+          "page": 36
+        }
+      ],
+      "evidence": [
+        "mentia,1 the Caregivers Skills Training Programme for Children with Developmental Disorders or Delays and other education, skills training and social support resources. 77. Proposed actions for international and national partners (a) Increase awareness of the impact of caring for people with neurological disorders, inc",
+        "r care input. Many carers are relatives, but close friends or volunteers can also take on caregiving responsibilities. Carers provide “hands-on” care and support for people with neurological disorders and play a significant role in organizing lifelong care. 73. Challenges for carers include stress, role strain, financi",
+        "ables people to live healthy, productive, independent and dignified lives and reduce the need for formal health and support services, long- term care and the work of carers. Few people in need have access to assistive products due Intersectoral global action plan on epilepsy and other neurological disorders 2022–2031 2",
+        "ional capacity for the training of health personnel in order to strengthen health systems and expand quality services. 2.4 Carer support 71. Neurological disorders have a profound impact on individuals, families and communities. Due to their chronic course, people with neurological disorders often require ongoing care ",
+        "re training requirements and core competencies for health and social workers in the field, as well as advanced neurological care training. (b) Support Member States in building health and social care workforce capacity, including informal care providers, by promoting, strengthening and developing guidance and tools and"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_024",
+      "question": "When a child with malaria presents with critical manifestations, how does the handbook recommend rapid assessment and treatment?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 188
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 181
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 231
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 181
+        },
+        {
+          "source": "WHO_Pocket_Book_Hospital_Care_for_Children.pdf",
+          "page": 187
+        }
+      ],
+      "evidence": [
+        "164 6. FEVER Note: If a child in a malarious area has fever with no obvious cause and it is not possible to conﬁ rm malaria on a blood ﬁ lm or with a rapid diagnostic test, treat the child for malaria. Treatment Treat with a ﬁ rst-line antimalarial agent, as in the national guidelines, with one of the following recomme",
+        "illness (including severe bacterial infections). If the rapid diagnostic test is negative, malaria is unlikely to be the cause of illness, and an alternative diagnosis must be sought. Treatment Emergency measures, to be taken within the ﬁ rst hour /L50776If the child is unconscious, minimize the risk for aspiration pne",
+        "fections (such as pneumonia, dysentery, skin or soft-tissue infections), give antibiotics as appropriate. – Add antimalarial treatment if the child has a positive blood ﬁ lm for malaria parasites or a positive malaria rapid diagnostic test. INFECTION PB2_ch7.indd 207PB2_ch7.indd 207 5/06/13 10:07 AM5/06/13 10:07 AM",
+        "reatment (see p. 169). If severe malaria is suspected and the initial blood smear is negative, perform a rapid diagnostic test, if available. If the test is positive, treat for severe malaria but continue to look for other causes of severe illness (including severe bacterial infections). If the rapid diagnostic test is",
+        "fusions) and output. 6.2.2 Uncomplicated malaria The presentation of uncomplicated malaria is highly variable and may mimic many other causes of fever. Diagnosis The child has: f e v e r ( t e m p e r a t u r e ≥ 37.5°C or ≥ 99.5 °F) or history of fever  a positive blood smear or positive rapid diagnostic test for ma"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_027",
+      "question": "For patients needing long-term HBV suppression, what class of recommended antiviral option is ETV?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 31
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 46
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 84
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 223
+        },
+        {
+          "source": "WHO_Chronic_Hepatitis_B_Guidelines_2024.pdf",
+          "page": 233
+        }
+      ],
+      "evidence": [
+        "uidelines, will capture an estimated 20% of all HBsAg positive people. Alternative antiviral regimens for treatment: The existing recommendation for use of two nucleos(t)ide analogues with a high genetic barrier to resistance – tenofovir disoproxil fumarate (TDF) or entecavir (ETV) as preferred first-line regimens was ",
+        "nce of access to HBV DNA assay 4. PERSISTENTLY ABNORMAL ALT LEVELS ALONEf,g HBV DNA <2000 IU/mL AND Absence of coinfections, comorbidities, immune suppression, extrahepatic manifestations family history of liver cancer or cirrhosis INITIATE ANTIVIRAL THERAPY AND MONITORh • TDF or ETV • TDF + 3TC or TDF + FTC (if no acc",
+        "nce of access to HBV DNA assay 4. PERSISTENTLY ABNORMAL ALT LEVELS ALONEf,g HBV DNA <2000 IU/mL AND Absence of coinfections, comorbidities, immune suppression, extrahepatic manifestations family history of liver cancer or cirrhosis INITIATE ANTIVIRAL THERAPY AND MONITORh • TDF or ETV • TDF + 3TC or TDF + FTC (if no acc",
+        "ere also high based on the few studies stopping therapy with nucleos(t)ide analogues with a higher barrier to resistance (three with ETV but none with TDF). Only 3% of HBeAg-negative viral responders treated with ETV for about one year had a sustained response (HBV DNA level <300 copies/mL) six months after therapy end",
+        " may benefit from nucleos(t)ide analogue therapy with ETV or TDF, to improve survival and reduce the risk of recurrent hepatitis B (66). The duration of treatment has not been established, but continuing antiviral therapy for at least three months after seroconversion to anti-HBs or at least 12 months after anti-HBe se"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_031",
+      "question": "When mosquito-borne viral cases rise in the rainy season, what key points should outbreak management focus on?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Managing_Epidemics_2nd_Edition.pdf",
+          "page": 141
+        },
+        {
+          "source": "WHO_Managing_Epidemics_2nd_Edition.pdf",
+          "page": 131
+        },
+        {
+          "source": "WHO_Managing_Epidemics_2nd_Edition.pdf",
+          "page": 131
+        },
+        {
+          "source": "WHO_Managing_Epidemics_2nd_Edition.pdf",
+          "page": 137
+        },
+        {
+          "source": "WHO_Managing_Epidemics_2nd_Edition.pdf",
+          "page": 121
+        }
+      ],
+      "evidence": [
+        "r the prevention and control of arboviruses including dengue, chikungunya, YF , Zika, as well as other mosquito-borne diseases such as malaria. DENGUEMANAGING EPIDEMICS | KEY FACTS ABOUT MAJOR DEADLY DISEASES 123",
+        "n populations likely to be in bed during the day (such as the ill, elderly, infants and young children). • Houses with solid floors and roofs, window screens and air conditioning can reduce the chance of mosquito-borne virus transmission. CHIKUNGUNYAMANAGING EPIDEMICS | KEY FACTS ABOUT MAJOR DEADLY DISEASES 113",
+        " should be engaged to develop, implement, and evaluate mosquito surveillance activities. • Mosquito vector surveil lance is important for the prevention and control of arboviruses including Zika, chikungunya, dengue and YF , as well as other mosquito- borne diseases like malaria. Individuals can and should protect them",
+        "itoring of cases. • Implement and str engthen mosquito surveillance to maintain timely data on vector distribution and risk of transmission in communities. • Pr ovide access to reliable laboratory testing and ensure adequate laboratory capacity for diagnosis and surveillance. An appropriate referral system should be in",
+        "ion and control of arboviruses including Zika, chikungunya, dengue and yellow fever, and other mosquito-borne diseases like malaria. ZIKAMANAGING EPIDEMICS | KEY FACTS ABOUT MAJOR DEADLY DISEASES 103"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_035",
+      "question": "In general recurrence prevention for people with a history of stones, what central role does fluid intake have?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 50
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 48
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 46
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 4
+        },
+        {
+          "source": "EAU_Urolithiasis_Guideline_2026.pdf",
+          "page": 68
+        }
+      ],
+      "evidence": [
+        "nce and recommendation for recurrence prevention Summary of evidence LE Increasing water intake reduces the risk of stone recurrence. 1a Recommendation Strength rating Advise patients that a generous intake of fluids, preferably water, is to be maintained, allowing for a 24-hour urine volume > 2.5L. Strong 4.3 Stone-sp",
+        "ophylaxis for recurrence, which is usually pharmacological treatment based on stone analysis and urinary risk profile. Table 4.5: General preventive measures Fluid intake (drinking advice) Fluid amount: 2.5–3.0L/day Water is the preferred fluid Diuresis: 2.0–2.5L/day Specific weight of urine: < 1,010g/day Nutritional a",
+        "ction and on their usual diet and fluid intake. Follow-up studies are necessary for patients taking medication for recurrence prevention [641]. The first follow-up 24-hour urine measurement is suggested eight to 12 weeks after starting pharmacological prevention of stone recurrence. This enables diet and/or drug dosage",
+        " metabolic work-up 46 4.1.4 Reference ranges of laboratory values 46 4.1.5 Risk indices and additional diagnostic tools 46 4.2 General considerations for recurrence prevention 48 4.2.1 Fluid intake 49 4.2.2 Diet 49 4.2.3 Lifestyle 50 4.2.4 Summary of evidence and recommendation for recurrence prevention 50 4.3 Stone-sp",
+        "dations for general preventive measures apply. Pharmacological intervention is difficult; therefore, high fluid intake ensures optimal specific weight levels of urine < 1.010 (urine specific gravity). A purine-reduced diet decreases the risk of spontaneous crystallisation in urine. 4.11 Drug-induced stones Drug stones "
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_039",
+      "question": "Why should the team verify before skin incision whether antimicrobial prophylaxis was given within the specified time window?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_Surgical_Safety_Checklist_Implementation_Manual.pdf",
+          "page": 12
+        },
+        {
+          "source": "WHO_Surgical_Safety_Checklist_Implementation_Manual.pdf",
+          "page": 12
+        },
+        {
+          "source": "WHO_Surgical_Safety_Checklist_Implementation_Manual.pdf",
+          "page": 12
+        },
+        {
+          "source": "WHO_Surgical_Safety_Checklist_Implementation_Manual.pdf",
+          "page": 8
+        },
+        {
+          "source": "WHO_Surgical_Safety_Checklist_Implementation_Manual.pdf",
+          "page": 6
+        }
+      ],
+      "evidence": [
+        "s is most effective if serum and/or tissue levels of antibiotic are achieved, surgical teams are inconsistent about administering antibiotics within one hour prior to incision. To reduce surgical infection risk, the coordinator will ask out loud whether prophylactic antibiotics were given during the previous 60 minutes",
+        " loud whether prophylactic antibiotics were given during the previous 60 minutes. The team member responsible for administering antibiotics – usually the anaesthetist – should provide verbal confirmation. If prophylactic antibiotics have not been administered, they should be administered now, prior to incision. If prop",
+        "t been administered, they should be administered now, prior to incision. If prophylactic antibiotics have been administered longer than 60 minutes before, the team should consider redosing the patient. If prophylactic antibiotics are not considered appropriate (e.g. cases without a skin incision, contaminated cases in ",
+        "itical elements of their plans for the operation, using the Checklist for guidance. They will also confirm that prophylactic antibiotics have been administered within the previous 60 minutes and that essential imaging is displayed, as appropriate. Before leaving the operating room, the team will review the operation th",
+        "Yes, and two IVs/central access and fluids planned Confirm all team members have introduced themselves by name and role. Confirm the patient’s name, procedure, and where the incision will be made. Has antibiotic prophylaxis been given within the last 60 minutes? Yes Not applicable Anticipated Critical Events To Surgeon"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_043",
+      "question": "When assessing CKD risk, why should urinary albumin be quantified in addition to eGFR?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 54
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 77
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 34
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 55
+        },
+        {
+          "source": "KDIGO_2024_CKD_Clinical_Practice_Guideline.pdf",
+          "page": 87
+        }
+      ],
+      "evidence": [
+        "or and with chronic kidney disease (CKD) using both urine albumin measurement and assessment of glomerularﬁltration rate (GFR). Early detection of any chronic disease, including CKD, provides greater opportunities to reduce morbidity as treat- ments can be initiated earlier in the disease course. Because treatments for",
+        "d because it is the single most important protein lost in the urine in most CKDs. Use of urinary albumin measurement as the preferred test for pro- teinuria detection will improve the sensitivity, quality, and consistency of approach to the early detection and manage- ment of kidney disease. Commonly used reagent strip",
+        "h urine albumin mea- surement and assessment of glomerularﬁltration rate (GFR). Practice Point 1.1.1.2: Following incidental detection of elevated urinary albumin-to-creatinine ratio (ACR), hematuria, or low estimated GFR (eGFR), repeat tests to conﬁrm presence of CKD. 1.1.2 Methods for staging of CKD Recommendation 1.",
+        "lized based on the person’s goals of care and suitability for treatment. Practice Point 1.1.1.2: Following incidental detection of elevated urinary albumin-to-creatinine ratio (ACR), he- maturia, or low estimated GFR (eGFR), repeat tests to conﬁrm presence of CKD. There is known biological and analytical variability in",
+        "y care in addition to eGFR-based criteria and other clinical considerations. People with CKD G4–G5 are more likely to develop con- current complications of CKD including anemia, hyper- kalemia, bone mineral disorders, and/or metabolic acidosis and protein-energy wasting. In addition, they remain at high risk for advers"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    },
+    {
+      "id": "rag_hard_047",
+      "question": "When managing hypertension and diabetes, why estimate combined CVD risk instead of focusing on one indicator?",
+      "answer": "",
+      "retrieved": [
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 25
+        },
+        {
+          "source": "WHO_PEN_Essential_NCD_Interventions.pdf",
+          "page": 82
+        },
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 15
+        },
+        {
+          "source": "WHO_HEARTS_Cardiovascular_Disease_Management.pdf",
+          "page": 31
+        },
+        {
+          "source": "WHO_PEN_Essential_NCD_Interventions.pdf",
+          "page": 79
+        }
+      ],
+      "evidence": [
+        " and decreasing risk. Systematic reviews of high- intensity combined lifestyle counselling for people with CVD risk factors show reduced cholesterol, blood pressure, weight, glucose level and diabetes incidence after 12–24 months, although it is unclear whether counselling has long-term effects on CVD events and mortal",
+        " a deﬁ ned subnational area Once in 3 months This is for the programme quality control and will assist with forecasting of medicines and improvements in supply chain management Population level (control of hypertension, diabetes and CVD risk) No. Indicator Source of data Reporting frequency Considerations in the interp",
+        "n to avert disease by addressing major modifiable risk factors, including tobacco use, hypertension, high blood cholesterol and diabetes, using a total cardiovascular risk approach; • secondary prevention to prevent recurrent events in people with a history of CVD; and • early detection of acute manifestations of CVD (",
+        "a (26) A simple CVD risk management package for assessing and managing hypertension on the basis of CVD risk was evaluated in China and Nigeria. The package contained a simple protocol based on guideline recommendations and optimized for primary prevention in low-resource settings. Two geographically distant regions in",
+        "S Hypertension Diabetes Hyperlipidaemia COPD Asthma Other CVD risk - lab based CVD risk - non lab based ANNEX 4.4: SAMPLE CLINICAL RECORD 72"
+      ],
+      "model_faithfulness": null,
+      "codex_supported_claims": null,
+      "codex_total_claims": null,
+      "codex_faithfulness": null,
+      "codex_note": ""
+    }
+  ]
+}

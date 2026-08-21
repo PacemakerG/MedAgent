@@ -488,14 +488,6 @@ function LoginModal({
               />
             </label>
             <label>
-              租户ID
-              <input
-                value={form.tenantId}
-                onChange={(e) => onChange('tenantId', e.target.value)}
-                placeholder="default"
-              />
-            </label>
-            <label>
               密码
               <input
                 type="password"
@@ -522,7 +514,6 @@ function LoginModal({
 // SECTION 6 — APP ROOT  (all state + API logic)
 // ══════════════════════════════════════════════════════════════
 const API_BASE = '/api/v1';
-const TENANT_STORAGE_KEY = 'medigenius_tenant_id';
 const USER_STORAGE_KEY = 'medigenius_user_id';
 const SESSION_STORAGE_KEY = 'medigenius_session_id';
 const ACCESS_TOKEN_STORAGE_KEY = 'medigenius_access_token';
@@ -542,20 +533,15 @@ function createClientSessionId() {
 
 function resolveClientIdentity() {
   if (typeof window === 'undefined') {
-    return { tenantId: 'default', userId: 'anonymous' };
+    return { userId: 'anonymous' };
   }
   const query = new URLSearchParams(window.location.search);
-  const tenantId = sanitizeIdentity(
-    query.get('tenant') || localStorage.getItem(TENANT_STORAGE_KEY) || import.meta.env.VITE_TENANT_ID,
-    'default',
-  );
   const userId = sanitizeIdentity(
     query.get('user') || localStorage.getItem(USER_STORAGE_KEY) || import.meta.env.VITE_USER_ID,
     'anonymous',
   );
-  localStorage.setItem(TENANT_STORAGE_KEY, tenantId);
   localStorage.setItem(USER_STORAGE_KEY, userId);
-  return { tenantId, userId };
+  return { userId };
 }
 
 function resolveClientSessionId() {
@@ -588,7 +574,6 @@ export default function App() {
   const [accessToken, setAccessToken] = useState(() => localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) || '');
   const [loginForm, setLoginForm] = useState({
     userId: '',
-    tenantId: resolveClientIdentity().tenantId,
     password: '',
   });
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
@@ -633,10 +618,8 @@ export default function App() {
   }, []);
 
   const persistIdentity = useCallback((nextIdentity) => {
-    const tenantId = sanitizeIdentity(nextIdentity?.tenantId, 'default');
     const userId = sanitizeIdentity(nextIdentity?.userId, 'anonymous');
-    setIdentity({ tenantId, userId });
-    localStorage.setItem(TENANT_STORAGE_KEY, tenantId);
+    setIdentity({ userId });
     localStorage.setItem(USER_STORAGE_KEY, userId);
   }, []);
 
@@ -710,7 +693,6 @@ export default function App() {
         if (cancelled) return;
 
         const nextIdentity = {
-          tenantId: sanitizeIdentity(data?.tenant_id || identity.tenantId, 'default'),
           userId: sanitizeIdentity(data?.user_id || 'anonymous', 'anonymous'),
         };
         persistIdentity(nextIdentity);
@@ -730,7 +712,6 @@ export default function App() {
     e.preventDefault();
     if (isAuthSubmitting) return;
     const userId = sanitizeIdentity(loginForm.userId, '');
-    const tenantId = sanitizeIdentity(loginForm.tenantId || identity.tenantId, 'default');
     const password = loginForm.password || '';
     if (!userId) {
       showToast('请输入用户ID', 'error');
@@ -749,11 +730,11 @@ export default function App() {
           'Content-Type': 'application/json',
           'X-Session-ID': sessionHeaderId,
         },
-        body: JSON.stringify({ user_id: userId, tenant_id: tenantId, password }),
+        body: JSON.stringify({ user_id: userId, password }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        persistIdentity({ tenantId: data.tenant_id, userId: data.user_id });
+        persistIdentity({ userId: data.user_id });
         if (data.access_token) {
           setAccessToken(data.access_token);
           localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, data.access_token);
@@ -778,7 +759,7 @@ export default function App() {
     } finally {
       setIsAuthSubmitting(false);
     }
-  }, [identity.tenantId, isAuthSubmitting, loginForm.password, loginForm.tenantId, loginForm.userId, persistIdentity, persistSessionId, sessionHeaderId, showToast]);
+  }, [isAuthSubmitting, loginForm.password, loginForm.userId, persistIdentity, persistSessionId, sessionHeaderId, showToast]);
 
   const logout = useCallback(async () => {
     try {
@@ -786,7 +767,7 @@ export default function App() {
     } catch {
       // ignore logout network failures, still clear local state
     }
-    persistIdentity({ tenantId: identity.tenantId, userId: 'anonymous' });
+    persistIdentity({ userId: 'anonymous' });
     setAccessToken('');
     localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
     setIsLoggedIn(false);
@@ -797,7 +778,7 @@ export default function App() {
     setShowWelcome(true);
     setSelectedDepartment(null);
     showToast('已退出登录', 'info');
-  }, [apiFetch, identity.tenantId, persistIdentity, showToast]);
+  }, [apiFetch, persistIdentity, showToast]);
 
   // ── Scroll to bottom ───────────────────────────────────────
   const scrollToBottom = useCallback(() => {
@@ -981,7 +962,6 @@ export default function App() {
     ecgPollingSessionRef.current = effectiveSession;
 
     const params = new URLSearchParams({
-      tenant_id: identity.tenantId,
       user_id: identity.userId,
       session_id: effectiveSession || '',
     });
@@ -1089,7 +1069,7 @@ export default function App() {
         }
       })();
     };
-  }, [apiFetch, currentSessionId, identity.tenantId, identity.userId, loadSessions, sessionHeaderId, showToast, stopEcgPolling]);
+  }, [apiFetch, currentSessionId, identity.userId, loadSessions, sessionHeaderId, showToast, stopEcgPolling]);
 
   const submitEcgGuide = useCallback(async (e) => {
     e.preventDefault();

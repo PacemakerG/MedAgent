@@ -22,7 +22,6 @@ def _escape_table_cell(value: str) -> str:
 
 
 def _render_notes(
-    safety_level: str,
     domain: str,
     use_rag: bool,
     need_rag: bool,
@@ -30,7 +29,6 @@ def _render_notes(
     profiling: dict | None = None,
 ) -> str:
     parts = [
-        f"safety_level={safety_level}",
         f"domain={domain}",
         f"primary_department={primary_department}",
         f"use_rag={use_rag}",
@@ -52,7 +50,6 @@ def append_flow_trace_record(
     question: str,
     flow_trace: Iterable[str],
     source: str,
-    safety_level: str,
     domain: str,
     primary_department: str,
     use_rag: bool,
@@ -63,7 +60,6 @@ def append_flow_trace_record(
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     flow_trace_list = list(flow_trace)
     notes = _render_notes(
-        safety_level,
         domain,
         use_rag,
         need_rag,

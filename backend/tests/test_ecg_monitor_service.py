@@ -91,10 +91,9 @@ def test_monitor_fetch_latest_and_llm_io_contract(monkeypatch):
     )
 
     task_id = "task-timeout-fallback"
-    service._worker(task_id, "session-1", "tenant-a", "user-a", intake.model_dump())
+    service._worker(task_id, "session-1", "user-a", intake.model_dump())
     status = service.get_status(
         task_id,
-        tenant_id="tenant-a",
         user_id="user-a",
         session_id="session-1",
     )
@@ -116,7 +115,6 @@ def test_monitor_status_isolation_by_identity():
         "task-isolated",
         status="completed",
         message="ok",
-        tenant_id="tenant-a",
         user_id="user-a",
         session_id="sess-a",
         success=True,
@@ -124,13 +122,11 @@ def test_monitor_status_isolation_by_identity():
 
     assert service.get_status(
         "task-isolated",
-        tenant_id="tenant-a",
         user_id="user-a",
         session_id="sess-a",
     ) is not None
     assert service.get_status(
         "task-isolated",
-        tenant_id="tenant-b",
-        user_id="user-a",
+        user_id="user-b",
         session_id="sess-a",
     ) is None

@@ -13,7 +13,6 @@ from langchain_core.documents import Document
 class AgentState(TypedDict):
     """Shared state passed between all LangGraph agent nodes."""
 
-    tenant_id: str
     user_id: str
     session_id: str
     question: str
@@ -56,7 +55,6 @@ class AgentState(TypedDict):
     tavily_success: bool
     current_tool: Optional[str]
     retry_count: int
-    safety_level: str
     domain: str
     ecg_metrics: str
     flow_trace: List[str]
@@ -66,7 +64,6 @@ class AgentState(TypedDict):
 def initialize_conversation_state() -> AgentState:
     """Return a fresh AgentState with all fields at their defaults."""
     return {
-        "tenant_id": "default",
         "user_id": "anonymous",
         "session_id": "",
         "question": "",
@@ -109,7 +106,6 @@ def initialize_conversation_state() -> AgentState:
         "tavily_success": False,
         "current_tool": None,
         "retry_count": 0,
-        "safety_level": "SAFE",
         "domain": "general",
         "ecg_metrics": "",
         "flow_trace": [],
@@ -126,7 +122,6 @@ def reset_query_state(state: AgentState) -> AgentState:
     """Reset per-query flags while preserving conversation history."""
     state.update(
         {
-            "tenant_id": state.get("tenant_id", "default"),
             "user_id": state.get("user_id", "anonymous"),
             "question": "",
             "documents": [],
@@ -167,7 +162,6 @@ def reset_query_state(state: AgentState) -> AgentState:
             "tavily_success": False,
             "current_tool": None,
             "retry_count": 0,
-            "safety_level": "SAFE",
             "domain": "general",
             "ecg_metrics": "",
             "flow_trace": [],

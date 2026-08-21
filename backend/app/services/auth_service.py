@@ -44,7 +44,6 @@ def _clean_identity(value: str, default: str = "") -> str:
 
 @dataclass
 class AuthResult:
-    tenant_id: str
     user_id: str
     session_id: str
     access_token: str
@@ -54,7 +53,7 @@ class AuthResult:
 
 
 class AuthService:
-    """Tenant-scoped authentication service."""
+    """User-scoped authentication service."""
 
     def __init__(self):
         self._secret = AUTH_TOKEN_SECRET or secrets.token_urlsafe(48)
@@ -63,10 +62,6 @@ class AuthService:
                 "AUTH_TOKEN_SECRET/SESSION_SECRET_KEY is not configured; "
                 "using a process-local signing secret."
             )
-
-    @staticmethod
-    def normalize_tenant_id(value: str | None) -> str:
-        return _clean_identity(value or "default", "default")
 
     @staticmethod
     def normalize_user_id(value: str | None) -> str:
@@ -118,14 +113,12 @@ class AuthService:
     def create_access_token(
         self,
         *,
-        tenant_id: str,
         user_id: str,
         session_id: str,
     ) -> tuple[str, int]:
         expires_at = int(time.time()) + int(AUTH_ACCESS_TOKEN_TTL_SECONDS)
         payload = {
             "typ": "access",
-            "tenant_id": tenant_id,
             "user_id": user_id,
             "session_id": session_id,
             "iat": int(time.time()),
@@ -151,13 +144,11 @@ class AuthService:
                 return None
             if int(payload.get("exp", 0)) < int(time.time()):
                 return None
-            tenant_id = self.normalize_tenant_id(payload.get("tenant_id"))
             user_id = self.normalize_user_id(payload.get("user_id"))
             session_id = _clean_identity(payload.get("session_id", ""), "")
-            if not tenant_id or not user_id or not session_id:
+            if not user_id or not session_id:
                 return None
             return {
-                "tenant_id": tenant_id,
                 "user_id": user_id,
                 "session_id": session_id,
                 "expires_at": int(payload["exp"]),
@@ -169,37 +160,34 @@ class AuthService:
     def authenticate(
         self,
         *,
-        tenant_id: str,
         user_id: str,
         password: str,
         session_id: str,
     ) -> Optional[AuthResult]:
-        tenant_id = self.normalize_tenant_id(tenant_id)
         user_id = self.normalize_user_id(user_id)
-        if not tenant_id or not user_id or not password:
+        if not user_id or not password:
             return None
 
         try:
-            user = db_service.get_user(tenant_id, user_id)
+            user = db_service.get_user(user_id)
         except Exception as exc:
             logger.warning("Auth: user lookup failed, attempting DB init: %s", exc)
             db_service.ensure_user_table()
-            user = db_service.get_user(tenant_id, user_id)
+            user = db_service.get_user(user_id)
         created = False
         if user is None:
             if not AUTH_AUTO_CREATE_USERS:
                 return None
             try:
                 db_service.create_user(
-                    tenant_id=tenant_id,
                     user_id=user_id,
                     password_hash=self.hash_password(password),
                 )
                 created = True
-                logger.info("Auth: auto-created user tenant=%s user=%s", tenant_id, user_id)
+                logger.info("Auth: auto-created user=%s", user_id)
             except Exception as exc:
                 logger.warning("Auth: auto-create race or failure, retrying lookup: %s", exc)
-                user = db_service.get_user(tenant_id, user_id)
+                user = db_service.get_user(user_id)
                 if user is None or not self.verify_password(password, user.password_hash):
                     return None
         elif not user.is_active:
@@ -207,14 +195,12 @@ class AuthService:
         elif not self.verify_password(password, user.password_hash):
             return None
 
-        db_service.update_user_last_login(tenant_id, user_id)
+        db_service.update_user_last_login(user_id)
         access_token, expires_at = self.create_access_token(
-            tenant_id=tenant_id,
             user_id=user_id,
             session_id=session_id,
         )
         return AuthResult(
-            tenant_id=tenant_id,
             user_id=user_id,
             session_id=session_id,
             access_token=access_token,

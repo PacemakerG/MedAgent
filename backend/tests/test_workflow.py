@@ -19,8 +19,6 @@ def test_routing_logic():
     state["domain"] = "medical"
     state["use_rag"] = True
     assert _route_after_keyword_router(state) == "medical_router"
-    state["domain"] = "nutrition"
-    assert _route_after_keyword_router(state) == "query_rewriter"
     state["selected_department_forced"] = True
     assert _route_after_keyword_router(state) == "query_rewriter"
     state["selected_department_forced"] = False

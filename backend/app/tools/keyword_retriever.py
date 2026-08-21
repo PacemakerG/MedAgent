@@ -59,13 +59,17 @@ class _ScopeKeywordIndex:
                 score = idf * tf * (k1 + 1.0) / max(1e-6, denom)
                 scores[doc_id] += score
 
-        ranked_doc_ids = sorted(scores.items(), key=lambda item: item[1], reverse=True)[: max(1, top_k)]
+        ranked_doc_ids = sorted(scores.items(), key=lambda item: item[1], reverse=True)[
+            : max(1, top_k)
+        ]
         results: List[Document] = []
         for doc_id, score in ranked_doc_ids:
             source_doc = self.docs[doc_id]
             metadata = dict(source_doc.metadata or {})
             metadata["keyword_score"] = round(float(score), 6)
-            results.append(Document(page_content=source_doc.page_content, metadata=metadata))
+            results.append(
+                Document(page_content=source_doc.page_content, metadata=metadata)
+            )
         return results
 
 
@@ -73,26 +77,44 @@ def _tokenize_text(text: str) -> List[str]:
     lowered = (text or "").lower()
     if not lowered:
         return []
-    terms = [token.strip() for token in _TOKEN_PATTERN.findall(lowered) if token.strip()]
+    terms = [
+        token.strip() for token in _TOKEN_PATTERN.findall(lowered) if token.strip()
+    ]
     # Add normalized multi-char medical terms to improve Chinese phrase matching.
     terms.extend(extract_query_terms(lowered))
     unique_terms = list(dict.fromkeys(t for t in terms if len(t) >= 2))
     return unique_terms[:48]
 
 
-def _build_where_filter(scope: str, domain: str) -> dict:
+def _build_where_filter(
+    scope: str,
+    domain: str,
+    *,
+    search_all_departments: bool = False,
+) -> dict:
     if domain == "medical":
+        if search_all_departments:
+            return {"domain": "medical"}
         return {"department": scope}
     return {"domain": domain}
 
 
-def _load_scope_docs(scope: str, domain: str) -> List[Document]:
+def _load_scope_docs(
+    scope: str,
+    domain: str,
+    *,
+    search_all_departments: bool = False,
+) -> List[Document]:
     vectorstore = get_or_create_vectorstore()
     if not vectorstore:
         return []
 
     collection = vectorstore._collection
-    where_filter = _build_where_filter(scope, domain)
+    where_filter = _build_where_filter(
+        scope,
+        domain,
+        search_all_departments=search_all_departments,
+    )
 
     docs: List[Document] = []
     offset = 0
@@ -106,7 +128,9 @@ def _load_scope_docs(scope: str, domain: str) -> List[Document]:
                 include=["documents", "metadatas"],
             )
         except Exception as exc:
-            logger.warning("Keyword retriever get() failed for scope=%s: %s", scope, exc)
+            logger.warning(
+                "Keyword retriever get() failed for scope=%s: %s", scope, exc
+            )
             break
 
         batch_docs = payload.get("documents") or []
@@ -125,8 +149,17 @@ def _load_scope_docs(scope: str, domain: str) -> List[Document]:
     return docs
 
 
-def _build_scope_index(scope: str, domain: str) -> Optional[_ScopeKeywordIndex]:
-    docs = _load_scope_docs(scope, domain)
+def _build_scope_index(
+    scope: str,
+    domain: str,
+    *,
+    search_all_departments: bool = False,
+) -> Optional[_ScopeKeywordIndex]:
+    docs = _load_scope_docs(
+        scope,
+        domain,
+        search_all_departments=search_all_departments,
+    )
     if not docs:
         return None
 
@@ -182,16 +215,21 @@ def keyword_search(
     scope: str,
     domain: str,
     top_k: int = 3,
+    search_all_departments: bool = False,
 ) -> List[Document]:
     """Run keyword retrieval for one scope using cached BM25-style index."""
     if not query.strip():
         return []
     with _INDEX_LOCK:
         _refresh_cache_if_needed()
-        cache_key = f"{domain}::{scope}"
+        cache_key = f"{domain}::{scope}::all={int(search_all_departments)}"
         index = _INDEX_CACHE.get(cache_key)
         if index is None:
-            index = _build_scope_index(scope, domain)
+            index = _build_scope_index(
+                scope,
+                domain,
+                search_all_departments=search_all_departments,
+            )
             if index is None:
                 return []
             _INDEX_CACHE[cache_key] = index

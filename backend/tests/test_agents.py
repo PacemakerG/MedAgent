@@ -1,11 +1,12 @@
 """Tests for all agents — Deep Modular Architecture"""
+
 import os
 import sys
 from unittest.mock import MagicMock, patch
 
 from langchain_core.documents import Document
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.agents.executor import ExecutorAgent  # noqa: E402
 from app.agents.medical_router import MedicalRouterAgent  # noqa: E402
@@ -25,6 +26,9 @@ def test_planner_agent_medical():
     new_state = PlannerAgent(state)
     assert new_state["current_tool"] == "medical_router"
     assert new_state["domain"] == "medical"
+    assert new_state["use_rag"] is True
+    assert "safety_level" not in new_state
+    assert new_state["flow_trace"] == ["keyword_router"]
 
 
 def test_planner_agent_general():
@@ -32,6 +36,30 @@ def test_planner_agent_general():
     state["question"] = "Hello there"
     new_state = PlannerAgent(state)
     assert new_state["current_tool"] == "judge_need_rag"
+    assert new_state["domain"] == "general"
+    assert new_state["use_rag"] is False
+
+
+def test_planner_agent_medical_keyword_is_not_safety_shortcut():
+    state = initialize_conversation_state()
+    state["question"] = "偏头痛通常需要做什么检查？"
+
+    new_state = PlannerAgent(state)
+
+    assert new_state["domain"] == "medical"
+    assert new_state["current_tool"] == "medical_router"
+    assert "safety_level" not in new_state
+
+
+def test_planner_agent_recognizes_specialty_medical_entities():
+    for question in ("登革热怎么传播？", "青光眼为什么要复查？", "疥疮怎么检测？"):
+        state = initialize_conversation_state()
+        state["question"] = question
+
+        new_state = PlannerAgent(state)
+
+        assert new_state["domain"] == "medical"
+        assert new_state["current_tool"] == "medical_router"
 
 
 def test_planner_agent_manual_department_override():
@@ -57,9 +85,11 @@ def test_retriever_agent_success():
     state["retrieval_query"] = "发热 感染"
     state["department_queries"] = {"infectious_disease": "感染 发热"}
 
-    with patch('app.agents.retriever.get_retriever') as mock_get_retriever:
+    with patch("app.agents.retriever.get_retriever") as mock_get_retriever:
         mock_retriever = MagicMock()
-        mock_retriever.invoke.return_value = [Document(page_content="Fever details " * 10)]
+        mock_retriever.invoke.return_value = [
+            Document(page_content="Fever details " * 10)
+        ]
         mock_get_retriever.return_value = mock_retriever
 
         new_state = RetrieverAgent(state)
@@ -78,32 +108,99 @@ def test_retriever_agent_manual_scope_only():
 
     with patch("app.agents.retriever.get_retriever") as mock_get_retriever:
         mock_retriever = MagicMock()
-        mock_retriever.invoke.return_value = [Document(page_content="神经系统症状评估 " * 10)]
+        mock_retriever.invoke.return_value = [
+            Document(page_content="神经系统症状评估 " * 10)
+        ]
         mock_get_retriever.return_value = mock_retriever
         new_state = RetrieverAgent(state)
 
     assert new_state["retrieval_scopes"] == ["neurology"]
     assert new_state["rag_success"] is True
+    assert mock_get_retriever.call_args.kwargs["search_kwargs"]["filter"] == {
+        "department": "neurology"
+    }
+    assert new_state["profiling"]["retrieval"]["search_all_departments"] is False
 
 
-def test_retriever_agent_general_scope_filter_is_strict():
+def test_retriever_agent_forced_general_searches_all_medical_departments():
     state = initialize_conversation_state()
     state["question"] = "通用健康建议"
     state["domain"] = "medical"
     state["use_rag"] = True
     state["selected_department"] = "general_medical"
     state["selected_department_forced"] = True
+    state["retrieval_queries"] = ["通用健康建议"]
 
-    with patch("app.agents.retriever.get_retriever") as mock_get_retriever:
+    with (
+        patch("app.agents.retriever.KEYWORD_BACKEND", "memory"),
+        patch("app.agents.retriever.HYBRID_RETRIEVAL_ENABLED", True),
+        patch(
+            "app.agents.retriever.keyword_search", return_value=[]
+        ) as mock_keyword_search,
+        patch("app.agents.retriever.get_retriever") as mock_get_retriever,
+    ):
         mock_retriever = MagicMock()
-        mock_retriever.invoke.return_value = [Document(page_content="通用医疗知识 " * 10)]
+        mock_retriever.invoke.return_value = [
+            Document(page_content="通用医疗知识 " * 10)
+        ]
         mock_get_retriever.return_value = mock_retriever
         new_state = RetrieverAgent(state)
 
     assert new_state["retrieval_scopes"] == ["general_medical"]
     assert mock_get_retriever.call_args.kwargs["search_kwargs"]["filter"] == {
-        "department": "general_medical"
+        "domain": "medical"
     }
+    assert mock_keyword_search.call_args.kwargs["search_all_departments"] is True
+    assert new_state["profiling"]["retrieval"]["search_all_departments"] is True
+
+
+def test_retriever_agent_automatic_general_scope_searches_all_medical_pdfs():
+    state = initialize_conversation_state()
+    state["question"] = "通用健康建议"
+    state["domain"] = "medical"
+    state["use_rag"] = True
+    state["primary_department"] = "general_medical"
+    state["department_candidates"] = [{"name": "general_medical", "score": 0.9}]
+
+    with patch("app.agents.retriever.get_retriever") as mock_get_retriever:
+        mock_retriever = MagicMock()
+        mock_retriever.invoke.return_value = [
+            Document(page_content="通用医疗知识 " * 10)
+        ]
+        mock_get_retriever.return_value = mock_retriever
+        new_state = RetrieverAgent(state)
+
+    assert mock_get_retriever.call_args.kwargs["search_kwargs"]["filter"] == {
+        "domain": "medical"
+    }
+    assert new_state["profiling"]["retrieval"]["search_all_departments"] is True
+
+
+def test_retriever_agent_automatic_specialty_only_searches_primary_department():
+    state = initialize_conversation_state()
+    state["question"] = "头晕和视物模糊应该如何判断"
+    state["domain"] = "medical"
+    state["use_rag"] = True
+    state["primary_department"] = "neurology"
+    state["department_candidates"] = [
+        {"name": "neurology", "score": 0.9},
+        {"name": "ophthalmology", "score": 0.6},
+        {"name": "general_medical", "score": 0.4},
+    ]
+
+    with patch("app.agents.retriever.get_retriever") as mock_get_retriever:
+        mock_retriever = MagicMock()
+        mock_retriever.invoke.return_value = [
+            Document(page_content="神经系统症状评估 " * 10)
+        ]
+        mock_get_retriever.return_value = mock_retriever
+        new_state = RetrieverAgent(state)
+
+    assert new_state["retrieval_scopes"] == ["neurology"]
+    assert mock_get_retriever.call_args.kwargs["search_kwargs"]["filter"] == {
+        "department": "neurology"
+    }
+    assert new_state["profiling"]["retrieval"]["search_all_departments"] is False
 
 
 def test_retriever_agent_failure():
@@ -111,11 +208,11 @@ def test_retriever_agent_failure():
     state["question"] = "unknown"
     state["domain"] = "medical"
     state["use_rag"] = True
-    state["primary_department"] = "hematology"
-    state["department_candidates"] = [{"name": "hematology", "score": 0.9}]
+    state["primary_department"] = "general_medical"
+    state["department_candidates"] = [{"name": "general_medical", "score": 0.9}]
     state["retrieval_query"] = "贫血"
-    state["department_queries"] = {"hematology": "贫血"}
-    with patch('app.agents.retriever.get_retriever') as mock_get:
+    state["department_queries"] = {"general_medical": "贫血"}
+    with patch("app.agents.retriever.get_retriever") as mock_get:
         mock_retriever = MagicMock()
         mock_retriever.invoke.return_value = []
         mock_get.return_value = mock_retriever
@@ -144,10 +241,12 @@ def test_retriever_agent_with_elasticsearch_keyword_backend():
         metadata={"chunk_id": "kw-1", "department": "infectious_disease"},
     )
 
-    with patch("app.agents.retriever.KEYWORD_BACKEND", "elasticsearch"), \
-            patch("app.agents.retriever.keyword_backend_available", return_value=True), \
-            patch("app.agents.retriever.get_retriever") as mock_get_retriever, \
-            patch("app.agents.retriever.keyword_search_es", return_value=[keyword_doc]):
+    with (
+        patch("app.agents.retriever.KEYWORD_BACKEND", "elasticsearch"),
+        patch("app.agents.retriever.keyword_backend_available", return_value=True),
+        patch("app.agents.retriever.get_retriever") as mock_get_retriever,
+        patch("app.agents.retriever.keyword_search_es", return_value=[keyword_doc]),
+    ):
         mock_retriever = MagicMock()
         mock_retriever.invoke.return_value = [vector_doc]
         mock_get_retriever.return_value = mock_retriever
@@ -164,9 +263,9 @@ def test_retriever_agent_no_tool():
     state = initialize_conversation_state()
     state["domain"] = "medical"
     state["use_rag"] = True
-    state["primary_department"] = "hematology"
-    state["department_candidates"] = [{"name": "hematology", "score": 0.9}]
-    with patch('app.agents.retriever.get_retriever', return_value=None):
+    state["primary_department"] = "general_medical"
+    state["department_candidates"] = [{"name": "general_medical", "score": 0.9}]
+    with patch("app.agents.retriever.get_retriever", return_value=None):
         new_state = RetrieverAgent(state)
         assert new_state["rag_success"] is False
 
@@ -195,37 +294,75 @@ def test_split_documents_assigns_stable_chunk_ids():
 
 def test_medical_router_agent_fallback():
     state = initialize_conversation_state()
-    state["question"] = "我血红蛋白低，经常头晕乏力"
+    state["question"] = "贫血通常需要做哪些检查"
     state["domain"] = "medical"
     state["use_rag"] = True
     new_state = MedicalRouterAgent(state)
-    assert new_state["primary_department"] == "hematology"
+    assert new_state["primary_department"] == "general_medical"
     assert new_state["department_candidates"]
+
+
+def test_medical_router_explicit_specialty_overrides_llm_general_fallback():
+    state = initialize_conversation_state()
+    state["question"] = "肾结石复发应该怎样预防？"
+    state["domain"] = "medical"
+    state["use_rag"] = True
+    response = MagicMock()
+    response.content = (
+        '{"primary_department":"general_medical",'
+        '"department_candidates":[{"name":"general_medical","score":0.9}],'
+        '"routing_reason":"general"}'
+    )
+    llm = MagicMock()
+    llm.invoke.return_value = response
+
+    with patch("app.agents.medical_router.get_light_llm", return_value=llm):
+        new_state = MedicalRouterAgent(state)
+
+    assert new_state["primary_department"] == "general_surgery"
 
 
 def test_query_rewriter_agent_fallback():
     state = initialize_conversation_state()
-    state["question"] = "我血红蛋白低，经常头晕乏力"
+    state["question"] = "贫血通常需要做哪些检查"
     state["domain"] = "medical"
     state["use_rag"] = True
-    state["primary_department"] = "hematology"
-    state["department_candidates"] = [{"name": "hematology", "score": 0.9}]
+    state["primary_department"] = "general_medical"
+    state["department_candidates"] = [{"name": "general_medical", "score": 0.9}]
     new_state = QueryRewriterAgent(state)
     assert new_state["retrieval_query"]
-    assert "hematology" in new_state["department_queries"]
+    assert "general_medical" in new_state["department_queries"]
+
+
+def test_query_rewriter_disabled_is_exact_pass_through(monkeypatch):
+    monkeypatch.setattr("app.agents.query_rewriter.QUERY_REWRITER_ENABLED", False)
+    state = initialize_conversation_state()
+    state["question"] = "What evidence supports CKD screening?"
+    state["domain"] = "medical"
+    state["use_rag"] = True
+    state["primary_department"] = "general_medical"
+    state["department_candidates"] = [{"name": "general_medical", "score": 0.9}]
+
+    new_state = QueryRewriterAgent(state)
+
+    assert new_state["retrieval_query"] == state["question"]
+    assert new_state["retrieval_queries"] == [state["question"]]
+    assert new_state["department_multi_queries"] == {
+        "general_medical": [state["question"]]
+    }
 
 
 def test_reranker_agent():
     state = initialize_conversation_state()
-    state["question"] = "贫血会不会导致头晕"
-    state["retrieval_query"] = "贫血 头晕"
-    state["primary_department"] = "hematology"
-    state["retrieval_scopes"] = ["hematology", "general_medical"]
+    state["question"] = "偏头痛会不会导致头晕"
+    state["retrieval_query"] = "偏头痛 头晕"
+    state["primary_department"] = "neurology"
+    state["retrieval_scopes"] = ["neurology", "general_medical"]
     state["merged_rag_context"] = [
         {
-            "content": "贫血常见症状包括头晕和乏力。",
-            "metadata": {"department": "hematology"},
-            "scope": "hematology",
+            "content": "偏头痛常见症状包括头痛和头晕。",
+            "metadata": {"department": "neurology"},
+            "scope": "neurology",
             "raw_rank": 0,
         },
         {
@@ -236,13 +373,15 @@ def test_reranker_agent():
         },
     ]
     new_state = RerankerAgent(state)
-    assert new_state["rag_context"][0]["scope"] == "hematology"
+    assert new_state["rag_context"][0]["scope"] == "neurology"
 
 
 # --- Memory Agent Tests ---
 def test_memory_agent():
     state = initialize_conversation_state()
-    state["conversation_history"] = [{"role": "user", "content": str(i)} for i in range(25)]
+    state["conversation_history"] = [
+        {"role": "user", "content": str(i)} for i in range(25)
+    ]
 
     new_state = MemoryAgent(state)
 
@@ -254,9 +393,10 @@ def test_memory_agent_loads_user_preferences():
     state = initialize_conversation_state()
     state["session_id"] = "sess-pref"
 
-    with patch("app.agents.memory.load_profile") as mock_load, patch(
-        "app.agents.memory.render_profile_as_text"
-    ) as mock_render:
+    with (
+        patch("app.agents.memory.load_profile") as mock_load,
+        patch("app.agents.memory.render_profile_as_text") as mock_render,
+    ):
         mock_load.return_value = {
             "preferences": {
                 "preferred_name": "王女士",
@@ -278,10 +418,14 @@ def test_executor_agent_with_docs():
     state["question"] = "What is X?"
     state["rag_context"] = [{"content": "X is Y."}]
 
-    with patch('app.agents.executor.get_llm') as mock_get_llm, \
-            patch('app.agents.executor._decide_web_search', return_value=(False, "")):
+    with (
+        patch("app.agents.executor.get_llm") as mock_get_llm,
+        patch("app.agents.executor._decide_web_search", return_value=(False, "")),
+    ):
         mock_llm = MagicMock()
-        mock_llm.invoke.return_value.content = "根据资料，X 大概率与 Y 相关。你最近还有别的症状吗？"
+        mock_llm.invoke.return_value.content = (
+            "根据资料，X 大概率与 Y 相关。你最近还有别的症状吗？"
+        )
         mock_get_llm.return_value = mock_llm
 
         new_state = ExecutorAgent(state)
@@ -293,7 +437,7 @@ def test_executor_agent_with_docs():
 def test_executor_agent_no_llm():
     state = initialize_conversation_state()
     state["question"] = "test"
-    with patch('app.agents.executor.get_llm', return_value=None):
+    with patch("app.agents.executor.get_llm", return_value=None):
         new_state = ExecutorAgent(state)
         assert "暂时不可用" in new_state["generation"]
         assert "你希望我下一步" in new_state["generation"]
@@ -312,7 +456,7 @@ def test_executor_agent_llm_fail():
     state = initialize_conversation_state()
     state["question"] = "test"
     state["documents"] = [Document(page_content="some content")]
-    with patch('app.agents.executor.get_llm') as mock_get:
+    with patch("app.agents.executor.get_llm") as mock_get:
         mock_llm = MagicMock()
         mock_llm.invoke.side_effect = Exception("error")
         mock_get.return_value = mock_llm
@@ -331,11 +475,14 @@ def test_executor_agent_includes_personalization_guidance_in_prompt():
         "language": "en-US",
     }
 
-    with patch("app.agents.executor.get_llm") as mock_get_llm, patch(
-        "app.agents.executor._decide_web_search", return_value=(False, "")
+    with (
+        patch("app.agents.executor.get_llm") as mock_get_llm,
+        patch("app.agents.executor._decide_web_search", return_value=(False, "")),
     ):
         mock_llm = MagicMock()
-        mock_llm.invoke.return_value.content = "请先观察一周并记录症状变化。你最近有发热吗？"
+        mock_llm.invoke.return_value.content = (
+            "请先观察一周并记录症状变化。你最近有发热吗？"
+        )
         mock_get_llm.return_value = mock_llm
 
         ExecutorAgent(state)
@@ -352,8 +499,8 @@ def test_executor_ecg_skill_shortcut():
     state["session_id"] = "session-ecg-1"
     state["question"] = (
         "请根据以下ECG数据生成报告：```json"
-        "{\"patient_info\":{\"age\":24,\"gender\":\"female\"},"
-        "\"features\":{\"heart_rate\":74}}```"
+        '{"patient_info":{"age":24,"gender":"female"},'
+        '"features":{"heart_rate":74}}```'
     )
     with patch("app.agents.executor._maybe_run_ecg_skill") as mock_skill:
         mock_skill.return_value = MagicMock(
@@ -365,7 +512,6 @@ def test_executor_ecg_skill_shortcut():
         mock_skill.assert_called_once_with(
             state["question"],
             "session-ecg-1",
-            tenant_id="default",
             user_id="anonymous",
         )
         assert "心电图诊断报告" in new_state["generation"]

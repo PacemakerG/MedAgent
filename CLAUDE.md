@@ -52,33 +52,39 @@ cp backend/.env.example backend/.env
 ### Workflow (LangGraph) — 9 Nodes
 
 ```
+semantic_cache
+  ├── cache hit ───────────────────────────────────────────────► response
+  └── cache miss
+          │
+          ▼
 memory_read
   │
   ▼
-health_concierge  ←── safety triage + domain classification
-  │
-  ├── safety_level = EMERGENCY/CLARIFY ──► executor (safety bypass, no retrieval)
+keyword_router  ←── binary medical-intent classification
   │
   ├── selected_department_forced ──► query_rewriter → rag → reranker → executor
   │
   ├── domain = "medical" ──► medical_router → query_rewriter → rag → reranker → executor
   │                                            └─ (use_rag=false) → executor
-  ├── domain in {nutrition,fitness,sleep} ──► query_rewriter → rag → reranker → executor
   │
-  └── domain = "general" ──► judge_need_rag → (need_rag) query_rewriter → rag → reranker → executor
-                                              └─ (!need_rag) executor
+  └── non-medical ──► judge_need_rag → (need_rag) query_rewriter → rag → reranker → executor
+                                      └─ (!need_rag) executor
                                                                          │
                                                                          ▼
                                                                   memory_write_async → END
+                                                                         │
+                                                                         ▼
+                                                            semantic_cache store → response
 ```
 
 Key rules:
 - All paths converge to `executor` (single sink pattern)
-- `health_concierge` EMERGENCY/CLARIFY levels bypass ALL retrieval — go directly to executor for safety responses
+- `keyword_router` performs one deterministic medical/non-medical classification
 - `medical_router` only activates for `domain == "medical"` queries
-- `judge_need_rag` only activates for `domain == "general"` queries
-- `query_rewriter` → `rag` → `reranker` always run as a pipeline (never individually)
+- `judge_need_rag` only activates for non-medical queries
+- `query_rewriter` remains in the pipeline but is a pass-through by default; the retained C2 path is fixed chunks + vector/Elasticsearch RRF + BGE reranking
 - `memory_write_async` runs in background, doesn't block response
+- `semantic_cache` lookup/store is handled by `ChatService`, outside the LangGraph nodes
 
 ### Agents (backend/app/agents/)
 
@@ -86,27 +92,27 @@ Key rules:
 |---|---|---|
 | `memory.py` | MemoryReadAgent | Loads profile JSON, trims history to 20 entries |
 | `memory.py` | MemoryWriteAsyncAgent | Async profile updates (non-blocking) |
-| `planner.py` | HealthConciergeAgent | Safety triage (EMERGENCY/CLARIFY/SAFE) + domain classification (medical/nutrition/fitness/sleep/general) |
-| `medical_router.py` | MedicalRouterAgent | Routes medical queries to hospital departments (cardiology, neurology, etc.) |
+| `planner.py` | KeywordRouterAgent | Deterministic medical/non-medical keyword classification |
+| `medical_router.py` | MedicalRouterAgent | Routes medical queries across the 8 supported departments |
 | `judge_need_rag.py` | JudgeNeedRAGAgent | Binary RAG-needed decision for general-domain queries only |
 | `query_rewriter.py` | QueryRewriterAgent | Rewrites user question into retrieval-optimized queries (per-department for medical, single for others) |
 | `retriever.py` | RetrieverAgent | Multi-scope parallel hybrid retrieval (ChromaDB vector + keyword) |
 | `reranker.py` | RerankerAgent | Two-stage reranking: rule-based scoring + optional cross-encoder model |
 | `executor.py` | ExecutorAgent | Final answer synthesis with web search, ECG skill, personalization, citation enforcement, safety templates |
 
-### Multi-Tenant Architecture
+### User/Session Identity
 
-All state carries `tenant_id` + `user_id` + `session_id` for isolation. Identity is resolved via `RequestContext` (in `backend/app/api/v1/request_context.py`) with this priority:
+All state carries `user_id` + `session_id` for isolation. Identity is resolved via `RequestContext` (in `backend/app/api/v1/request_context.py`) with this priority:
 1. Bearer token (HMAC-signed, from `Authorization` header)
-2. Cookie session (`session_id`, `tenant_id`, `user_id` in starlette session)
-3. Identity headers (`X-Tenant-ID`, `X-User-ID`, `X-Session-ID`) — only when `AUTH_TRUST_IDENTITY_HEADERS=true`
+2. Cookie session (`session_id`, `user_id` in starlette session)
+3. Identity headers (`X-User-ID`, `X-Session-ID`) — only when `AUTH_TRUST_IDENTITY_HEADERS=true`
 
 ### AgentState (backend/app/core/state.py)
 
 The state TypedDict has ~46 fields. Key categories:
-- **Identity**: `tenant_id`, `user_id`, `session_id`, `question`, `messages`
+- **Identity**: `user_id`, `session_id`, `question`, `messages`
 - **Memory**: `memory_context`, `memory_profile`
-- **Routing**: `safety_level`, `domain`, `selected_department`, `selected_department_forced`
+- **Routing**: `keyword_hit`, `domain`, `selected_department`, `selected_department_forced`
 - **Medical routing**: `primary_department`, `department_candidates`, `department_queries`, `department_multi_queries`, `routing_reason`
 - **Retrieval pipeline**: `use_rag`, `need_rag`, `retrieval_query`, `retrieval_queries`, `query_complexity`, `retrieval_scopes`, `retrieval_results_by_scope`, `merged_rag_context`, `reranked_rag_context`, `rag_context`, `packed_rag_context`
 - **Execution**: `generation`, `source`, `ecg_metrics`, `intent`
@@ -125,7 +131,7 @@ Auth & infrastructure:
 - `auth_service.py`: PBKDF2-SHA256 password hashing + HMAC-signed access tokens (stateful, not JWT)
 - `redis_service.py`: Optional Redis client with transparent in-memory fallback
 - `rate_limit_service.py`: Fixed-window rate limiter (login: 10/min, chat: 60/min)
-- `semantic_cache_service.py`: Rule-based cache for low-risk medical queries (keyed by extracted entities + question type, not raw text)
+- `semantic_cache_service.py`: Redis Stack semantic cache using normalized entities plus vector similarity
 - `task_queue_service.py`: Thread-pool task queue with Redis-compatible status storage
 
 ECG services:
@@ -158,7 +164,7 @@ ECG services:
 - `POST /api/v1/chat/stream` — SSE streaming chat (events: `start` → `delta*` → `done`/`error`)
 - `POST /api/v1/chat/jobs` — queue async chat task, returns `job_id`
 - `GET /api/v1/jobs/{job_id}` — poll async job status
-- `GET /api/v1/sessions` — list sessions (scoped by tenant/user)
+- `GET /api/v1/sessions` — list sessions (scoped by user)
 - `GET /api/v1/session/{session_id}` — load session details
 - `DELETE /api/v1/session/{session_id}` — delete session
 - `GET /api/v1/history` — current session chat history
@@ -245,35 +251,28 @@ Key characteristics:
 - `pyproject.toml`: test discovery in `tests/`, auto `--cov=app`
 - `conftest.py`: Autouse fixtures mock ALL external dependencies (DB, LLM, vector store, PDF processing, workflow) so tests run without real API keys
 
-### Test Files (16 total)
+### Test Files (20 total)
 - `test_agents.py` — all agent unit tests
 - `test_workflow.py`, `test_workflow_routing.py` — LangGraph integration + routing branches
 - `test_api.py`, `test_api_edge_cases.py`, `test_auth_api.py` — API endpoint tests
 - `test_database.py`, `test_services.py`, `test_profile_service.py` — service layer
 - `test_ecg_service.py`, `test_ecg_api.py`, `test_ecg_monitor_service.py` — ECG
 - `test_tools.py` — LLM client, vector store, PDF loader, keyword retriever
-- `test_semantic_cache_service.py`, `test_greeting_service.py` — specific services
+- `test_semantic_cache_service.py`, `test_semantic_cache_redis_integration.py`, `test_greeting_service.py` — semantic cache and specific services
+- `test_evaluation_tools.py` — consolidated evaluation pipeline tests
 - `test_coverage_gaps.py` — deep branch coverage for Executor, session endpoints, lifespan
-- `test_langsmith_eval_tools.py` — eval pipeline self-tests
 - `test_logging.py` — logging infrastructure
 
 ## LangSmith Evaluation Pipeline
 
-Three-stage pipeline in `backend/scripts/`:
-
-1. **Build** (`build_langsmith_eval_dataset.py`): Generates 50-sample JSONL dataset across 4 categories (single_hop, multi_hop, open_domain, negative) covering 8 departments
-2. **Run** (`run_langsmith_eval.py`): Executes full LangGraph workflow against each sample, computes route match %, retrieval metrics (Top1/Recall/MRR), behavior pass/fail, optional LLM judge scoring
-3. **Upload** (`upload_langsmith_dataset.py`): Pushes dataset to LangSmith cloud (graceful skip without credentials)
-
-All components degrade gracefully without LangSmith credentials.
+Five scripts under `backend/scripts/evaluation/` build, upload, and evaluate three independent datasets: RAG 150, end-to-end routing 50, and Redis semantic-cache 50 pairs. The RAG report uses Hit@1, Recall@5, MRR, answer faithfulness, and retrieval latency; routing reports route and department accuracy; Redis reports hit-decision accuracy and paired latency. See `docs/evaluation/` for the exact protocol and current results.
 
 ## Risk Controls
 
 - **Executor tool loop**: Hard budget (max 2 calls) + same-tool repeat limit (max 1) + timeout + forced final answer
 - **Memory JSON corruption**: Atomic writes + file locking + limited retry on failure
 - **RAG low quality**: Executor autonomous judgment with optional WebSearch fallback
-- **Safety bypass**: EMERGENCY/CLARIFY queries skip retrieval entirely, go direct to executor with emergency templates
-- **Semantic cache safety**: High-risk keywords (chest pain, dyspnea, etc.) and personalization-dependent queries bypass cache
+- **Semantic cache matching**: Exact normalized-entity filtering precedes vector-threshold matching; extraction or Redis Search failures fall through to the full workflow
 - **Rate limiting**: Fixed-window counters on login (10/min) and chat (60/min)
 
 ## Language & Tone

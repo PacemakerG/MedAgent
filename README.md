@@ -1,8 +1,8 @@
-# MediGenius (HardWare-Medicial)
+# MedAgent
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-MediGenius is a production-oriented healthcare AI assistant that combines multi-agent orchestration, RAG retrieval, streaming interaction, long-term memory, and medical report delivery into one end-to-end system.
+MedAgent is a production-oriented healthcare AI assistant that combines multi-agent orchestration, RAG retrieval, streaming interaction, long-term memory, and medical report delivery into one end-to-end system.
 
 Two core pipelines:
 
@@ -211,7 +211,7 @@ uv run python scripts/evaluation/evaluate_redis_cache.py
 ## Project Structure
 
 ```
-HardWare-Medicial/
+MedAgent/
 ├── backend/
 │   ├── app/
 │   │   ├── agents/          # 9 LangGraph agents
@@ -247,7 +247,7 @@ On top of that prototype, this repository introduces substantial re-engineering:
 
 - **ElonGe** -- [GitHub](https://github.com/PacemakerG)
 - **xhforever** -- [GitHub](https://github.com/xhforever)
-- **Project** -- [HardWare-Medicial](https://github.com/PacemakerG/HardWare-Medicial)
+- **Project** -- [MedAgent](https://github.com/PacemakerG/MedAgent)
 
 ## Disclaimer
 
